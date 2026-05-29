@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1100" viewBox="0 0 1000 1100" preserveAspectRatio="xMidYMid slice">
 <defs>
 <linearGradient id="g241" x1="0" y1="0" x2="1" y2="1">
-<stop offset="0" stop-color="#d9e0cf"/><stop offset="1" stop-color="#7e9468"/>
+<stop offset="0" stop-color="#cfe0bd"/><stop offset="1" stop-color="#5e9150"/>
 </linearGradient>
-<filter id="b241" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="60"/></filter>
+<filter id="b241" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="46"/></filter>
 <filter id="n241"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.05"/></feComponentTransfer><feComposite operator="over" in2="SourceGraphic"/></filter>
 </defs>
 <rect width="1000" height="1100" fill="url(#g241)"/>
-<g filter="url(#b241)"><circle cx="151" cy="640" r="210" fill="#7e9468" opacity="0.41"/><circle cx="688" cy="386" r="362" fill="#7e9468" opacity="0.35"/><circle cx="447" cy="276" r="259" fill="#aebf9b" opacity="0.60"/><circle cx="610" cy="673" r="437" fill="#aebf9b" opacity="0.29"/><circle cx="580" cy="509" r="463" fill="#d9e0cf" opacity="0.62"/><circle cx="843" cy="264" r="358" fill="#aebf9b" opacity="0.64"/></g>
-<rect width="1000" height="1100" fill="#48583a" opacity="0.04"/>
+<g filter="url(#b241)"><circle cx="151" cy="640" r="210" fill="#5e9150" opacity="0.61"/><circle cx="688" cy="386" r="362" fill="#5e9150" opacity="0.55"/><circle cx="447" cy="276" r="259" fill="#9cc07f" opacity="0.80"/><circle cx="610" cy="673" r="437" fill="#9cc07f" opacity="0.49"/><circle cx="580" cy="509" r="463" fill="#cfe0bd" opacity="0.82"/><circle cx="843" cy="264" r="358" fill="#9cc07f" opacity="0.84"/></g>
+<rect width="1000" height="1100" fill="#33502d" opacity="0.04"/>
 <rect width="1000" height="1100" filter="url(#n241)" opacity="0.5"/>
 </svg>

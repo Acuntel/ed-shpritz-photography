@@ -13,7 +13,7 @@ fs.mkdirSync(dataDir, { recursive: true });
 const collections = [
   {
     slug: "chicago",
-    palette: ["#cdd7dc", "#9fb3bd", "#6f8893", "#3c4d56"],
+    palette: ["#bcd2dd", "#7fa3b3", "#4f7385", "#2b4452"],
     mood: "wash",
     triggers: 4,
     extra: 4,
@@ -22,7 +22,7 @@ const collections = [
   },
   {
     slug: "animals-and-birds",
-    palette: ["#e7dcc6", "#cdb98f", "#a98f5d", "#6b5836"],
+    palette: ["#ecd6a6", "#cda869", "#a87b3d", "#5e4626"],
     mood: "wash",
     triggers: 4,
     extra: 4,
@@ -31,7 +31,7 @@ const collections = [
   },
   {
     slug: "landscape",
-    palette: ["#d9e0cf", "#aebf9b", "#7e9468", "#48583a"],
+    palette: ["#cfe0bd", "#9cc07f", "#5e9150", "#33502d"],
     mood: "wash",
     triggers: 3,
     extra: 4,
@@ -40,7 +40,7 @@ const collections = [
   },
   {
     slug: "icm",
-    palette: ["#e8d7e2", "#c8a9c6", "#9b7aa6", "#5f4a72"],
+    palette: ["#e6c9e0", "#c089bf", "#8f6fb0", "#574c82"],
     mood: "streak",
     triggers: 4,
     extra: 4,
@@ -49,7 +49,7 @@ const collections = [
   },
   {
     slug: "black-and-white",
-    palette: ["#e3e3e3", "#b4b4b4", "#6f6f6f", "#1f1f1f"],
+    palette: ["#dcdcdc", "#9a9a9a", "#525252", "#171717"],
     mood: "wash",
     triggers: 3,
     extra: 4,
@@ -58,7 +58,7 @@ const collections = [
   },
   {
     slug: "watercolor",
-    palette: ["#eef0ec", "#dbe3df", "#c6d2d6", "#aebcc4"],
+    palette: ["#d9e6df", "#bcd3cf", "#d3c2dd", "#b6c8e0"],
     mood: "bleed",
     triggers: 3,
     extra: 4,
@@ -67,7 +67,7 @@ const collections = [
   },
   {
     slug: "sets-of-three",
-    palette: ["#ddd6cb", "#c2b8a6", "#9c8f78", "#5e5443"],
+    palette: ["#ddd0bb", "#c2ad8e", "#9c8160", "#5e4a36"],
     mood: "triptych",
     triggers: 3,
     extra: 4,
@@ -95,7 +95,7 @@ function blob(rand, palette) {
   const cy = (0.15 + rand() * 0.7) * 1000;
   const r = (0.18 + rand() * 0.3) * 1000;
   const fill = palette[Math.floor(rand() * palette.length)];
-  const o = (0.25 + rand() * 0.4).toFixed(2);
+  const o = (0.45 + rand() * 0.4).toFixed(2);
   return `<circle cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" r="${r.toFixed(0)}" fill="${fill}" opacity="${o}"/>`;
 }
 
@@ -123,7 +123,7 @@ function svg(seed, palette, mood, w, h) {
 <linearGradient id="g${seed}" x1="0" y1="0" x2="1" y2="1">
 <stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${c}"/>
 </linearGradient>
-<filter id="b${seed}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${mood === "streak" ? 26 : 60}"/></filter>
+<filter id="b${seed}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${mood === "streak" ? 26 : 46}"/></filter>
 <filter id="n${seed}"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.05"/></feComponentTransfer><feComposite operator="over" in2="SourceGraphic"/></filter>
 </defs>
 <rect width="${w}" height="${h}" fill="url(#g${seed})"/>
