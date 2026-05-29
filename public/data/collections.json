@@ -3,49 +3,49 @@
     "slug": "chicago",
     "name": "Chicago",
     "kicker": "The city, quietly",
-    "blurb": "A familiar skyline seen the way you see it on the walk home. Lines, light, and the lake.",
-    "cover": "/images/placeholders/chicago-1.svg"
+    "blurb": "A familiar skyline seen the way you see it on an ordinary walk. Lines, light, and the lake.",
+    "cover": "/images/gallery/chicago-pavilion.jpg"
   },
   {
     "slug": "animals-and-birds",
     "name": "Animals and Birds",
-    "kicker": "Small lives, close up",
+    "kicker": "Small lives, up close",
     "blurb": "Birds mid turn and animals caught being themselves. Patience, mostly, and a little luck.",
-    "cover": "/images/placeholders/animals-and-birds-1.svg"
+    "cover": "/images/gallery/pure-joy.jpg"
   },
   {
     "slug": "landscape",
     "name": "Landscape",
     "kicker": "Room to breathe",
     "blurb": "Wide open places where the light is the subject and the land just holds it.",
-    "cover": "/images/placeholders/landscape-1.svg"
+    "cover": "/images/gallery/mackerel-sky.jpg"
   },
   {
     "slug": "icm",
     "name": "Intentional Camera Movement",
-    "kicker": "When the camera dances",
+    "kicker": "When the camera moves",
     "blurb": "The camera moves on purpose and the world turns soft. Photographs that feel like paintings.",
-    "cover": "/images/placeholders/icm-1.svg"
+    "cover": "/images/gallery/the-promenade.jpg"
   },
   {
     "slug": "black-and-white",
     "name": "Black and White",
     "kicker": "Light without color",
     "blurb": "Take the color away and what is left is shape, shadow, and feeling.",
-    "cover": "/images/placeholders/black-and-white-1.svg"
+    "cover": "/images/gallery/royal-family.jpg"
   },
   {
-    "slug": "watercolor",
-    "name": "Watercolor",
-    "kicker": "Less is more",
-    "blurb": "Soft, washed, and nearly empty. The pictures that ask the very least and give the most.",
-    "cover": "/images/placeholders/watercolor-1.svg"
+    "slug": "less-is-more",
+    "name": "Less Is More",
+    "kicker": "The quiet ones",
+    "blurb": "White frames and soft frames. Very little in the picture, and a great deal to feel.",
+    "cover": "/images/gallery/marina-white.jpg"
   },
   {
-    "slug": "sets-of-three",
-    "name": "Sets of Three",
-    "kicker": "Told in threes",
-    "blurb": "Stories that needed more than one frame. Birds, the air and water show, butterflies, and dogs.",
-    "cover": "/images/placeholders/sets-of-three-1.svg"
+    "slug": "air-and-water-show",
+    "name": "Air and Water Show",
+    "kicker": "Sky and speed",
+    "blurb": "Jets in formation and balloons at first light. Moments that will not hold still.",
+    "cover": "/images/gallery/blue-angels.jpg"
   }
 ]

@@ -15,9 +15,9 @@ export default function Home() {
   const site = getSite();
   const collections = getCollections();
   const triggers = getTriggerPhotos();
-  const watercolor = getPhotosByCollection("watercolor").slice(0, 2);
+  const watercolor = getPhotosByCollection("less-is-more").slice(0, 2);
   const watercolorCover = collections.find(
-    (c) => c.slug === "watercolor",
+    (c) => c.slug === "less-is-more",
   )?.cover;
 
   return (
@@ -64,10 +64,10 @@ export default function Home() {
               {site.lessIsMore}
             </p>
             <Link
-              href="/collections/watercolor/"
+              href="/collections/less-is-more/"
               className="mt-8 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
             >
-              See the watercolor work
+              See the quiet ones
             </Link>
           </Reveal>
           <div className="grid grid-cols-2 gap-5 lg:col-span-7">

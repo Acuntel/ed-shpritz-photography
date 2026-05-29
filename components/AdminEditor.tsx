@@ -45,7 +45,7 @@ export default function AdminEditor({
     const id = `p-${Date.now()}`;
     const next: Photo = {
       id,
-      src: "/images/placeholders/watercolor-1.svg",
+      src: "/images/gallery/marina-white.jpg",
       alt: "New photograph",
       name: "Untitled",
       title: "untitled",
