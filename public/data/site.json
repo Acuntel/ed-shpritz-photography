@@ -1,0 +1,27 @@
+{
+  "name": "Ed Shpritz",
+  "role": "Photography",
+  "concepts": ["Do You See What I See?", "Less Is More"],
+  "heroLine": "Do you see what I see?",
+  "heroSub": "Quiet pictures that ask you to look a little longer.",
+  "intro": "A small collection of moments from Chicago, the natural world, and the spaces in between. Some are sharp and still. Some are soft and moving. All of them began with a question.",
+  "lessIsMore": "The white frames and the watercolor frames are where less is more. Very little in the picture, and a great deal to feel. Step back, slow down, and let the quiet ones speak.",
+  "bio": {
+    "portrait": "/images/placeholders/portrait.svg",
+    "heading": "A few words from Ed",
+    "body": [
+      "I am drawn to the moment just before a thing becomes obvious. A bird turning, light folding over water, a city softening into shape. I make pictures so that other people might pause where I paused.",
+      "Some of this work is intentional camera movement, where the camera moves on purpose and the world turns to watercolor. Some of it is plain and white and almost empty. Both come from the same place. I am asking you to look, and then to look again.",
+      "If a picture makes you slow down for a second, it has done its job. That is the whole idea."
+    ]
+  },
+  "edisms": [
+    "Less is more.",
+    "Do you see what I see?",
+    "The best camera is the one you remembered to bring.",
+    "Look once for the picture. Look twice for the moment.",
+    "A quiet picture is still saying something."
+  ],
+  "contactEmail": "hello@edshpritz.com",
+  "location": "Chicago"
+}

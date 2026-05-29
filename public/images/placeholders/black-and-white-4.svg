@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1250" viewBox="0 0 1000 1250" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="g449" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#e3e3e3"/><stop offset="1" stop-color="#6f6f6f"/>
+</linearGradient>
+<filter id="b449" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="60"/></filter>
+<filter id="n449"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.05"/></feComponentTransfer><feComposite operator="over" in2="SourceGraphic"/></filter>
+</defs>
+<rect width="1000" height="1250" fill="url(#g449)"/>
+<g filter="url(#b449)"><circle cx="152" cy="192" r="260" fill="#1f1f1f" opacity="0.33"/><circle cx="369" cy="236" r="423" fill="#e3e3e3" opacity="0.52"/><circle cx="285" cy="303" r="211" fill="#6f6f6f" opacity="0.25"/><circle cx="735" cy="392" r="317" fill="#e3e3e3" opacity="0.25"/><circle cx="466" cy="403" r="315" fill="#1f1f1f" opacity="0.62"/><circle cx="564" cy="355" r="363" fill="#1f1f1f" opacity="0.58"/></g>
+<rect width="1000" height="1250" fill="#1f1f1f" opacity="0.04"/>
+<rect width="1000" height="1250" filter="url(#n449)" opacity="0.5"/>
+</svg>

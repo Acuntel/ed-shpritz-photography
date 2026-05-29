@@ -1,0 +1,80 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { ArrowLeft } from "lucide-react";
+import {
+  getCollections,
+  getCollection,
+  getPhotosByCollection,
+  getSite,
+} from "@/lib/data";
+import PhotoGrid from "@/components/PhotoGrid";
+import Reveal from "@/components/Reveal";
+
+export function generateStaticParams() {
+  return getCollections().map((c) => ({ slug: c.slug }));
+}
+
+export function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Metadata {
+  const c = getCollection(params.slug);
+  if (!c) return { title: "Collection" };
+  return { title: `${c.name} | Ed Shpritz Photography`, description: c.blurb };
+}
+
+export default function CollectionPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const collection = getCollection(params.slug);
+  if (!collection) notFound();
+
+  const photos = getPhotosByCollection(params.slug);
+  const site = getSite();
+  const others = getCollections().filter((c) => c.slug !== params.slug);
+
+  return (
+    <article className="pt-28">
+      <header className="container-rail">
+        <Link
+          href="/#collections"
+          className="inline-flex items-center gap-2 font-sans text-sm text-ink-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft size={16} /> All collections
+        </Link>
+        <Reveal className="mt-8 border-b border-ink/10 pb-10">
+          <p className="kicker">{collection.kicker}</p>
+          <h1 className="mt-3 font-serif text-5xl font-light text-ink sm:text-6xl">
+            {collection.name}
+          </h1>
+          <p className="mt-5 max-w-prose2 font-sans text-base leading-relaxed text-ink-soft">
+            {collection.blurb}
+          </p>
+        </Reveal>
+      </header>
+
+      <section className="container-rail mt-12">
+        <PhotoGrid photos={photos} email={site.contactEmail} />
+      </section>
+
+      <section className="container-rail mt-24 border-t border-ink/10 pt-12">
+        <p className="kicker mb-6">Keep looking</p>
+        <div className="flex flex-wrap gap-x-8 gap-y-3">
+          {others.map((c) => (
+            <Link
+              key={c.slug}
+              href={`/collections/${c.slug}/`}
+              className="font-serif text-xl text-ink-soft transition-colors hover:text-ink"
+            >
+              {c.name}
+            </Link>
+          ))}
+        </div>
+      </section>
+    </article>
+  );
+}
