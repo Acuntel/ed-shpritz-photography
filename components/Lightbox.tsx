@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import Picture from "@/components/Picture";
 import type { Photo } from "@/lib/types";
 
 type Props = {
@@ -22,6 +23,7 @@ export default function Lightbox({
 }: Props) {
   const open = index !== null;
   const photo = open ? photos[index as number] : null;
+  const touchX = useRef<number | null>(null);
 
   const go = useCallback(
     (dir: number) => {
@@ -47,11 +49,21 @@ export default function Lightbox({
     };
   }, [open, go, onClose]);
 
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+    touchX.current = null;
+  };
+
   return (
     <AnimatePresence>
       {open && photo && (
         <motion.div
-          className="fixed inset-0 z-[60] flex flex-col bg-paper/96 backdrop-blur-xl"
+          className="protect fixed inset-0 z-[60] flex flex-col bg-paper/97 backdrop-blur-xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -75,6 +87,8 @@ export default function Lightbox({
           <div
             className="flex flex-1 items-center justify-center px-6 pb-6"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
           >
             <button
               type="button"
@@ -92,14 +106,21 @@ export default function Lightbox({
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="flex max-h-full min-w-0 flex-col items-center"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.src}
-                alt={photo.alt}
-                className="max-h-[68vh] w-auto max-w-full object-contain shadow-[0_30px_80px_-40px_rgba(0,0,0,0.45)]"
+              <Picture
+                photo={photo}
+                variant="full"
+                priority
+                sizes="100vw"
+                className="max-h-[68vh] w-auto max-w-full object-contain shadow-[0_30px_80px_-40px_rgba(0,0,0,0.6)]"
+                style={{ aspectRatio: undefined }}
               />
               <figcaption className="mt-6 max-w-prose2 text-center">
                 <h2 className="font-serif text-2xl text-ink">{photo.name}</h2>
+                {photo.title && (
+                  <p className="mt-1 font-sans text-xs uppercase tracking-widest2 text-ink-faint">
+                    {photo.title}
+                  </p>
+                )}
                 {photo.description && (
                   <p className="mt-2 font-sans text-sm leading-relaxed text-ink-muted">
                     {photo.description}

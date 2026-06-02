@@ -1,11 +1,12 @@
 {
   "name": "Edward H. Shpritz",
   "role": "Photography",
-  "concepts": ["Do You See What I See?", "Less Is More"],
-  "heroLine": "Do you see what I see?",
+  "concepts": ["Do You See What I See?", "From Light to Dark"],
+  "heroLine": "Do You See What I See?",
+  "tagline": "From Light to Dark",
   "heroSub": "Quiet pictures that ask you to look a little longer.",
   "intro": "Photographs from Chicago, the lakefront, and the wild places in between. Some are sharp and still. Some are soft and moving. Every one of them began with a question.",
-  "lessIsMore": "The white frames and the soft frames are where less is more. Very little in the picture, and a great deal to feel. Step back, slow down, and let the quiet ones speak.",
+  "lessIsMore": "Step back, slow down, and let the quiet pictures speak.",
   "bio": {
     "portrait": "/images/portrait.jpg",
     "heading": "A few words from Ed",
@@ -17,10 +18,17 @@
   },
   "edisms": [
     "Beauty within, shines outside. Beauty outside, only shines.",
-    "Less is more.",
+    "From light to dark.",
     "Do you see what I see?",
     "A quiet picture is still saying something."
   ],
-  "contactEmail": "hello@edshpritz.com",
-  "location": "Chicago"
+  "contactEmail": "ed@edshpritzphotography.com",
+  "location": "Chicago",
+  "ownerName": "Edward H. Shpritz",
+  "prints": {
+    "available": true,
+    "statement": "Prints are available on request. Each is printed to archival standards and signed. Write to me, tell me which picture spoke to you, and we will find the right size and paper for your wall."
+  },
+  "watermark": "none",
+  "formEndpoint": ""
 }

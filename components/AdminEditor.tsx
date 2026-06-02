@@ -177,9 +177,14 @@ export default function AdminEditor({
         {tab === "Words" && (
           <div className="max-w-2xl space-y-5">
             <Text
-              label="Hero line"
+              label="Hero line (the big opening words)"
               value={site.heroLine}
               onChange={(v) => setSite({ ...site, heroLine: v })}
+            />
+            <Text
+              label="Tagline (under the hero line)"
+              value={site.tagline}
+              onChange={(v) => setSite({ ...site, tagline: v })}
             />
             <Text
               label="Hero subtitle"
@@ -192,7 +197,7 @@ export default function AdminEditor({
               onChange={(v) => setSite({ ...site, intro: v })}
             />
             <Area
-              label="Less is more"
+              label="Footer statement"
               value={site.lessIsMore}
               onChange={(v) => setSite({ ...site, lessIsMore: v })}
             />
@@ -237,6 +242,29 @@ export default function AdminEditor({
               label="Location"
               value={site.location}
               onChange={(v) => setSite({ ...site, location: v })}
+            />
+            <Area
+              label="Prints statement"
+              value={site.prints.statement}
+              onChange={(v) =>
+                setSite({ ...site, prints: { ...site.prints, statement: v } })
+              }
+            />
+            <Select
+              label="Watermark on full-size images"
+              value={site.watermark}
+              options={[
+                { value: "none", label: "None" },
+                { value: "subtle", label: "Subtle" },
+              ]}
+              onChange={(v) =>
+                setSite({ ...site, watermark: v as "none" | "subtle" })
+              }
+            />
+            <Text
+              label="Contact form key (Web3Forms access key — leave blank to use email)"
+              value={site.formEndpoint}
+              onChange={(v) => setSite({ ...site, formEndpoint: v })}
             />
           </div>
         )}
@@ -326,6 +354,35 @@ function Area({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+    </div>
+  );
+}
+
+function Select({
+  label: l,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <span className={label}>{l}</span>
+      <select
+        className={field}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

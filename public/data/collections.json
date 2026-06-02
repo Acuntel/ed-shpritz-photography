@@ -1,5 +1,33 @@
 [
   {
+    "slug": "minimal-white",
+    "name": "Minimal White",
+    "kicker": "Almost nothing",
+    "blurb": "High-key frames with very little in them and a great deal to feel.",
+    "cover": "/images/gallery/marina-white.jpg"
+  },
+  {
+    "slug": "pastels",
+    "name": "Pastels",
+    "kicker": "Soft color",
+    "blurb": "Gentle washes of color and quiet light.",
+    "cover": "/images/gallery/harbor-moon.jpg"
+  },
+  {
+    "slug": "icm-color",
+    "name": "ICM Color",
+    "kicker": "The camera moves",
+    "blurb": "Intentional camera movement in color — photographs that feel painted.",
+    "cover": "/images/gallery/sail-moving.jpg"
+  },
+  {
+    "slug": "icm-bw",
+    "name": "ICM Black & White",
+    "kicker": "Movement, in mono",
+    "blurb": "Intentional camera movement with the color taken away. New work coming to this collection soon.",
+    "cover": ""
+  },
+  {
     "slug": "chicago",
     "name": "Chicago",
     "kicker": "The city, quietly",
@@ -7,45 +35,45 @@
     "cover": "/images/gallery/chicago-pavilion.jpg"
   },
   {
-    "slug": "animals-and-birds",
-    "name": "Animals and Birds",
-    "kicker": "Small lives, up close",
-    "blurb": "Birds mid turn and animals caught being themselves. Patience, mostly, and a little luck.",
-    "cover": "/images/gallery/pure-joy.jpg"
-  },
-  {
-    "slug": "landscape",
-    "name": "Landscape",
+    "slug": "landscapes",
+    "name": "Landscapes",
     "kicker": "Room to breathe",
     "blurb": "Wide open places where the light is the subject and the land just holds it.",
     "cover": "/images/gallery/mackerel-sky.jpg"
   },
   {
-    "slug": "icm",
-    "name": "Intentional Camera Movement",
-    "kicker": "When the camera moves",
-    "blurb": "The camera moves on purpose and the world turns soft. Photographs that feel like paintings.",
-    "cover": "/images/gallery/the-promenade.jpg"
-  },
-  {
-    "slug": "black-and-white",
-    "name": "Black and White",
-    "kicker": "Light without color",
-    "blurb": "Take the color away and what is left is shape, shadow, and feeling.",
+    "slug": "wildlife",
+    "name": "Wildlife",
+    "kicker": "Small lives, up close",
+    "blurb": "Animals caught being themselves. Patience, mostly, and a little luck.",
     "cover": "/images/gallery/royal-family.jpg"
   },
   {
-    "slug": "less-is-more",
-    "name": "Less Is More",
-    "kicker": "The quiet ones",
-    "blurb": "White frames and soft frames. Very little in the picture, and a great deal to feel.",
-    "cover": "/images/gallery/marina-white.jpg"
+    "slug": "birds",
+    "name": "Birds",
+    "kicker": "Mid-turn",
+    "blurb": "Birds in the air and on the water, a held breath before the next beat.",
+    "cover": "/images/gallery/incoming.jpg"
   },
   {
-    "slug": "air-and-water-show",
-    "name": "Air and Water Show",
+    "slug": "dogs",
+    "name": "Dogs",
+    "kicker": "Joy, at speed",
+    "blurb": "Dogs being dogs — flat out, full hearted, all in.",
+    "cover": "/images/gallery/pure-joy.jpg"
+  },
+  {
+    "slug": "aviation",
+    "name": "Aviation",
     "kicker": "Sky and speed",
-    "blurb": "Jets in formation and balloons at first light. Moments that will not hold still.",
+    "blurb": "Jets in formation, moments that will not hold still.",
     "cover": "/images/gallery/blue-angels.jpg"
+  },
+  {
+    "slug": "balloons",
+    "name": "Balloons",
+    "kicker": "First light",
+    "blurb": "Hot-air balloons glowing on the ground and rising into the morning.",
+    "cover": "/images/gallery/valley-of-balloons.jpg"
   }
 ]

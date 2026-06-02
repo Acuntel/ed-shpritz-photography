@@ -10,11 +10,25 @@ export default function Footer() {
       <div className="container-rail flex flex-col gap-10 py-16 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="font-serif text-2xl text-ink">{site.heroLine}</p>
+          <p className="mt-1 font-serif text-lg font-light italic text-ink-soft">
+            {site.tagline}
+          </p>
           <p className="mt-3 max-w-prose2 font-sans text-sm leading-relaxed text-ink-muted">
             {site.lessIsMore}
           </p>
         </div>
         <div className="font-sans text-sm text-ink-muted">
+          <div className="mb-4 flex gap-5">
+            <Link href="/prints" className="transition-colors hover:text-ink">
+              Prints
+            </Link>
+            <Link href="/about" className="transition-colors hover:text-ink">
+              About
+            </Link>
+            <Link href="/contact" className="transition-colors hover:text-ink">
+              Contact
+            </Link>
+          </div>
           <p>{site.location}</p>
           <a
             href={`mailto:${site.contactEmail}`}

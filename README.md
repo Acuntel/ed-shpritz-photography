@@ -1,6 +1,11 @@
 # Ed Shpritz Photography
 
-A quiet, gallery style photography site. Built with Next.js, TypeScript, and Tailwind. It exports to plain static files and is hosted on Vercel.
+A quiet, gallery-style photography site on a **black** background, where the
+images are the menu. Built with Next.js, TypeScript, and Tailwind. It exports to
+plain static files and is hosted on Vercel.
+
+> **`MASTER_PROMPT.md` is the source of truth** for the concept, the collections,
+> image sizes, the domain, and the open decisions. Read it first.
 
 ## Run it locally
 
@@ -15,36 +20,68 @@ Open http://localhost:3000
 
 There is no database. Everything the visitor sees lives in three files:
 
-- `public/data/site.json` — the name, the hero lines, the bio, the ed'isms, the contact email.
-- `public/data/collections.json` — the seven collections and their descriptions.
-- `public/data/photos.json` — every photograph and its name, title, description, and collection.
+- `public/data/site.json` — name, hero line + tagline, bio, ed'isms, prints
+  statement, contact email, watermark + form settings.
+- `public/data/collections.json` — the **eleven** collections and their descriptions.
+- `public/data/photos.json` — every photograph and its name, title, description,
+  collection, and whether it appears on the home page (`trigger`).
 
-Photographs themselves are image files in `public/images`.
+Photographs are image files in `public/images/gallery` (and `/uploads` for
+admin-added ones).
+
+## Images: optimization, sizes, and protection
+
+`npm run optimize` (which also runs automatically as `prebuild` before
+`next build`) reads every photo and writes responsive **AVIF + WebP** variants to
+`public/images/opt`, plus a blur-up placeholder, into `public/data/imeta.json`.
+
+- Tiles ~1200px, collection grids ~1600px, full-screen ~2560px (capped at the
+  source width).
+- The print-resolution master is **never** served — that is the real download
+  protection. Right-click/drag is also deterred on `.protect` images.
+- Watermark is controlled by `site.json` → `watermark` (`none` | `subtle`); a
+  subtle one is baked onto the full-size image at optimize time.
+
+## QR code
+
+`npm run qr [url]` writes `public/qr-edshpritz.svg` (for print) and `.png` (for
+screens) pointing at the site. Re-run with the final URL once the domain is live.
 
 ## The admin page
 
-Go to `/admin` and enter the password **1111** (there is a small Admin link at the very bottom of every page).
-
-Grandpa can edit names, titles, descriptions, collections, the home page selection, and all of the words. He can also add or replace photographs.
-
-When he is finished he clicks **Export to publish**. The browser downloads:
-
-- `site.json`, `collections.json`, `photos.json`
-- any new photo files he added
+Go to `/admin` and enter the password **1111** (small Admin link at the bottom of
+every page). Ed can edit names, titles, descriptions, collections, the home-page
+selection (quarterly rotation), and all of the words. He can add or replace
+photographs, then click **Export to publish** to download the three `.json` files
+plus any new images.
 
 To publish those changes:
 
 1. Put the three `.json` files into `public/data` (replace the old ones).
 2. Put any new photo files into `public/images/uploads`.
-3. Commit and push. Vercel redeploys automatically.
+3. Commit and push, then redeploy.
 
-## Replacing the placeholder art
+## Pages
 
-The site ships with soft watercolor placeholders so it looks complete. To use real photos, drop the image files into `public/images` (a folder per collection is tidy, for example `public/images/chicago`), then point each photo's `src` at it in the admin page or directly in `photos.json`.
+`/` (the wall + collections), `/collections/[slug]`, `/about`, `/prints`
+(inquiry only — pricing is intentionally deferred), `/contact`, `/admin`.
+Plus `sitemap.xml` and `robots.txt` for SEO.
+
+## Contact form
+
+Both `/contact` and `/prints` use `InquiryForm`. Set a free
+[Web3Forms](https://web3forms.com) access key in `site.json` → `formEndpoint` to
+receive submissions by email; if it is blank, the form falls back to a `mailto:`
+link.
 
 ## Deploy
 
-Push to GitHub, import the repo in Vercel, and deploy. No environment variables are needed. The build command is `next build` and the output is static.
+```bash
+npx vercel --prod --yes
+```
+
+No environment variables are required. The build command is `next build` and the
+output is static (`output: export`).
 
 ## Change the admin password
 

@@ -4,16 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "optimize": "node scripts/optimize.mjs",
+    "qr": "node scripts/qr.mjs",
+    "prebuild": "node scripts/optimize.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.460.0",
     "next": "14.2.35",
+    "qrcode": "^1.5.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/node": "^20",

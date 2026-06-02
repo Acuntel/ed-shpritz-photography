@@ -58,7 +58,16 @@ export default function CollectionPage({
       </header>
 
       <section className="container-rail mt-12">
-        <PhotoGrid photos={photos} email={site.contactEmail} />
+        {photos.length > 0 ? (
+          <PhotoGrid photos={photos} email={site.contactEmail} />
+        ) : (
+          <div className="flex min-h-[30vh] flex-col items-center justify-center text-center">
+            <p className="kicker">Coming soon</p>
+            <p className="mt-4 max-w-prose2 font-serif text-2xl font-light text-ink-soft">
+              New work for this collection is on its way.
+            </p>
+          </div>
+        )}
       </section>
 
       <section className="container-rail mt-24 border-t border-ink/10 pt-12">
