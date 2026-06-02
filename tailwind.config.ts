@@ -8,16 +8,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Dark theme. "paper" = the (now dark) surface, "ink" = the (now light)
+        // foreground. The names are kept so the whole site flips in one place.
         paper: {
-          DEFAULT: "#f7f5f0",
-          soft: "#efece4",
-          deep: "#e7e3d9",
+          DEFAULT: "#0b0b0c",
+          soft: "#161617",
+          deep: "#202022",
         },
         ink: {
-          DEFAULT: "#1c1b19",
-          soft: "#3a3833",
-          muted: "#6f6b62",
-          faint: "#a7a298",
+          DEFAULT: "#f3f1ea",
+          soft: "#c9c6bd",
+          muted: "#8d8a82",
+          faint: "#56544e",
         },
         wash: {
           50: "#f1f4f5",

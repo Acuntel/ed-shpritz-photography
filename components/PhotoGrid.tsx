@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Reveal from "@/components/Reveal";
 import Lightbox from "@/components/Lightbox";
+import Picture from "@/components/Picture";
 import type { Photo } from "@/lib/types";
 
 export default function PhotoGrid({
@@ -16,13 +17,13 @@ export default function PhotoGrid({
 
   return (
     <>
-      <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+      <div className="protect columns-1 gap-4 sm:columns-2 sm:gap-5 lg:columns-3">
         {photos.map((p, i) => (
           <Reveal
             key={p.id}
             as="div"
-            delay={Math.min(i, 8) * 60}
-            className="mb-6 break-inside-avoid"
+            delay={Math.min(i, 8) * 50}
+            className="mb-4 break-inside-avoid sm:mb-5"
           >
             <button
               type="button"
@@ -31,12 +32,10 @@ export default function PhotoGrid({
               aria-label={`Open ${p.name}`}
             >
               <span className="block overflow-hidden bg-paper-soft">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={p.src}
-                  alt={p.alt}
-                  loading="lazy"
-                  className="block h-auto w-full transition-transform duration-[1.2s] ease-gallery group-hover:scale-[1.03]"
+                <Picture
+                  photo={p}
+                  variant="grid"
+                  className="block h-auto w-full transition-transform duration-[1.4s] ease-gallery group-hover:scale-[1.03]"
                 />
               </span>
               <span className="mt-3 flex items-baseline justify-between gap-3">
