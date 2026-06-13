@@ -15,7 +15,7 @@ export default function Hero({ site }: { site: SiteContent }) {
         {site.heroSub}
       </p>
       <Link
-        href="#photographs"
+        href="#collections"
         className="mt-12 animate-fade-up font-sans text-[11px] uppercase tracking-widest2 text-ink-muted transition-colors hover:text-ink [animation-delay:320ms]"
       >
         Begin ↓

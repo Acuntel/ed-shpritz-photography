@@ -18,6 +18,9 @@ export type Photo = {
   title: string;
   description: string;
   collection: string;
+  // Optional subgroup within a collection (e.g. "Fog", "Boats Beached",
+  // "Life"). Consecutive photos sharing a section render under one heading.
+  section?: string;
   // Trigger photos appear on the home page grid.
   trigger: boolean;
   order: number;
@@ -29,9 +32,45 @@ export type Photo = {
   height?: number;
 };
 
+// A single image inside a private client gallery. Served at full quality and
+// downloadable — these are the customer's own photos, the opposite of the
+// public site (where the print master is never served).
+export type GalleryPhoto = {
+  id: string;
+  src: string;
+  alt: string;
+  // Optional one- or two-word caption shown beneath the image.
+  name?: string;
+  // Optimize meta (only present if the image was run through scripts/optimize.mjs).
+  optBase?: string;
+  optWidths?: number[];
+  lqip?: string;
+  width?: number;
+  height?: number;
+};
+
+// A private, unlisted gallery for one person/dog Ed photographed. Reached only
+// by its unguessable token URL (/gallery/<token>/), never linked or indexed.
+// An optional passcode adds a soft second gate (see components/PrivateGallery).
+export type ClientGallery = {
+  // Unguessable URL slug — the primary access control on a static site.
+  token: string;
+  // Who it's for, e.g. "The Johnson Family".
+  client: string;
+  // The dog's name, e.g. "Marley".
+  dog?: string;
+  // A short welcome note from Ed shown at the top of the gallery.
+  intro?: string;
+  // SHA-256 hex of an optional passcode. Empty/undefined = no passcode gate.
+  passcodeHash?: string;
+  photos: GalleryPhoto[];
+};
+
 export type SiteContent = {
   name: string;
   role: string;
+  // The site's overarching title/question, shown in the browser tab and footer.
+  titleQuestion: string;
   concepts: string[];
   heroLine: string;
   tagline: string;

@@ -22,18 +22,20 @@ const inter = Inter({
 
 const site = getSite();
 const SITE_URL = "https://edshpritzphotography.com";
-const TITLE = `${site.name} Photography`;
+const BRAND = `${site.name} Photography`;
+// Home/default browser title leads with Ed's question; subpages use "%s | Brand".
+const TITLE = `${site.titleQuestion} — ${BRAND}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    template: `%s | ${TITLE}`,
+    template: `%s | ${BRAND}`,
   },
   description: `${site.heroLine} Fine art photography from Chicago by ${site.name} — skyline, lakefront, wildlife, and intentional camera movement.`,
   keywords: [
-    "Edward H. Shpritz",
     "Ed Shpritz",
+    "Ed Shpritz photography",
     "Chicago photographer",
     "fine art photography",
     "Chicago fine art photography",
@@ -47,7 +49,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: site.heroSub,
     url: SITE_URL,
-    siteName: TITLE,
+    siteName: BRAND,
     type: "website",
     images: [
       {

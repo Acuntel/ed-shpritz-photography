@@ -6,8 +6,10 @@ const SITE_URL = "https://edshpritzphotography.com";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // next.config has trailingSlash: true, so exported paths carry a trailing
+  // slash — keep sitemap URLs consistent with the page canonicals.
   const staticPages = ["", "about", "prints", "contact"].map((p) => ({
-    url: `${SITE_URL}/${p}`,
+    url: p === "" ? `${SITE_URL}/` : `${SITE_URL}/${p}/`,
     changeFrequency: "monthly" as const,
     priority: p === "" ? 1 : 0.7,
   }));

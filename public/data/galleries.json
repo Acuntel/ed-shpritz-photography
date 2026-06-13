@@ -1,0 +1,23 @@
+[
+  {
+    "token": "demo-marley-7f3a9c2b8e",
+    "client": "The Example Family",
+    "dog": "Marley",
+    "intro": "It was a joy photographing Marley. Here are your pictures — they are yours to keep, download, and print. Reach out any time. — Ed",
+    "passcodeHash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "photos": [
+      {
+        "id": "g-pure-joy",
+        "src": "/images/gallery/aussie-pup.jpg",
+        "alt": "Marley mid-leap, ears flying",
+        "name": "Pure Joy"
+      },
+      {
+        "id": "g-the-sheriff",
+        "src": "/images/gallery/doodle-bandana.jpg",
+        "alt": "Marley sitting tall, on watch",
+        "name": "The Sheriff"
+      }
+    ]
+  }
+]

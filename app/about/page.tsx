@@ -37,7 +37,7 @@ export default function AboutPage() {
           <Reveal className="lg:col-span-7" delay={120}>
             <p className="kicker">{site.bio.heading}</p>
             <h1 className="mt-3 font-serif text-5xl font-light text-ink">
-              {site.name}
+              {site.name} Photography
             </h1>
             <div className="mt-8 space-y-6">
               {site.bio.body.map((para, i) => (
@@ -77,10 +77,10 @@ export default function AboutPage() {
 
       <section className="container-rail mt-24 text-center">
         <Link
-          href="/#photographs"
+          href="/#collections"
           className="border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
         >
-          Back to the photographs
+          Back to the collections
         </Link>
       </section>
     </article>

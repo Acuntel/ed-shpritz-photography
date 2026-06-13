@@ -6,7 +6,7 @@ import InquiryForm from "@/components/InquiryForm";
 export const metadata: Metadata = {
   title: "Prints | Ed Shpritz Photography",
   description:
-    "Archival, signed fine art prints by Chicago photographer Edward H. Shpritz, available on request.",
+    "Archival, signed fine art prints by Chicago photographer Ed Shpritz, available on request.",
 };
 
 export default function PrintsPage() {

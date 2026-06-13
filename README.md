@@ -52,20 +52,40 @@ screens) pointing at the site. Re-run with the final URL once the domain is live
 Go to `/admin` and enter the password **1111** (small Admin link at the bottom of
 every page). Ed can edit names, titles, descriptions, collections, the home-page
 selection (quarterly rotation), and all of the words. He can add or replace
-photographs, then click **Export to publish** to download the three `.json` files
-plus any new images.
+photographs, then click **Export to publish** to download the `.json` files
+(`site`, `collections`, `photos`, `galleries`) plus any new images.
 
 To publish those changes:
 
-1. Put the three `.json` files into `public/data` (replace the old ones).
+1. Put the `.json` files into `public/data` (replace the old ones).
 2. Put any new photo files into `public/images/uploads`.
 3. Commit and push, then redeploy.
+
+## Private client galleries ("pooch pics")
+
+Each person Ed photographs with their dog can get a **private, unlisted gallery**
+at `/gallery/<token>/` — full-quality, downloadable photos behind an unguessable
+link and an optional passcode. They are `noindex` and excluded from `robots.txt`.
+See **MASTER_PROMPT.md §11** for the full model (and the honest security caveats).
+
+Create one with the CLI:
+
+```bash
+npm run gallery -- --client "The Johnsons" --dog Marley --passcode 1234 \
+  --intro "Lovely meeting Marley..." --images ~/Desktop/marley/*.jpg
+npm run gallery -- --list
+```
+
+It mints the token, copies the images into `public/images/private/<token>/`,
+hashes the passcode, appends to `public/data/galleries.json`, and prints the
+share URL + passcode. Then commit + redeploy and share the link. Ed can edit the
+words, passcode, and photo order from the **Galleries** tab in `/admin`.
 
 ## Pages
 
 `/` (the wall + collections), `/collections/[slug]`, `/about`, `/prints`
-(inquiry only — pricing is intentionally deferred), `/contact`, `/admin`.
-Plus `sitemap.xml` and `robots.txt` for SEO.
+(inquiry only — pricing is intentionally deferred), `/contact`, `/admin`,
+`/gallery/[token]` (private). Plus `sitemap.xml` and `robots.txt` for SEO.
 
 ## Contact form
 

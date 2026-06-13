@@ -1,30 +1,34 @@
 {
-  "name": "Edward H. Shpritz",
+  "name": "Ed Shpritz",
   "role": "Photography",
-  "concepts": ["Do You See What I See?", "From Light to Dark"],
+  "titleQuestion": "We Look… But Do We See?",
+  "concepts": ["Do You See What I See?", "Less is always more"],
   "heroLine": "Do You See What I See?",
-  "tagline": "From Light to Dark",
-  "heroSub": "Quiet pictures that ask you to look a little longer.",
-  "intro": "Photographs from Chicago, the lakefront, and the wild places in between. Some are sharp and still. Some are soft and moving. Every one of them began with a question.",
-  "lessIsMore": "Step back, slow down, and let the quiet pictures speak.",
+  "tagline": "Less… so you may see more.",
+  "heroSub": "Fine-art photography from Chicago, the lakefront, and the wild places between.",
+  "intro": "Wildlife at sunrise, the streets of Chicago, a beloved pet, a quiet moment between people — photographs drawn to the beauty most of us pass by.",
+  "lessIsMore": "We look… but do we see?",
   "bio": {
     "portrait": "/images/portrait.jpg",
-    "heading": "A few words from Ed",
+    "heading": "Welcome to my world",
     "body": [
-      "I am an optometrist by day, moved by nature, her beauty and her geometry.",
-      "Photography has been my joy since I was a boy, and now it is my passion. Capturing some of the beauty that nature paints on her palette is my honor to share with you.",
-      "Please enjoy."
+      "For me, photography is not about recording what is in front of the camera. It is about discovering what others may pass by.",
+      "Whether I am photographing wildlife at sunrise, the streets of Chicago, a beloved pet, or a quiet moment between people, I am drawn to images that tell a story, evoke an emotion, or reveal beauty in the ordinary.",
+      "My goal is simple: to create photographs that encourage us to slow down, look closer, and see more.",
+      "After a lifetime of caring for patients as an optometrist, photography has become another way of helping people see the beauty of the world.",
+      "Less… is always more."
     ]
   },
   "edisms": [
-    "Beauty within, shines outside. Beauty outside, only shines.",
-    "From light to dark.",
+    "We look… but do we see?",
+    "Less… so you may see more.",
     "Do you see what I see?",
-    "A quiet picture is still saying something."
+    "Beauty within, shines outside. Beauty outside, only shines.",
+    "Less is always more."
   ],
   "contactEmail": "ed@edshpritzphotography.com",
   "location": "Chicago",
-  "ownerName": "Edward H. Shpritz",
+  "ownerName": "Ed Shpritz",
   "prints": {
     "available": true,
     "statement": "Prints are available on request. Each is printed to archival standards and signed. Write to me, tell me which picture spoke to you, and we will find the right size and paper for your wall."

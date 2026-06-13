@@ -5,8 +5,7 @@ import InquiryForm from "@/components/InquiryForm";
 
 export const metadata: Metadata = {
   title: "Contact | Ed Shpritz Photography",
-  description:
-    "Get in touch with Chicago fine art photographer Edward H. Shpritz.",
+  description: "Get in touch with Chicago fine art photographer Ed Shpritz.",
 };
 
 export default function ContactPage() {

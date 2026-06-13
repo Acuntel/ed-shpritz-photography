@@ -1,4 +1,4 @@
-# MASTER PROMPT — Edward H. Shpritz Photography
+# MASTER PROMPT — Ed Shpritz Photography
 
 > Single source of truth for the site. Any fresh Claude Code session should read this
 > first, then build/update against it. This file wins over older comments, the README,
@@ -15,12 +15,12 @@
 
 ## 1. What this site is
 
-A photographer's portfolio for **Edward H. Shpritz** (optometrist by day, Chicago).
+A photographer's portfolio for **Ed Shpritz** (optometrist by day, Chicago).
 It is **not a traditional gallery**. It is a **visual experience** where the
 **images are the menu**. You scroll a quiet wall of pictures on a black background; each
 picture is a door; clicking a picture opens the collection behind it.
 
-- **Site title:** Edward H. Shpritz Photography
+- **Site title:** Ed Shpritz Photography
 - **Primary line (hero):** _Do You See What I See?_
 - **Secondary line:** _From Light to Dark_
 - **Opening-quote options** (Ed picks one as primary; the rest can rotate quarterly):
@@ -209,11 +209,13 @@ the variants at build with a `sharp` script (`scripts/optimize.mjs`) writing int
 ## 8. Domain, QR, SEO, analytics
 
 **Domain — DECIDED (2026-06-02): `edshpritzphotography.com`.**
-One domain, the best one. Availability checked via WHOIS:
+Spelled **Shpritz**, matching the name (name AND domain are both "Shpritz").
+A "spitz"-spelled domain was briefly considered and **rejected** — keep it
+Shpritz everywhere. WHOIS-checked **available**.
 
-- `edshpritzphotography.com` — ✅ **available, chosen** (name + craft = best SEO, findable by name, gives a pro email ed@…)
+- `edshpritzphotography.com` — ✅ **available, chosen** (matches the name; best SEO; gives a pro email ed@…)
 - `doyouseewhatisee.com` — ❌ already registered (taken), so it's out
-- `edwardhshpritz.com` — available, but "Shpritz" is hard to spell aloud
+- `edwardhshpritz.com` — available, but the longer formal spelling
 - `fromlighttodark.com` — available brandable alt (could be a cheap redirect later)
 
 > **Buy at Porkbun** (~$10/yr, free WHOIS privacy + free SSL + free email
@@ -224,7 +226,7 @@ One domain, the best one. Availability checked via WHOIS:
 **QR code** → homepage URL. Generate once domain is live; use on business cards,
 calendars, prints, and gallery displays. Keep an SVG master so it scales on signage.
 
-**SEO** — make searchable: "Edward Shpritz / Ed Shpritz", "Chicago photographer",
+**SEO** — make searchable: "Ed Shpritz / Edward Shpritz", "Chicago photographer",
 "fine art photography Chicago". Per-page `<title>`/meta, Open Graph image, `sitemap.xml`,
 `robots.txt`, descriptive `alt` on every photo, `Photograph`/`Person` JSON-LD.
 
@@ -256,7 +258,50 @@ Admin reads/writes these in the browser and exports them; Brady commits + redepl
 
 ---
 
-## 11. Future roadmap (build the slots, not the features)
+## 11. Private client galleries ("pooch pics")
+
+Ed photographs people with their dogs in the field, hands them a card, and sends
+the pictures if they want them. This feature gives **each person a private area**
+for their own photos — added **2026-06-02**.
+
+**How it works (static-site model, no backend):**
+
+- Each gallery is one entry in `public/data/galleries.json`: `token`, `client`,
+  `dog`, `intro`, optional `passcodeHash`, and a list of `photos`.
+- It lives at **`/gallery/<token>/`** where `token` is an **unguessable random
+  slug** (e.g. `marley-7f3a9c2b8e`). `generateStaticParams` builds one page per
+  token; unknown tokens 404.
+- Optional **passcode**: a client-side SHA-256 gate (`components/PrivateGallery`).
+  The raw code is never stored — only its hash sits in the JSON. Unlock persists
+  in `sessionStorage`.
+- Private images live in **`public/images/private/<token>/`**, served **at full
+  quality and downloadable** (the opposite of the public site — these are the
+  client's own pictures to keep). They are **not** run through the optimize
+  pipeline.
+- Galleries are **`noindex`** and **disallowed in `robots.txt`** (`/gallery`),
+  never linked from nav or sitemap.
+
+**The honest security model:** on a static host, anything served can be fetched
+by anyone who has the URL — so "private" here means **unlisted + obscured**, the
+same model as a Google Photos / Dropbox share link. The real protections are
+(1) the unguessable token and (2) noindex. The passcode is a soft second gate
+(a determined person could read the JSON), good for "feels private" + casual
+deterrence, not secrets. **True per-user security (login, expiry, signed URLs)
+needs a backend** (Supabase / S3) — flagged as an upgrade if Ed ever needs it.
+
+**Managing galleries:**
+
+- **CLI (Brady, primary):** `npm run gallery -- --client "The Johnsons" --dog
+Marley --passcode 1234 --intro "..." --images ~/path/to/pics/*.jpg`. It mints
+  the token, copies the images into `public/images/private/<token>/`, hashes the
+  passcode, appends to `galleries.json`, and prints the share URL + passcode.
+  `npm run gallery -- --list` lists them. Then commit + redeploy.
+- **Admin (Ed):** the **Galleries** tab at `/admin` lists existing galleries,
+  copies each share link, and edits the words / passcode / photo order / captions,
+  then **Export** writes `galleries.json` alongside the other files. (New galleries
+  with images are easiest via the CLI, since images must be committed + deployed.)
+
+## 12. Future roadmap (build the slots, not the features)
 
 - Prints **pricing page** (currently inquiry-only).
 - Print **sales / checkout** (Stripe) if Ed wants commerce later.
@@ -265,7 +310,7 @@ Admin reads/writes these in the browser and exports them; Brady commits + redepl
 
 ---
 
-## 12. Build / deploy checklist
+## 13. Build / deploy checklist
 
 ```bash
 cd "~/Desktop/Client Websites/Ed Shpritz Photography/edspitz-next"
@@ -282,7 +327,7 @@ npx vercel --prod --yes     # deploy
 
 ---
 
-## 13. Status (built 2026-06-02) & remaining decisions
+## 14. Status (built 2026-06-02) & remaining decisions
 
 **Built and shipping now:** black retheme · 11 collections · 24-hook wall (images
 are the menu) · collection pages + lightbox (swipe, keyboard) · About · Prints

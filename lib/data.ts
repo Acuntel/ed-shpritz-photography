@@ -1,6 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { Collection, Photo, SiteContent } from "./types";
+import type {
+  ClientGallery,
+  Collection,
+  GalleryPhoto,
+  Photo,
+  SiteContent,
+} from "./types";
 
 const dataDir = path.join(process.cwd(), "public", "data");
 
@@ -79,4 +85,37 @@ export function getCollection(slug: string): Collection | undefined {
 
 export function getPhotosByCollection(slug: string): Photo[] {
   return getPhotos().filter((p) => p.collection === slug);
+}
+
+function enrichGalleryPhoto(p: GalleryPhoto, meta: IMeta): GalleryPhoto {
+  const base = baseFromSrc(p.src);
+  const m = meta[base];
+  if (!m) return p;
+  return {
+    ...p,
+    optBase: base,
+    optWidths: m.widths,
+    lqip: m.lqip,
+    width: m.width,
+    height: m.height,
+  };
+}
+
+// Private client galleries. Missing galleries.json is fine — returns [].
+export function getGalleries(): ClientGallery[] {
+  const meta = readMeta();
+  let raw: ClientGallery[];
+  try {
+    raw = read<ClientGallery[]>("galleries.json");
+  } catch {
+    return [];
+  }
+  return raw.map((g) => ({
+    ...g,
+    photos: (g.photos ?? []).map((p) => enrichGalleryPhoto(p, meta)),
+  }));
+}
+
+export function getGallery(token: string): ClientGallery | undefined {
+  return getGalleries().find((g) => g.token === token);
 }

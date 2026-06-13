@@ -4,76 +4,69 @@
     "name": "Minimal White",
     "kicker": "Almost nothing",
     "blurb": "High-key frames with very little in them and a great deal to feel.",
-    "cover": "/images/gallery/marina-white.jpg"
+    "cover": "/images/gallery/baby-elephant.jpg"
   },
   {
-    "slug": "pastels",
-    "name": "Pastels",
+    "slug": "watercolor",
+    "name": "WaterColor",
     "kicker": "Soft color",
-    "blurb": "Gentle washes of color and quiet light.",
-    "cover": "/images/gallery/harbor-moon.jpg"
+    "blurb": "Gentle washes of color and quiet light — photographs that feel painted.",
+    "cover": "/images/gallery/winter-reflection.jpg"
   },
   {
-    "slug": "icm-color",
-    "name": "ICM Color",
-    "kicker": "The camera moves",
-    "blurb": "Intentional camera movement in color — photographs that feel painted.",
-    "cover": "/images/gallery/sail-moving.jpg"
-  },
-  {
-    "slug": "icm-bw",
-    "name": "ICM Black & White",
-    "kicker": "Movement, in mono",
-    "blurb": "Intentional camera movement with the color taken away. New work coming to this collection soon.",
-    "cover": ""
-  },
-  {
-    "slug": "chicago",
-    "name": "Chicago",
-    "kicker": "The city, quietly",
-    "blurb": "A familiar skyline seen the way you see it on an ordinary walk. Lines, light, and the lake.",
-    "cover": "/images/gallery/chicago-pavilion.jpg"
-  },
-  {
-    "slug": "landscapes",
-    "name": "Landscapes",
-    "kicker": "Room to breathe",
-    "blurb": "Wide open places where the light is the subject and the land just holds it.",
-    "cover": "/images/gallery/mackerel-sky.jpg"
+    "slug": "places-and-reflections",
+    "name": "Places and Reflections",
+    "kicker": "Stillness, doubled",
+    "blurb": "Quiet places and the water that gives them back — a city, a temple, a shoreline, mirrored.",
+    "cover": "/images/gallery/garden-bridge.jpg"
   },
   {
     "slug": "wildlife",
     "name": "Wildlife",
-    "kicker": "Small lives, up close",
-    "blurb": "Animals caught being themselves. Patience, mostly, and a little luck.",
-    "cover": "/images/gallery/royal-family.jpg"
+    "kicker": "The wild ones",
+    "blurb": "Animals at home in the open — the great herds and the watchful few, near and far.",
+    "cover": "/images/gallery/lions-pair.jpg"
+  },
+  {
+    "slug": "natures-beauty-and-flight",
+    "name": "Nature's Beauty and Flight",
+    "kicker": "Petals and wings",
+    "blurb": "Flowers in full color and the small fliers that visit them — beauty, and the things that fly.",
+    "cover": "/images/gallery/monarch-sunflower.jpg"
   },
   {
     "slug": "birds",
     "name": "Birds",
     "kicker": "Mid-turn",
-    "blurb": "Birds in the air and on the water, a held breath before the next beat.",
-    "cover": "/images/gallery/incoming.jpg"
+    "blurb": "Birds in the air and on the water, caught just before the next beat.",
+    "cover": "/images/gallery/two-down.jpg"
   },
   {
-    "slug": "dogs",
-    "name": "Dogs",
-    "kicker": "Joy, at speed",
-    "blurb": "Dogs being dogs — flat out, full hearted, all in.",
-    "cover": "/images/gallery/pure-joy.jpg"
+    "slug": "icm",
+    "name": "Impression in Motion",
+    "kicker": "The camera moves",
+    "blurb": "Intentional camera movement — a held breath turned to brushstrokes.",
+    "cover": "/images/gallery/icm-flowers.jpg"
   },
   {
-    "slug": "aviation",
-    "name": "Aviation",
+    "slug": "our-best-friends",
+    "name": "Our Best Friends",
+    "kicker": "Good dogs",
+    "blurb": "Portraits of the dogs we love — every one of them certain they are the favorite.",
+    "cover": "/images/gallery/aussie-pup.jpg"
+  },
+  {
+    "slug": "life-observed",
+    "name": "Life Observed",
+    "kicker": "A quiet moment",
+    "blurb": "Fog on the water, boats at rest, and people in the middle of their day — beauty in the ordinary.",
+    "cover": "/images/gallery/plein-air.jpg"
+  },
+  {
+    "slug": "air-and-water-show",
+    "name": "Air & Water Show",
     "kicker": "Sky and speed",
-    "blurb": "Jets in formation, moments that will not hold still.",
-    "cover": "/images/gallery/blue-angels.jpg"
-  },
-  {
-    "slug": "balloons",
-    "name": "Balloons",
-    "kicker": "First light",
-    "blurb": "Hot-air balloons glowing on the ground and rising into the morning.",
-    "cover": "/images/gallery/valley-of-balloons.jpg"
+    "blurb": "Jets in formation over the lakefront, moments that will not hold still.",
+    "cover": "/images/gallery/thunderbirds-climb.jpg"
   }
 ]

@@ -1,12 +1,6 @@
 import Link from "next/link";
-import {
-  getSite,
-  getCollections,
-  getPhotos,
-  getTriggerPhotos,
-} from "@/lib/data";
+import { getSite, getCollections, getPhotos } from "@/lib/data";
 import Hero from "@/components/Hero";
-import TriggerGrid from "@/components/TriggerGrid";
 import CollectionsIndex from "@/components/CollectionsIndex";
 import Edism from "@/components/Edism";
 import Reveal from "@/components/Reveal";
@@ -15,37 +9,26 @@ export default function Home() {
   const site = getSite();
   const collections = getCollections();
   const photos = getPhotos();
-  const triggers = getTriggerPhotos();
 
   return (
     <>
       <Hero site={site} />
 
-      {/* The wall — the images are the menu */}
-      <section id="photographs" className="container-rail scroll-mt-20 pt-6">
-        <Reveal className="mb-10 text-center">
-          <p className="kicker">{site.heroLine}</p>
-          <p className="mx-auto mt-3 max-w-prose2 font-serif text-xl font-light leading-relaxed text-ink-soft">
-            Choose any picture. It will open the rest of its kind.
-          </p>
-        </Reveal>
-        <TriggerGrid photos={triggers} collections={collections} />
-      </section>
-
-      <Edism quote={site.edisms[0] ?? "From light to dark."} />
-
-      {/* Browse by collection */}
-      <section id="collections" className="container-rail scroll-mt-20 pb-8">
+      {/* Browse by collection — one cover each, the image is the door */}
+      <section
+        id="collections"
+        className="container-rail scroll-mt-20 pt-6 pb-8"
+      >
         <Reveal className="mb-14 text-center">
-          <p className="kicker">Eleven ways of looking</p>
-          <h2 className="mt-2 font-serif text-4xl font-light text-ink sm:text-5xl">
-            Browse by collection
+          <p className="kicker">The collections</p>
+          <h2 className="mx-auto mt-3 max-w-prose2 font-serif text-3xl font-light leading-snug text-ink sm:text-4xl">
+            Choose a picture. It opens the rest of its kind.
           </h2>
         </Reveal>
         <CollectionsIndex collections={collections} photos={photos} />
       </section>
 
-      <Edism quote={site.edisms[2] ?? "Do you see what I see?"} />
+      <Edism quote={site.edisms[0] ?? "We look… but do we see?"} />
 
       {/* About teaser */}
       <section className="container-rail pb-8">

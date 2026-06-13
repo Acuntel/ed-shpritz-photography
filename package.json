@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "optimize": "node scripts/optimize.mjs",
+    "gallery": "node scripts/gallery.mjs",
     "qr": "node scripts/qr.mjs",
     "prebuild": "node scripts/optimize.mjs",
     "build": "next build",
@@ -13,6 +14,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.4.0",
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.460.0",
     "next": "14.2.35",

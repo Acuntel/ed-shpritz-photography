@@ -12,6 +12,9 @@ type Props = {
   email: string;
   onClose: () => void;
   onIndex: (i: number) => void;
+  // When true (private client galleries), show a download link instead of the
+  // "inquire about a print" link.
+  download?: boolean;
 };
 
 export default function Lightbox({
@@ -20,6 +23,7 @@ export default function Lightbox({
   email,
   onClose,
   onIndex,
+  download = false,
 }: Props) {
   const open = index !== null;
   const photo = open ? photos[index as number] : null;
@@ -126,14 +130,24 @@ export default function Lightbox({
                     {photo.description}
                   </p>
                 )}
-                <a
-                  href={`mailto:${email}?subject=${encodeURIComponent(
-                    "Print inquiry: " + photo.name,
-                  )}`}
-                  className="mt-5 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
-                >
-                  Inquire about a print
-                </a>
+                {download ? (
+                  <a
+                    href={photo.src}
+                    download
+                    className="mt-5 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
+                  >
+                    Download this photo
+                  </a>
+                ) : (
+                  <a
+                    href={`mailto:${email}?subject=${encodeURIComponent(
+                      "Print inquiry: " + photo.name,
+                    )}`}
+                    className="mt-5 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
+                  >
+                    Inquire about a print
+                  </a>
+                )}
               </figcaption>
             </motion.figure>
 

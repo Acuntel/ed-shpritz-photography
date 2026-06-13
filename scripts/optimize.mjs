@@ -19,15 +19,32 @@ function quality(w) {
   return 64;
 }
 
-async function getWatermark() {
+async function getSiteMeta() {
   try {
     const site = JSON.parse(
       await readFile(path.join(ROOT, "public/data/site.json"), "utf8"),
     );
-    return site.watermark === "subtle" ? site.name : null;
+    const owner = site.ownerName || site.name || "Ed Shpritz";
+    return {
+      owner,
+      watermark: site.watermark === "subtle" ? owner : null,
+    };
   } catch {
-    return null;
+    return { owner: "Ed Shpritz", watermark: null };
   }
+}
+
+// Copyright/author EXIF baked into every web variant. Note this is a deterrent,
+// not a control — the real protection is that the print master is never served
+// (MASTER_PROMPT.md §5). Metadata can be stripped by a determined downloader.
+function copyrightExif(owner) {
+  const year = new Date().getFullYear();
+  return {
+    IFD0: {
+      Copyright: `© ${year} ${owner}. All rights reserved.`,
+      Artist: owner,
+    },
+  };
 }
 
 function watermarkSvg(width, height, text) {
@@ -43,7 +60,8 @@ function watermarkSvg(width, height, text) {
 
 async function run() {
   await mkdir(OUT_DIR, { recursive: true });
-  const watermark = await getWatermark();
+  const { owner, watermark } = await getSiteMeta();
+  const exif = copyrightExif(owner);
   const manifest = {};
   let count = 0;
 
@@ -80,9 +98,11 @@ async function run() {
 
         const buf = await pipe.toBuffer();
         await sharp(buf)
+          .withExif(exif)
           .avif({ quality: quality(w) })
           .toFile(path.join(OUT_DIR, `${base}-${w}.avif`));
         await sharp(buf)
+          .withExif(exif)
           .webp({ quality: quality(w) + 8 })
           .toFile(path.join(OUT_DIR, `${base}-${w}.webp`));
       }
