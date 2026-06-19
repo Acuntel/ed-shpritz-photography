@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Star } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import Lightbox from "@/components/Lightbox";
 import Picture from "@/components/Picture";
@@ -67,8 +68,15 @@ export default function PhotoGrid({
                     />
                   </span>
                   <span className="mt-3 flex items-baseline justify-between gap-3">
-                    <span className="font-serif text-base text-ink-soft transition-colors group-hover:text-ink">
+                    <span className="flex items-baseline gap-1.5 font-serif text-base text-ink-soft transition-colors group-hover:text-ink">
                       {p.name}
+                      {p.award && (
+                        <Star
+                          size={12}
+                          aria-label="Award-winning"
+                          className="shrink-0 translate-y-px fill-amber-500 text-amber-500"
+                        />
+                      )}
                     </span>
                     <span className="kicker shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
                       View

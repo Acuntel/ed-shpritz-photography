@@ -1,8 +1,14 @@
 export type Collection = {
   slug: string;
   name: string;
+  // A short label that used to sit above the title on the overview/collection
+  // pages. Ed asked for these to be hidden, so they are no longer rendered on
+  // the public site — kept in the data only for the admin/legacy reference.
   kicker: string;
   blurb: string;
+  // A longer introduction shown ONLY on the individual collection page, beneath
+  // the title. The overview page keeps the short `blurb`.
+  intro?: string;
   cover: string;
   // Computed at load time in lib/data.ts.
   count?: number;
@@ -23,6 +29,9 @@ export type Photo = {
   section?: string;
   // Trigger photos appear on the home page grid.
   trigger: boolean;
+  // Award-winning images carry a small star/asterisk on the site. Ed marks
+  // these in the admin; defaults to false.
+  award?: boolean;
   order: number;
   // Computed at load time from public/data/imeta.json (the optimize step).
   optBase?: string;
@@ -78,6 +87,9 @@ export type SiteContent = {
   intro: string;
   // A short statement shown in the footer (formerly "less is more").
   lessIsMore: string;
+  // Optional path to Ed's cartoon/self-portrait illustration, shown small in
+  // the lower-right of the quote section. Empty string = nothing rendered.
+  cartoon?: string;
   bio: {
     portrait: string;
     heading: string;

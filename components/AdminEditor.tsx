@@ -1,22 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Send, LogOut } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Send, LogOut } from "lucide-react";
 import type {
   ClientGallery,
   Collection,
   Photo,
   SiteContent,
 } from "@/lib/types";
-import AdminPhotoRow from "@/components/AdminPhotoRow";
 import AdminGalleries from "@/components/AdminGalleries";
+import AdminPhotographs from "@/components/AdminPhotographs";
+import AdminCollections from "@/components/AdminCollections";
+import { Area, Select, Text } from "@/components/AdminFields";
 import { sanitizeFilename } from "@/lib/download";
 import { buildZip, downloadBlob } from "@/lib/zip";
 import { upload } from "@vercel/blob/client";
 
-const field =
-  "w-full border border-ink/15 bg-paper px-3 py-2 font-sans text-sm text-ink outline-none focus:border-ink/50";
-const label = "font-sans text-[11px] uppercase tracking-widest2 text-ink-muted";
 const tabs = ["Photographs", "Words", "Collections", "Galleries"] as const;
 type Tab = (typeof tabs)[number];
 
@@ -78,7 +77,7 @@ export default function AdminEditor({
     missingNames: string[];
   }>(null);
   const [building, setBuilding] = useState(false);
-  const addInput = useRef<HTMLInputElement>(null);
+  const [lastSaved, setLastSaved] = useState<number | null>(null);
 
   // Autosave every edit to this device so a closed tab, a back-swipe, or an
   // iPad reloading the page never loses Ed's work.
@@ -99,6 +98,7 @@ export default function AdminEditor({
       };
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        setLastSaved(draft.savedAt);
       } catch {
         // Storage full or blocked — nothing useful to do.
       }
@@ -133,8 +133,13 @@ export default function AdminEditor({
   };
 
   // "Add photographs" opens the picker straight away — a new row only ever
-  // exists WITH Ed's picture in it, and it appears at the top of the list.
-  const addPhotos = (list: FileList | null) => {
+  // exists WITH Ed's picture in it, and it lands INSIDE the collection he is
+  // looking at (at the top by default), not always the first collection.
+  const addPhotos = (
+    list: FileList | null,
+    slug: string,
+    position: "top" | "bottom" = "top",
+  ) => {
     if (!list || list.length === 0) return;
     const rows: Photo[] = [];
     Array.from(list).forEach((file, i) => {
@@ -147,29 +152,30 @@ export default function AdminEditor({
         name: "Untitled",
         title: "untitled",
         description: "",
-        collection: collections[0]?.slug ?? "",
+        collection: slug,
         trigger: false,
         order: 0,
       });
     });
-    if (rows.length) {
-      setPhotos((ps) => [...rows, ...ps]);
-      setSent(null);
-    }
+    if (!rows.length) return;
+    setPhotos((ps) => {
+      if (position === "top") {
+        const first = ps.findIndex((p) => p.collection === slug);
+        const at = first < 0 ? 0 : first;
+        return [...ps.slice(0, at), ...rows, ...ps.slice(at)];
+      }
+      let last = -1;
+      ps.forEach((p, k) => {
+        if (p.collection === slug) last = k;
+      });
+      const at = last < 0 ? ps.length : last + 1;
+      return [...ps.slice(0, at), ...rows, ...ps.slice(at)];
+    });
+    setSent(null);
   };
 
   const removePhoto = (id: string) =>
     setPhotos((ps) => ps.filter((p) => p.id !== id));
-
-  const movePhoto = (id: string, dir: -1 | 1) =>
-    setPhotos((ps) => {
-      const i = ps.findIndex((p) => p.id === id);
-      const j = i + dir;
-      if (i < 0 || j < 0 || j >= ps.length) return ps;
-      const copy = [...ps];
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-      return copy;
-    });
 
   const triggerCount = useMemo(
     () => photos.filter((p) => p.trigger).length,
@@ -312,6 +318,16 @@ export default function AdminEditor({
             <h1 className="mt-1 font-serif text-3xl font-light text-ink">
               Manage the site
             </h1>
+            <p className="mt-1 font-sans text-xs text-ink-muted">
+              {lastSaved
+                ? `Your work is saved on this device ✓ · ${new Date(
+                    lastSaved,
+                  ).toLocaleTimeString([], {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}`
+                : "Your work saves itself on this device as you go. When you are ready, send it to Brady to put on the site."}
+            </p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -425,44 +441,19 @@ export default function AdminEditor({
 
       <div className="container-rail py-10">
         {tab === "Photographs" && (
-          <div className="space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="font-sans text-sm text-ink-muted">
-                {photos.length} photographs, {triggerCount} shown on the home
-                page. New pictures appear at the top of this list.
-              </p>
-              <button
-                onClick={() => addInput.current?.click()}
-                className="inline-flex items-center gap-2 border border-ink/20 px-4 py-2 font-sans text-sm text-ink hover:border-ink"
-              >
-                <Plus size={16} /> Add photographs
-              </button>
-              <input
-                ref={addInput}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-                  addPhotos(e.target.files);
-                  e.target.value = "";
-                }}
-              />
-            </div>
-            {photos.map((p) => (
-              <AdminPhotoRow
-                key={p.id}
-                photo={p}
-                preview={previews[p.id] ?? p.src}
-                collections={collections}
-                missingFile={!!pending[p.id] && !files[p.id]}
-                onChange={(patch) => patchPhoto(p.id, patch)}
-                onFile={(file) => onFile(p.id, file)}
-                onDelete={() => removePhoto(p.id)}
-                onMove={(dir) => movePhoto(p.id, dir)}
-              />
-            ))}
-          </div>
+          <AdminPhotographs
+            photos={photos}
+            setPhotos={setPhotos}
+            collections={collections}
+            previews={previews}
+            files={files}
+            pending={pending}
+            triggerCount={triggerCount}
+            onFile={onFile}
+            addPhotos={addPhotos}
+            patchPhoto={patchPhoto}
+            removePhoto={removePhoto}
+          />
         )}
 
         {tab === "Words" && (
@@ -566,123 +557,18 @@ export default function AdminEditor({
         )}
 
         {tab === "Collections" && (
-          <div className="max-w-2xl space-y-8">
-            {collections.map((c, i) => (
-              <div
-                key={c.slug}
-                className="space-y-3 border border-ink/10 bg-paper-soft p-5"
-              >
-                <p className="font-serif text-xl text-ink">{c.name}</p>
-                <Text
-                  label="Title"
-                  value={c.name}
-                  onChange={(v) =>
-                    setCollections((cs) =>
-                      cs.map((x, k) => (k === i ? { ...x, name: v } : x)),
-                    )
-                  }
-                />
-                <Text
-                  label="Short line"
-                  value={c.kicker}
-                  onChange={(v) =>
-                    setCollections((cs) =>
-                      cs.map((x, k) => (k === i ? { ...x, kicker: v } : x)),
-                    )
-                  }
-                />
-                <Area
-                  label="Blurb"
-                  value={c.blurb}
-                  onChange={(v) =>
-                    setCollections((cs) =>
-                      cs.map((x, k) => (k === i ? { ...x, blurb: v } : x)),
-                    )
-                  }
-                />
-              </div>
-            ))}
-          </div>
+          <AdminCollections
+            collections={collections}
+            setCollections={setCollections}
+            photos={photos}
+            previews={previews}
+          />
         )}
 
         {tab === "Galleries" && (
           <AdminGalleries galleries={galleries} setGalleries={setGalleries} />
         )}
       </div>
-    </div>
-  );
-}
-
-function Text({
-  label: l,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div>
-      <span className={label}>{l}</span>
-      <input
-        className={field}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </div>
-  );
-}
-
-function Area({
-  label: l,
-  value,
-  onChange,
-  rows = 3,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  rows?: number;
-}) {
-  return (
-    <div>
-      <span className={label}>{l}</span>
-      <textarea
-        className={`${field} resize-y`}
-        rows={rows}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    </div>
-  );
-}
-
-function Select({
-  label: l,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div>
-      <span className={label}>{l}</span>
-      <select
-        className={field}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
     </div>
   );
 }

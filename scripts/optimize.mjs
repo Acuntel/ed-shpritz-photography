@@ -11,12 +11,17 @@ const SRC_DIRS = ["public/images/gallery", "public/images/uploads"];
 const OUT_DIR = path.join(ROOT, "public/images/opt");
 const META_FILE = path.join(ROOT, "public/data/imeta.json");
 const WIDTHS = [1200, 1600, 2560];
+// Cap the full-size variant a little higher than the old 2560 so retina screens
+// have real detail to draw when a photo is opened in the lightbox.
+const MAX_W = 3000;
 const EXT = /\.(jpe?g|png|webp)$/i;
 
+// Bumped from 58/60/64. The old settings were the main reason opened photos
+// looked soft; fine-art photography wants a higher floor.
 function quality(w) {
-  if (w <= 1200) return 58;
-  if (w <= 1600) return 60;
-  return 64;
+  if (w <= 1200) return 66;
+  if (w <= 1600) return 70;
+  return 74;
 }
 
 async function getSiteMeta() {
@@ -81,7 +86,7 @@ async function run() {
       const widths = [
         ...new Set([
           ...WIDTHS.filter((w) => w <= srcW),
-          Math.min(srcW, 2560),
+          Math.min(srcW, MAX_W),
         ]),
       ].sort((a, b) => a - b);
       const maxW = widths[widths.length - 1];
@@ -89,7 +94,10 @@ async function run() {
       for (const w of widths) {
         const pipe = sharp(input)
           .resize({ width: w, withoutEnlargement: true })
-          .toColorspace("srgb");
+          .toColorspace("srgb")
+          // Downscaling always softens; a gentle unsharp mask restores the
+          // crispness Ed expects when a picture is opened full-screen.
+          .sharpen({ sigma: 0.7 });
 
         if (watermark && w === maxW) {
           const h = Math.round((srcH / srcW) * w);

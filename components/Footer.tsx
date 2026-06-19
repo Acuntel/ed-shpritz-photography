@@ -9,16 +9,13 @@ export default function Footer() {
     <footer className="mt-32 border-t border-ink/10">
       <div className="container-rail flex flex-col gap-10 py-16 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="font-serif text-2xl text-ink">{site.heroLine}</p>
+          <p className="font-serif text-2xl text-ink">
+            {site.name} Photography
+          </p>
           <p className="mt-1 font-serif text-lg font-light italic text-ink-soft">
             {site.tagline}
           </p>
-          <p className="mt-3 max-w-prose2 font-sans text-sm leading-relaxed text-ink-muted">
-            {site.lessIsMore}
-          </p>
-        </div>
-        <div className="font-sans text-sm text-ink-muted">
-          <div className="mb-4 flex gap-5">
+          <div className="mt-5 flex gap-5 font-sans text-sm text-ink-muted">
             <Link href="/prints" className="transition-colors hover:text-ink">
               Prints
             </Link>
@@ -29,6 +26,8 @@ export default function Footer() {
               Contact
             </Link>
           </div>
+        </div>
+        <div className="font-sans text-sm text-ink-muted sm:text-right">
           <p>{site.location}</p>
           <a
             href={`mailto:${site.contactEmail}`}

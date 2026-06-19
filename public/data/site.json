@@ -8,6 +8,7 @@
   "heroSub": "Fine-art photography from Chicago, the lakefront, and the wild places between.",
   "intro": "Wildlife at sunrise, the streets of Chicago, a beloved pet, a quiet moment between people — photographs drawn to the beauty most of us pass by.",
   "lessIsMore": "We look… but do we see?",
+  "cartoon": "",
   "bio": {
     "portrait": "/images/portrait.jpg",
     "heading": "Welcome to my world",
@@ -21,10 +22,8 @@
   },
   "edisms": [
     "We look… but do we see?",
-    "Less… so you may see more.",
     "Do you see what I see?",
-    "Beauty within, shines outside. Beauty outside, only shines.",
-    "Less is always more."
+    "Beauty within shines outside; beauty outside only shines."
   ],
   "contactEmail": "ed@edshpritzphotography.com",
   "location": "Chicago",

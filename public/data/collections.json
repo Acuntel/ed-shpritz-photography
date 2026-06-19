@@ -4,6 +4,7 @@
     "name": "Minimal White",
     "kicker": "Almost nothing",
     "blurb": "High-key frames with very little in them and a great deal to feel.",
+    "intro": "This site is about less is more. I wanted to create the style of an award winning wildlife photographer in England and I just did not figure it out… However, in my frustration, I created this minimal concept to let the viewer look …. To see more!",
     "cover": "/images/gallery/baby-elephant.jpg"
   },
   {
@@ -11,6 +12,7 @@
     "name": "WaterColor",
     "kicker": "Soft color",
     "blurb": "Gentle washes of color and quiet light — photographs that feel painted.",
+    "intro": "To enjoy photography, is to try different techniques, subjects and the spontaneity of life. I used less technique in editing these moments and pictures of Chicago to create an impression of Water Color painting.",
     "cover": "/images/gallery/winter-reflection.jpg"
   },
   {
@@ -18,6 +20,7 @@
     "name": "Places and Reflections",
     "kicker": "Stillness, doubled",
     "blurb": "Quiet places and the water that gives them back — a city, a temple, a shoreline, mirrored.",
+    "intro": "We look, we see, then we look and there is the reflection. Beautiful buildings, trees, and much more. Architecture creating sculpture and stairs.",
     "cover": "/images/gallery/garden-bridge.jpg"
   },
   {
@@ -25,6 +28,7 @@
     "name": "Wildlife",
     "kicker": "The wild ones",
     "blurb": "Animals at home in the open — the great herds and the watchful few, near and far.",
+    "intro": "Over my life I have had the privilege to travel and see animals in Africa in their natural environment. We travel in the cage, and they are doing their thing! And we watch with amazement!",
     "cover": "/images/gallery/lions-pair.jpg"
   },
   {
@@ -32,6 +36,7 @@
     "name": "Nature's Beauty and Flight",
     "kicker": "Petals and wings",
     "blurb": "Flowers in full color and the small fliers that visit them — beauty, and the things that fly.",
+    "intro": "Nature paints pictures from her wonderful palette of colors and the result is flowers. To help the flowers, butterflies arrive in shapes and sizes and as many colors and color combinations as Nature can draw.",
     "cover": "/images/gallery/monarch-sunflower.jpg"
   },
   {
@@ -39,6 +44,7 @@
     "name": "Birds",
     "kicker": "Mid-turn",
     "blurb": "Birds in the air and on the water, caught just before the next beat.",
+    "intro": "My first love is capturing birds and their colorful beauty. In motion when possible and showing them in their environment.",
     "cover": "/images/gallery/two-down.jpg"
   },
   {
@@ -46,6 +52,7 @@
     "name": "Impression in Motion",
     "kicker": "The camera moves",
     "blurb": "Intentional camera movement — a held breath turned to brushstrokes.",
+    "intro": "I came across several award winning photographers using this technique. Initially, I wanted to create an Impressionistic looking photograph. As I tried to make that happen, many other approaches evolved and some did look like Impressionistic paintings.",
     "cover": "/images/gallery/icm-flowers.jpg"
   },
   {
@@ -53,6 +60,7 @@
     "name": "Our Best Friends",
     "kicker": "Good dogs",
     "blurb": "Portraits of the dogs we love — every one of them certain they are the favorite.",
+    "intro": "Mug shots of adorable loving companions. Their beauty, sweetness, and energy.",
     "cover": "/images/gallery/aussie-pup.jpg"
   },
   {
@@ -60,6 +68,7 @@
     "name": "Life Observed",
     "kicker": "A quiet moment",
     "blurb": "Fog on the water, boats at rest, and people in the middle of their day — beauty in the ordinary.",
+    "intro": "My favorite thing to do is wonder, always with my camera. In a moment kids jumping into the lake, a statue decorated for the season or event, an animal smiling. Trees naked and sharing their geometry. I encourage all to look and really see! And you might even smile or giggle too!",
     "cover": "/images/gallery/plein-air.jpg"
   },
   {
@@ -67,6 +76,7 @@
     "name": "Air & Water Show",
     "kicker": "Sky and speed",
     "blurb": "Jets in formation over the lakefront, moments that will not hold still.",
+    "intro": "The speed of light and up and away! Acrobatics, spins, and formations. The Thunderbirds and Blue Angels speak for themselves.",
     "cover": "/images/gallery/thunderbirds-climb.jpg"
   }
 ]

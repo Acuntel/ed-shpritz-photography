@@ -47,13 +47,17 @@ export default function CollectionPage({
           <ArrowLeft size={16} /> All collections
         </Link>
         <Reveal className="mt-8 border-b border-ink/10 pb-10">
-          <p className="kicker">{collection.kicker}</p>
-          <h1 className="mt-3 font-serif text-5xl font-light text-ink sm:text-6xl">
+          <h1 className="font-serif text-5xl font-light text-ink sm:text-6xl">
             {collection.name}
           </h1>
           <p className="mt-5 max-w-prose2 font-sans text-base leading-relaxed text-ink-soft">
             {collection.blurb}
           </p>
+          {collection.intro && (
+            <p className="mt-5 max-w-prose2 font-sans text-base italic leading-relaxed text-ink-muted">
+              {collection.intro}
+            </p>
+          )}
         </Reveal>
       </header>
 

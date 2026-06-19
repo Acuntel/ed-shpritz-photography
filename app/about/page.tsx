@@ -59,20 +59,27 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Ed'isms */}
-      <section className="container-rail mt-28 border-t border-ink/10 pt-16">
-        <Reveal className="mb-10 text-center">
-          <p className="kicker">In his words</p>
+      {/* A single current thought */}
+      <section className="container-rail relative mt-28 border-t border-ink/10 pb-10 pt-20">
+        <Reveal className="mx-auto max-w-3xl text-center">
+          <span
+            aria-hidden
+            className="font-serif text-5xl leading-none text-ink-faint"
+          >
+            &ldquo;
+          </span>
+          <p className="mt-2 font-serif text-3xl font-light leading-snug text-ink sm:text-4xl">
+            {site.edisms[0] ?? "We look… but do we see?"}
+          </p>
         </Reveal>
-        <div className="mx-auto max-w-3xl space-y-10 text-center">
-          {site.edisms.map((q, i) => (
-            <Reveal key={i} delay={Math.min(i, 6) * 60}>
-              <p className="font-serif text-2xl font-light leading-snug text-ink-soft sm:text-3xl">
-                {q}
-              </p>
-            </Reveal>
-          ))}
-        </div>
+        {site.cartoon && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={site.cartoon}
+            alt={`A cartoon of ${site.name}`}
+            className="pointer-events-none absolute bottom-2 right-4 w-20 sm:w-28"
+          />
+        )}
       </section>
 
       <section className="container-rail mt-24 text-center">
