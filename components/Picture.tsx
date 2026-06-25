@@ -19,7 +19,7 @@ const WIDTHS: Record<Variant, number[]> = {
   full: [1080, 1600, 2048, 2560, 3840],
 };
 
-const QUALITY = 72;
+const QUALITY = 80;
 
 // Build a Vercel image-optimization URL. Works for both local /images/* paths
 // and remote Vercel Blob URLs (allowed via next.config remotePatterns). Vercel

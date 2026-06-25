@@ -27,6 +27,11 @@ export default function Lightbox({
 }: Props) {
   const open = index !== null;
   const photo = open ? photos[index as number] : null;
+  // Fill the viewport at the photo's own aspect ratio so an opened picture is
+  // always large — small placeholder images scale up to fill rather than
+  // floating tiny in the middle; full-resolution photos fill crisply.
+  const aspect =
+    photo && photo.width && photo.height ? photo.width / photo.height : 3 / 2;
   const touchX = useRef<number | null>(null);
 
   const go = useCallback(
@@ -110,14 +115,19 @@ export default function Lightbox({
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="flex max-h-full min-w-0 flex-col items-center"
             >
-              <Picture
-                photo={photo}
-                variant="full"
-                priority
-                sizes="100vw"
-                className="max-h-[68vh] w-auto max-w-full object-contain shadow-[0_30px_80px_-40px_rgba(0,0,0,0.6)]"
-                style={{ aspectRatio: undefined }}
-              />
+              <div
+                className="mx-auto w-full"
+                style={{ width: `min(90vw, calc(74vh * ${aspect}))` }}
+              >
+                <Picture
+                  photo={photo}
+                  variant="full"
+                  priority
+                  sizes="90vw"
+                  className="block h-auto w-full object-contain shadow-[0_30px_80px_-40px_rgba(0,0,0,0.6)]"
+                  style={{ aspectRatio: `${aspect}` }}
+                />
+              </div>
               <figcaption className="mt-6 max-w-prose2 text-center">
                 <h2 className="flex items-center justify-center gap-2 font-serif text-2xl text-ink">
                   {photo.name}
