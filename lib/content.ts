@@ -63,7 +63,11 @@ export const loadContent = cache(
     try {
       const url = await contentUrl();
       if (url) {
-        const res = await fetch(url, { cache: "no-store" });
+        // A unique query param forces the read past any edge/CDN cache straight
+        // to the (strongly consistent) blob origin, so a publish is visible
+        // immediately rather than a few seconds later on some POPs.
+        const fresh = `${url}${url.includes("?") ? "&" : "?"}cb=${Date.now()}`;
+        const res = await fetch(fresh, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (isContent(data)) return data;
