@@ -36,9 +36,11 @@ export default function CollectionsIndex({
               <h3 className="mt-4 font-serif text-2xl text-ink transition-colors group-hover:text-ink-soft">
                 {c.name}
               </h3>
-              <p className="mt-2 max-w-prose2 font-sans text-sm leading-relaxed text-ink-muted">
-                {c.blurb}
-              </p>
+              {c.blurb && (
+                <p className="mt-2 max-w-prose2 font-sans text-sm leading-relaxed text-ink-muted">
+                  {c.blurb}
+                </p>
+              )}
             </Link>
           </Reveal>
         );

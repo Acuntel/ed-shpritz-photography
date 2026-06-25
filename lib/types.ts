@@ -88,8 +88,16 @@ export type SiteContent = {
   // A short statement shown in the footer (formerly "less is more").
   lessIsMore: string;
   // Optional path to Ed's cartoon/self-portrait illustration, shown small in
-  // the lower-right of the quote section. Empty string = nothing rendered.
+  // the lower-right of the closing statement. Empty string = nothing rendered.
   cartoon?: string;
+  // The closing statement on the About page ("the last page"): a headline,
+  // two short lines, and the awards note. Cartoon (above) sits lower-right.
+  closing?: {
+    headline: string;
+    thankYou: string;
+    didYouSee: string;
+    awards: string;
+  };
   bio: {
     portrait: string;
     heading: string;

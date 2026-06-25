@@ -22,7 +22,10 @@ export function generateMetadata({
 }): Metadata {
   const c = getCollection(params.slug);
   if (!c) return { title: "Collection" };
-  return { title: `${c.name} | Ed Shpritz Photography`, description: c.blurb };
+  return {
+    title: `${c.name} | Ed Shpritz Photography`,
+    description: c.blurb || c.intro,
+  };
 }
 
 export default function CollectionPage({
@@ -50,9 +53,11 @@ export default function CollectionPage({
           <h1 className="font-serif text-5xl font-light text-ink sm:text-6xl">
             {collection.name}
           </h1>
-          <p className="mt-5 max-w-prose2 font-sans text-base leading-relaxed text-ink-soft">
-            {collection.blurb}
-          </p>
+          {collection.blurb && (
+            <p className="mt-5 max-w-prose2 font-sans text-base leading-relaxed text-ink-soft">
+              {collection.blurb}
+            </p>
+          )}
           {collection.intro && (
             <p className="mt-5 max-w-prose2 font-sans text-base italic leading-relaxed text-ink-muted">
               {collection.intro}

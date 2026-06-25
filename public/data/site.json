@@ -25,6 +25,12 @@
     "Do you see what I see?",
     "Beauty within shines outside; beauty outside only shines."
   ],
+  "closing": {
+    "headline": "We look… but do we see?",
+    "thankYou": "Thank you for LOOKING.",
+    "didYouSee": "Did you SEE?",
+    "awards": "Photographs marked with an asterisk (*) have received awards."
+  },
   "contactEmail": "ed@edshpritzphotography.com",
   "location": "Chicago",
   "ownerName": "Ed Shpritz",

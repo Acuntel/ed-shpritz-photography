@@ -1478,7 +1478,7 @@
     "description": "Not this kind of Blue Angel — Ed's nod before the real thing.",
     "collection": "air-and-water-show",
     "trigger": true,
-    "order": 132
+    "order": 136
   },
   {
     "id": "thunderbirds-climb",
@@ -1489,7 +1489,7 @@
     "description": "A pair pulling up into the blue.",
     "collection": "air-and-water-show",
     "trigger": true,
-    "order": 133
+    "order": 132
   },
   {
     "id": "thunderbirds-diamond",
@@ -1500,7 +1500,7 @@
     "description": "Four jets locked in the diamond.",
     "collection": "air-and-water-show",
     "trigger": true,
-    "order": 134
+    "order": 133
   },
   {
     "id": "blue-angels-diamond",
@@ -1511,7 +1511,7 @@
     "description": "The Navy's four in their diamond.",
     "collection": "air-and-water-show",
     "trigger": true,
-    "order": 135
+    "order": 134
   },
   {
     "id": "thunderbirds-cross",
@@ -1522,7 +1522,7 @@
     "description": "Two jets crossing on opposite lines.",
     "collection": "air-and-water-show",
     "trigger": true,
-    "order": 136
+    "order": 135
   },
   {
     "id": "blue-angels-pair",

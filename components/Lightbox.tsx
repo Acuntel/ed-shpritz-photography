@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Star, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Picture from "@/components/Picture";
 import type { Photo } from "@/lib/types";
 
@@ -122,11 +122,13 @@ export default function Lightbox({
                 <h2 className="flex items-center justify-center gap-2 font-serif text-2xl text-ink">
                   {photo.name}
                   {photo.award && (
-                    <Star
-                      size={16}
+                    <span
                       aria-label="Award-winning"
-                      className="shrink-0 fill-amber-500 text-amber-500"
-                    />
+                      title="Award-winning"
+                      className="shrink-0 font-serif text-2xl leading-none text-amber-500"
+                    >
+                      *
+                    </span>
                   )}
                 </h2>
                 {photo.title && (

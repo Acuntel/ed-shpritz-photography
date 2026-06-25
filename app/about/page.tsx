@@ -59,25 +59,30 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* A single current thought */}
-      <section className="container-rail relative mt-28 border-t border-ink/10 pb-10 pt-20">
+      {/* The closing statement — the last page */}
+      <section className="container-rail relative mt-28 border-t border-ink/10 pb-20 pt-20">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <span
-            aria-hidden
-            className="font-serif text-5xl leading-none text-ink-faint"
-          >
-            &ldquo;
-          </span>
-          <p className="mt-2 font-serif text-3xl font-light leading-snug text-ink sm:text-4xl">
-            {site.edisms[0] ?? "We look… but do we see?"}
+          <p className="font-serif text-4xl font-light leading-snug text-ink sm:text-5xl">
+            {site.closing?.headline ?? "We look… but do we see?"}
           </p>
+          <p className="mt-10 font-serif text-2xl font-light text-ink-soft sm:text-3xl">
+            {site.closing?.thankYou ?? "Thank you for LOOKING."}
+          </p>
+          <p className="mt-1 font-serif text-2xl font-light text-ink-soft sm:text-3xl">
+            {site.closing?.didYouSee ?? "Did you SEE?"}
+          </p>
+          {site.closing?.awards && (
+            <p className="mx-auto mt-12 max-w-prose2 font-sans text-sm leading-relaxed text-ink-muted">
+              {site.closing.awards}
+            </p>
+          )}
         </Reveal>
         {site.cartoon && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={site.cartoon}
             alt={`A cartoon of ${site.name}`}
-            className="pointer-events-none absolute bottom-2 right-4 w-20 sm:w-28"
+            className="pointer-events-none absolute bottom-4 right-4 w-24 sm:w-32"
           />
         )}
       </section>
