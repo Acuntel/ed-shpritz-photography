@@ -8,8 +8,10 @@ export const metadata: Metadata = {
   description: "A few words from Ed Shpritz, and the idea behind the pictures.",
 };
 
-export default function AboutPage() {
-  const site = getSite();
+export const dynamic = "force-dynamic";
+
+export default async function AboutPage() {
+  const site = await getSite();
 
   return (
     <article className="pt-28">

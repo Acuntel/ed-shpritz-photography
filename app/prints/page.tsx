@@ -9,8 +9,10 @@ export const metadata: Metadata = {
     "Archival, signed fine art prints by Chicago photographer Ed Shpritz, available on request.",
 };
 
-export default function PrintsPage() {
-  const site = getSite();
+export const dynamic = "force-dynamic";
+
+export default async function PrintsPage() {
+  const site = await getSite();
 
   return (
     <article className="pt-28">

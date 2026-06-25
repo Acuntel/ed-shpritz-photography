@@ -7,6 +7,7 @@ import {
   ChevronsDown,
   ChevronsUp,
   ImageOff,
+  Loader2,
   Trash2,
 } from "lucide-react";
 import type { Collection, Photo } from "@/lib/types";
@@ -22,6 +23,7 @@ export default function AdminPhotoRow({
   preview,
   collections,
   missingFile = false,
+  uploading = false,
   isFirst = false,
   isLast = false,
   onChange,
@@ -32,9 +34,11 @@ export default function AdminPhotoRow({
   photo: Photo;
   preview: string;
   collections: Collection[];
-  // The photo was picked in an earlier visit; the browser could not keep the
-  // image itself, so Ed needs to choose this picture again.
+  // This row has no usable picture yet (never chosen, or the last upload
+  // failed) — Ed needs to choose one.
   missingFile?: boolean;
+  // The picture is currently saving to the website.
+  uploading?: boolean;
   // First/last within its collection — used to disable the up/top, down/bottom
   // arrows so Ed never wonders why a tap "did nothing".
   isFirst?: boolean;
@@ -57,8 +61,8 @@ export default function AdminPhotoRow({
   return (
     <div className="grid grid-cols-1 gap-5 border border-ink/10 bg-paper-soft p-5 sm:grid-cols-[160px_1fr]">
       <div>
-        <div className="aspect-[4/5] overflow-hidden bg-paper">
-          {needsPhoto ? (
+        <div className="relative aspect-[4/5] overflow-hidden bg-paper">
+          {needsPhoto && !uploading ? (
             <div className="flex h-full w-full flex-col items-center justify-center gap-2 border border-dashed border-amber-600/50 px-3 text-center">
               <ImageOff size={22} className="text-amber-700" />
               <p className="font-sans text-xs leading-snug text-amber-700">
@@ -73,6 +77,12 @@ export default function AdminPhotoRow({
               className="h-full w-full object-cover"
               onError={() => setLoadFailed(true)}
             />
+          )}
+          {uploading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-paper/70 text-center">
+              <Loader2 size={22} className="animate-spin text-ink-soft" />
+              <p className="font-sans text-xs text-ink-soft">Saving…</p>
+            </div>
           )}
         </div>
         <label

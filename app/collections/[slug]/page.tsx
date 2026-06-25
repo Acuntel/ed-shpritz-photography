@@ -11,16 +11,16 @@ import {
 import PhotoGrid from "@/components/PhotoGrid";
 import Reveal from "@/components/Reveal";
 
-export function generateStaticParams() {
-  return getCollections().map((c) => ({ slug: c.slug }));
-}
+// Rendered on demand from Ed's live Blob content, so a collection he adds (or
+// reorders) appears immediately without a rebuild.
+export const dynamic = "force-dynamic";
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
-}): Metadata {
-  const c = getCollection(params.slug);
+}): Promise<Metadata> {
+  const c = await getCollection(params.slug);
   if (!c) return { title: "Collection" };
   return {
     title: `${c.name} | Ed Shpritz Photography`,
@@ -28,17 +28,20 @@ export function generateMetadata({
   };
 }
 
-export default function CollectionPage({
+export default async function CollectionPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const collection = getCollection(params.slug);
+  const collection = await getCollection(params.slug);
   if (!collection) notFound();
 
-  const photos = getPhotosByCollection(params.slug);
-  const site = getSite();
-  const others = getCollections().filter((c) => c.slug !== params.slug);
+  const [photos, site, all] = await Promise.all([
+    getPhotosByCollection(params.slug),
+    getSite(),
+    getCollections(),
+  ]);
+  const others = all.filter((c) => c.slug !== params.slug);
 
   return (
     <article className="pt-28">

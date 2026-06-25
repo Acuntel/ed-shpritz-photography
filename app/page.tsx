@@ -5,10 +5,16 @@ import CollectionsIndex from "@/components/CollectionsIndex";
 import Edism from "@/components/Edism";
 import Reveal from "@/components/Reveal";
 
-export default function Home() {
-  const site = getSite();
-  const collections = getCollections();
-  const photos = getPhotos();
+// Read Ed's live content from Blob on every request so his published changes
+// appear instantly with no rebuild.
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [site, collections, photos] = await Promise.all([
+    getSite(),
+    getCollections(),
+    getPhotos(),
+  ]);
 
   return (
     <>

@@ -3,18 +3,18 @@ import { getCollections } from "@/lib/data";
 
 const SITE_URL = "https://edshpritzphotography.com";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  // next.config has trailingSlash: true, so exported paths carry a trailing
-  // slash — keep sitemap URLs consistent with the page canonicals.
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // trailingSlash: true, so paths carry a trailing slash — keep sitemap URLs
+  // consistent with the page canonicals.
   const staticPages = ["", "about", "prints", "contact"].map((p) => ({
     url: p === "" ? `${SITE_URL}/` : `${SITE_URL}/${p}/`,
     changeFrequency: "monthly" as const,
     priority: p === "" ? 1 : 0.7,
   }));
 
-  const collectionPages = getCollections().map((c) => ({
+  const collectionPages = (await getCollections()).map((c) => ({
     url: `${SITE_URL}/collections/${c.slug}/`,
     changeFrequency: "monthly" as const,
     priority: 0.6,

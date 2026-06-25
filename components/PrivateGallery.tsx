@@ -173,6 +173,7 @@ export default function PrivateGallery({
                     <Picture
                       photo={p}
                       variant="grid"
+                      raw
                       className="block h-auto w-full transition-transform duration-[1.4s] ease-gallery group-hover:scale-[1.03]"
                     />
                   </span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Send, LogOut } from "lucide-react";
+import { Check, Loader2, LogOut, UploadCloud } from "lucide-react";
 import type {
   ClientGallery,
   Collection,
@@ -13,37 +13,30 @@ import AdminPhotographs from "@/components/AdminPhotographs";
 import AdminCollections from "@/components/AdminCollections";
 import { Area, Select, Text } from "@/components/AdminFields";
 import { sanitizeFilename } from "@/lib/download";
-import { buildZip, downloadBlob } from "@/lib/zip";
+import { measureImage } from "@/lib/measure";
 import { upload } from "@vercel/blob/client";
 
 const tabs = ["Photographs", "Words", "Collections", "Galleries"] as const;
 type Tab = (typeof tabs)[number];
 
 export const DRAFT_KEY = "edshpritz-admin-draft";
-const BRADY_EMAIL = "bradyschwartz25@gmail.com";
-// One-tap send: the ed-uploads Vercel project stores the zip and emails Brady
-// a download link. The key only gates the notify endpoint against drive-by
-// spam — it is public in this bundle by design (static site, no secrets).
-const UPLOAD_API = "https://ed-uploads.vercel.app";
-const NOTIFY_KEY = "305ff55ea622419f65238c2bc2dc7d86";
-// HEIC previews fine in Safari but breaks for Chrome/Firefox visitors, so we
-// only accept formats every browser can show. Restricting `accept` also makes
-// iPads convert HEIC to JPEG automatically when picking from Photos.
+// Only formats every browser can show. Restricting `accept` also makes iPads
+// convert HEIC to JPEG automatically when Ed picks from Photos.
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-// Edits autosaved to this device. The browser cannot keep picked image BYTES
-// across a reload, so those are tracked by name in pendingFiles and the row
-// asks Ed to choose that picture again.
+// Unsaved edits autosaved to this device. Image bytes are NOT kept here — by
+// the time a photo is in the list its picture already lives in Blob and `src`
+// is a permanent URL, so a reload simply reloads it.
 export type AdminDraft = {
   savedAt: number;
   site: SiteContent;
   collections: Collection[];
   photos: Photo[];
   galleries: ClientGallery[];
-  pendingFiles: Record<string, string>;
 };
 
 export default function AdminEditor({
+  passcode,
   initialSite,
   initialCollections,
   initialPhotos,
@@ -51,11 +44,12 @@ export default function AdminEditor({
   restored,
   onDiscardDraft,
 }: {
+  passcode: string;
   initialSite: SiteContent;
   initialCollections: Collection[];
   initialPhotos: Photo[];
   initialGalleries: ClientGallery[];
-  restored?: { savedAt: number; pendingFiles: Record<string, string> } | null;
+  restored?: { savedAt: number } | null;
   onDiscardDraft?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("Photographs");
@@ -65,99 +59,140 @@ export default function AdminEditor({
   const [photos, setPhotos] = useState(
     [...initialPhotos].sort((a, b) => a.order - b.order),
   );
-  const [files, setFiles] = useState<Record<string, File>>({});
+  // Transient: object-URL preview shown the instant a file is picked, before
+  // its Blob URL is ready. `uploading`/`failed` drive the per-row status.
   const [previews, setPreviews] = useState<Record<string, string>>({});
-  const [pending, setPending] = useState<Record<string, string>>(
-    restored?.pendingFiles ?? {},
-  );
-  const [notice, setNotice] = useState<string | null>(null);
-  const [sent, setSent] = useState<null | {
-    filename: string;
-    how: "uploaded" | "shared" | "downloaded";
-    missingNames: string[];
-  }>(null);
-  const [building, setBuilding] = useState(false);
-  const [lastSaved, setLastSaved] = useState<number | null>(null);
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+  const [failed, setFailed] = useState<Record<string, boolean>>({});
 
-  // Autosave every edit to this device so a closed tab, a back-swipe, or an
-  // iPad reloading the page never loses Ed's work.
+  const [notice, setNotice] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [draftAt, setDraftAt] = useState<number | null>(null);
+
+  const uploadingCount = useMemo(
+    () => Object.keys(uploading).length,
+    [uploading],
+  );
+  const needPhotoCount = useMemo(
+    () => photos.filter((p) => !p.src || failed[p.id]).length,
+    [photos, failed],
+  );
+
+  // Autosave edits to this device so a closed tab or a reload never loses work.
   useEffect(() => {
     const t = setTimeout(() => {
-      const pendingFiles: Record<string, string> = {};
-      photos.forEach((p) => {
-        if (files[p.id]) pendingFiles[p.id] = files[p.id].name;
-        else if (pending[p.id]) pendingFiles[p.id] = pending[p.id];
-      });
       const draft: AdminDraft = {
         savedAt: Date.now(),
         site,
         collections,
         photos: photos.map((p, i) => ({ ...p, order: i })),
         galleries,
-        pendingFiles,
       };
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-        setLastSaved(draft.savedAt);
+        setDraftAt(draft.savedAt);
       } catch {
         // Storage full or blocked — nothing useful to do.
       }
     }, 800);
     return () => clearTimeout(t);
-  }, [site, collections, photos, galleries, files, pending]);
+  }, [site, collections, photos, galleries]);
 
   const patchPhoto = (id: string, patch: Partial<Photo>) =>
     setPhotos((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
 
-  const acceptFile = (id: string, file: File): boolean => {
+  // Save one picked file straight to Blob and stamp its URL + dimensions onto
+  // the photo. The picture is safe the moment this resolves — no zip, no email,
+  // no "the browser lost it".
+  const ingest = async (id: string, file: File) => {
     if (!ACCEPTED_TYPES.includes(file.type)) {
       setNotice(
         `"${file.name}" is in a format web browsers cannot show (probably Apple's HEIC). ` +
           `In the Photos app, share or export it as a JPEG, then try again.`,
       );
-      return false;
+      return;
     }
-    setFiles((f) => ({ ...f, [id]: file }));
     setPreviews((p) => ({ ...p, [id]: URL.createObjectURL(file) }));
-    setPending((pd) => {
-      const copy = { ...pd };
-      delete copy[id];
-      return copy;
+    setFailed((f) => {
+      const c = { ...f };
+      delete c[id];
+      return c;
     });
-    return true;
+    setUploading((u) => ({ ...u, [id]: true }));
+    try {
+      const meta = await measureImage(file);
+      const blob = await upload(
+        `gallery/${id}-${sanitizeFilename(file.name)}`,
+        file,
+        {
+          access: "public",
+          handleUploadUrl: "/api/upload/",
+          contentType: file.type,
+          clientPayload: passcode,
+        },
+      );
+      patchPhoto(id, {
+        src: blob.url,
+        width: meta.width,
+        height: meta.height,
+        lqip: meta.lqip,
+      });
+    } catch {
+      setFailed((f) => ({ ...f, [id]: true }));
+      setNotice(
+        "That picture could not be saved just now. Please check your internet and choose it again.",
+      );
+    } finally {
+      setUploading((u) => {
+        const c = { ...u };
+        delete c[id];
+        return c;
+      });
+    }
   };
 
+  // Replace the picture on an existing row.
   const onFile = (id: string, file: File) => {
-    const target = `/images/uploads/${id}-${sanitizeFilename(file.name)}`;
-    if (acceptFile(id, file)) patchPhoto(id, { src: target });
+    void ingest(id, file);
   };
 
-  // "Add photographs" opens the picker straight away — a new row only ever
-  // exists WITH Ed's picture in it, and it lands INSIDE the collection he is
-  // looking at (at the top by default), not always the first collection.
+  // "Add photographs" — new rows appear immediately (with a preview + a spinner)
+  // INSIDE the open collection, then each picture saves itself to Blob.
   const addPhotos = (
     list: FileList | null,
     slug: string,
     position: "top" | "bottom" = "top",
   ) => {
     if (!list || list.length === 0) return;
-    const rows: Photo[] = [];
-    Array.from(list).forEach((file, i) => {
-      const id = `p-${Date.now()}-${i}`;
-      if (!acceptFile(id, file)) return;
-      rows.push({
-        id,
-        src: `/images/uploads/${id}-${sanitizeFilename(file.name)}`,
-        alt: "Photograph by Ed Shpritz",
-        name: "Untitled",
-        title: "untitled",
-        description: "",
-        collection: slug,
-        trigger: false,
-        order: 0,
-      });
-    });
-    if (!rows.length) return;
+    const picked = Array.from(list);
+    const rejected = picked.filter((f) => !ACCEPTED_TYPES.includes(f.type));
+    const accepted = picked.filter((f) => ACCEPTED_TYPES.includes(f.type));
+    if (rejected.length) {
+      setNotice(
+        `${rejected.length} picture${rejected.length === 1 ? "" : "s"} could not be added ` +
+          "(probably Apple's HEIC format). Export them as JPEG from Photos and try again.",
+      );
+    }
+    if (!accepted.length) return;
+
+    const base = Date.now();
+    const items = accepted.map((file, i) => ({
+      id: `p-${base}-${i}`,
+      file,
+    }));
+    const rows: Photo[] = items.map(({ id }) => ({
+      id,
+      src: "",
+      alt: "Photograph by Ed Shpritz",
+      name: "Untitled",
+      title: "untitled",
+      description: "",
+      collection: slug,
+      trigger: false,
+      order: 0,
+    }));
+
     setPhotos((ps) => {
       if (position === "top") {
         const first = ps.findIndex((p) => p.collection === slug);
@@ -171,7 +206,8 @@ export default function AdminEditor({
       const at = last < 0 ? ps.length : last + 1;
       return [...ps.slice(0, at), ...rows, ...ps.slice(at)];
     });
-    setSent(null);
+
+    items.forEach(({ id, file }) => void ingest(id, file));
   };
 
   const removePhoto = (id: string) =>
@@ -182,112 +218,57 @@ export default function AdminEditor({
     [photos],
   );
 
-  const pendingCount = useMemo(
-    () => photos.filter((p) => pending[p.id] && !files[p.id]).length,
-    [photos, pending, files],
-  );
-
-  // Everything goes into ONE zip (Safari and iPads drop extra simultaneous
-  // downloads). The share sheet can hand it straight to Mail; otherwise it
-  // downloads and the banner explains exactly what to email to Brady.
-  const exportAll = async () => {
-    setBuilding(true);
+  // The one button that matters: publish everything to the live site. No zip,
+  // no email, no Brady — the website updates within seconds.
+  const publish = async () => {
+    if (uploadingCount > 0) {
+      setNotice(
+        "A picture is still being saved. Give it a moment, then try again.",
+      );
+      return;
+    }
+    if (needPhotoCount > 0) {
+      setNotice(
+        `${needPhotoCount} picture${needPhotoCount === 1 ? "" : "s"} still need a photo chosen — look for the orange notes below.`,
+      );
+      return;
+    }
+    setPublishing(true);
     setNotice(null);
     try {
       const ordered = photos.map((p, i) => ({ ...p, order: i }));
-      const missingNames = photos
-        .filter((p) => pending[p.id] && !files[p.id])
-        .map((p) => p.name);
-      // Local date, not UTC — an evening export must not be "dated tomorrow".
-      const stamp = new Date().toLocaleDateString("en-CA");
-      const filename = `ed-website-update-${stamp}.zip`;
-      const readme = [
-        `Website update exported from /admin on ${new Date().toLocaleString()}.`,
-        ``,
-        `To publish:`,
-        `1. Copy the four files in data/ into public/data/ (replace the old ones).`,
-        `2. Copy everything in uploads/ into public/images/uploads/.`,
-        `3. Run: node scripts/optimize.mjs && npm run build`,
-        `4. Deploy: npx vercel --prod --yes`,
-        ``,
-        `If photos.json points at an /images/uploads/ file that is not in this`,
-        `zip, Ed picked it in an earlier session and the browser could not keep`,
-        `the bytes — ask him to open that photo's row and choose it again.`,
-      ].join("\n");
-      const zipFiles: { name: string; data: string | Blob }[] = [
-        { name: "README-FOR-BRADY.txt", data: readme },
-        { name: "data/photos.json", data: JSON.stringify(ordered, null, 2) },
-        { name: "data/site.json", data: JSON.stringify(site, null, 2) },
-        {
-          name: "data/collections.json",
-          data: JSON.stringify(collections, null, 2),
-        },
-        {
-          name: "data/galleries.json",
-          data: JSON.stringify(galleries, null, 2),
-        },
-      ];
-      Object.entries(files).forEach(([id, file]) => {
-        const p = ordered.find((x) => x.id === id);
-        if (p) {
-          zipFiles.push({
-            name: `uploads/${p.src.split("/").pop()}`,
-            data: file,
-          });
-        }
+      const res = await fetch("/api/content/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          passcode,
+          content: { site, collections, photos: ordered, galleries },
+        }),
       });
-      const blob = await buildZip(zipFiles);
-      // Best path: the file goes straight to Brady — upload to storage, then
-      // a server function emails him the download link. Ed does nothing else.
+      if (!res.ok) {
+        const e = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(e.error || "Your changes could not be saved.");
+      }
+      setSavedAt(Date.now());
       try {
-        const uploaded = await upload(filename, blob, {
-          access: "public",
-          handleUploadUrl: `${UPLOAD_API}/api/upload`,
-          contentType: "application/zip",
-          multipart: true,
-        });
-        const notifyRes = await fetch(`${UPLOAD_API}/api/notify`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            key: NOTIFY_KEY,
-            filename,
-            url: uploaded.url,
-            size: blob.size,
-            photoCount: ordered.length,
-          }),
-        });
-        if (!notifyRes.ok) throw new Error("notify failed");
-        setSent({ filename, how: "uploaded", missingNames });
-        return;
+        localStorage.removeItem(DRAFT_KEY);
       } catch {
-        // Offline or the upload service is down — fall back to share/download.
+        // ignore
       }
-      const zipAsFile = new File([blob], filename, {
-        type: "application/zip",
-      });
-      if (navigator.canShare?.({ files: [zipAsFile] })) {
-        try {
-          await navigator.share({
-            files: [zipAsFile],
-            title: "Website update from Ed",
-          });
-          setSent({ filename, how: "shared", missingNames });
-          return;
-        } catch {
-          // Cancelled or blocked — fall through to a plain download.
-        }
-      }
-      downloadBlob(filename, blob);
-      setSent({ filename, how: "downloaded", missingNames });
+    } catch (e) {
+      setNotice(
+        (e as Error).message ||
+          "Your changes could not be saved. Please try again.",
+      );
     } finally {
-      setBuilding(false);
+      setPublishing(false);
     }
   };
 
   const logout = () => {
     if (!confirm("Sign out? Your editing stays saved on this device.")) return;
     sessionStorage.removeItem("edshpritz-admin");
+    sessionStorage.removeItem("edshpritz-admin-pass");
     location.href = "/";
   };
 
@@ -301,14 +282,6 @@ export default function AdminEditor({
     onDiscardDraft?.();
   };
 
-  const mailto = `mailto:${BRADY_EMAIL}?subject=${encodeURIComponent(
-    "Website update from Ed",
-  )}&body=${encodeURIComponent(
-    `Hi Brady,\n\nMy website changes are in the attached file${
-      sent ? ` (${sent.filename}, in my Downloads folder)` : ""
-    }. Please put them on the site.\n\nEd`,
-  )}`;
-
   return (
     <div className="pt-24">
       <div className="container-rail">
@@ -319,24 +292,29 @@ export default function AdminEditor({
               Manage the site
             </h1>
             <p className="mt-1 font-sans text-xs text-ink-muted">
-              {lastSaved
-                ? `Your work is saved on this device ✓ · ${new Date(
-                    lastSaved,
-                  ).toLocaleTimeString([], {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}`
-                : "Your work saves itself on this device as you go. When you are ready, send it to Brady to put on the site."}
+              {savedAt
+                ? `Published to your live website ✓ · ${new Date(savedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+                : draftAt
+                  ? `Your work is saved on this device. Press “Save to my website” to make it live.`
+                  : "Make your changes, then press “Save to my website” to put them live."}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={exportAll}
-              disabled={building}
+              onClick={publish}
+              disabled={publishing || uploadingCount > 0}
               className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 font-sans text-sm text-paper transition-colors hover:bg-ink-soft disabled:opacity-60"
             >
-              <Send size={16} />
-              {building ? "Getting it ready..." : "Send my changes to Brady"}
+              {publishing ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <UploadCloud size={16} />
+              )}
+              {publishing
+                ? "Saving to your website..."
+                : uploadingCount > 0
+                  ? "Saving pictures..."
+                  : "Save to my website"}
             </button>
             <button
               onClick={logout}
@@ -354,20 +332,29 @@ export default function AdminEditor({
               dateStyle: "long",
               timeStyle: "short",
             })}{" "}
-            were brought back for you.
-            {pendingCount > 0 && (
-              <>
-                {" "}
-                <strong className="text-amber-700">
-                  {pendingCount} picture{pendingCount === 1 ? "" : "s"} need
-                  {pendingCount === 1 ? "s" : ""} to be chosen again
-                </strong>{" "}
-                — look for the orange notes below.
-              </>
-            )}{" "}
+            were brought back for you.{" "}
             <button onClick={discardDraft} className="underline hover:text-ink">
               Start over from the live site
             </button>
+          </div>
+        )}
+
+        {savedAt && (
+          <div className="mt-5 flex items-center gap-2 border border-wash-300 bg-wash-50 p-4 font-sans text-sm text-wash-800">
+            <Check size={18} className="shrink-0 text-green-700" />
+            <p>
+              <strong className="text-ink">Your website is updated.</strong>{" "}
+              Your changes are live now.{" "}
+              <a
+                href="/"
+                target="_blank"
+                rel="noreferrer"
+                className="underline hover:text-ink"
+              >
+                See your site
+              </a>
+              .
+            </p>
           </div>
         )}
 
@@ -380,45 +367,6 @@ export default function AdminEditor({
             >
               OK
             </button>
-          </div>
-        )}
-
-        {sent && (
-          <div className="mt-5 space-y-2 border border-wash-300 bg-wash-50 p-4 font-sans text-sm text-wash-800">
-            {sent.how === "uploaded" ? (
-              <p>
-                <strong className="text-ink">
-                  Sent! Your changes went straight to Brady.
-                </strong>{" "}
-                You are done — there is nothing else to do. He will put them on
-                the site.
-              </p>
-            ) : sent.how === "shared" ? (
-              <p>
-                Your update was handed to the app you picked. If you emailed it
-                to Brady, you are done — he will put it on the site.
-              </p>
-            ) : (
-              <p>
-                Everything was saved into one file:{" "}
-                <strong className="text-ink">{sent.filename}</strong> (in your
-                Downloads). Email that one file to Brady at{" "}
-                <strong className="text-ink">{BRADY_EMAIL}</strong> and he will
-                put it on the site.{" "}
-                <a href={mailto} className="underline hover:text-ink">
-                  Open an email to Brady
-                </a>{" "}
-                (then attach the file from Downloads).
-              </p>
-            )}
-            {sent.missingNames.length > 0 && (
-              <p className="text-amber-800">
-                Heads up: {sent.missingNames.join(", ")} still need
-                {sent.missingNames.length === 1 ? "s" : ""} a picture — choose
-                {sent.missingNames.length === 1 ? " it" : " them"} again below
-                and send once more.
-              </p>
-            )}
           </div>
         )}
 
@@ -446,8 +394,7 @@ export default function AdminEditor({
             setPhotos={setPhotos}
             collections={collections}
             previews={previews}
-            files={files}
-            pending={pending}
+            uploading={uploading}
             triggerCount={triggerCount}
             onFile={onFile}
             addPhotos={addPhotos}

@@ -15,8 +15,7 @@ export default function AdminPhotographs({
   setPhotos,
   collections,
   previews,
-  files,
-  pending,
+  uploading,
   triggerCount,
   onFile,
   addPhotos,
@@ -27,8 +26,7 @@ export default function AdminPhotographs({
   setPhotos: React.Dispatch<React.SetStateAction<Photo[]>>;
   collections: Collection[];
   previews: Record<string, string>;
-  files: Record<string, File>;
-  pending: Record<string, string>;
+  uploading: Record<string, boolean>;
   triggerCount: number;
   onFile: (id: string, file: File) => void;
   addPhotos: (
@@ -225,7 +223,8 @@ export default function AdminPhotographs({
               photo={p}
               preview={previews[p.id] ?? p.src}
               collections={collections}
-              missingFile={!!pending[p.id] && !files[p.id]}
+              missingFile={!p.src && !uploading[p.id]}
+              uploading={!!uploading[p.id]}
               isFirst={i === 0}
               isLast={i === inIt.length - 1}
               onChange={(patch) => patchPhoto(p.id, patch)}

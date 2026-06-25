@@ -20,74 +20,76 @@ const inter = Inter({
   display: "swap",
 });
 
-const site = getSite();
 const SITE_URL = "https://edshpritzphotography.com";
-const BRAND = `${site.name} Photography`;
-// Home/default browser title leads with Ed's question; subpages use "%s | Brand".
-const TITLE = `${site.titleQuestion} — ${BRAND}`;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: TITLE,
-    template: `%s | ${BRAND}`,
-  },
-  description: `${site.heroLine} Fine art photography from Chicago by ${site.name} — skyline, lakefront, wildlife, and intentional camera movement.`,
-  keywords: [
-    "Ed Shpritz",
-    "Ed Shpritz photography",
-    "Chicago photographer",
-    "fine art photography",
-    "Chicago fine art photography",
-    "intentional camera movement",
-    "wildlife photography",
-    "fine art prints",
-  ],
-  authors: [{ name: site.name }],
-  alternates: { canonical: "/" },
-  openGraph: {
-    title: TITLE,
-    description: site.heroSub,
-    url: SITE_URL,
-    siteName: BRAND,
-    type: "website",
-    images: [
-      {
-        url: "/images/gallery/chicago-pavilion.jpg",
-        width: 2200,
-        height: 1372,
-      },
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSite();
+  const BRAND = `${site.name} Photography`;
+  // Home/default title leads with Ed's question; subpages use "%s | Brand".
+  const TITLE = `${site.titleQuestion} — ${BRAND}`;
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: TITLE,
+      template: `%s | ${BRAND}`,
+    },
+    description: `${site.heroLine} Fine art photography from Chicago by ${site.name} — skyline, lakefront, wildlife, and intentional camera movement.`,
+    keywords: [
+      "Ed Shpritz",
+      "Ed Shpritz photography",
+      "Chicago photographer",
+      "fine art photography",
+      "Chicago fine art photography",
+      "intentional camera movement",
+      "wildlife photography",
+      "fine art prints",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: TITLE,
-    description: site.heroSub,
-    images: ["/images/gallery/chicago-pavilion.jpg"],
-  },
-};
+    authors: [{ name: site.name }],
+    alternates: { canonical: "/" },
+    openGraph: {
+      title: TITLE,
+      description: site.heroSub,
+      url: SITE_URL,
+      siteName: BRAND,
+      type: "website",
+      images: [
+        {
+          url: "/images/gallery/chicago-pavilion.jpg",
+          width: 2200,
+          height: 1372,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: TITLE,
+      description: site.heroSub,
+      images: ["/images/gallery/chicago-pavilion.jpg"],
+    },
+  };
+}
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: site.name,
-  jobTitle: "Photographer",
-  description: `Fine art photographer based in ${site.location}.`,
-  url: SITE_URL,
-  email: site.contactEmail,
-  address: { "@type": "PostalAddress", addressLocality: site.location },
-  knowsAbout: [
-    "Fine art photography",
-    "Intentional camera movement",
-    "Wildlife photography",
-  ],
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const site = await getSite();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: site.name,
+    jobTitle: "Photographer",
+    description: `Fine art photographer based in ${site.location}.`,
+    url: SITE_URL,
+    email: site.contactEmail,
+    address: { "@type": "PostalAddress", addressLocality: site.location },
+    knowsAbout: [
+      "Fine art photography",
+      "Intentional camera movement",
+      "Wildlife photography",
+    ],
+  };
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
       <body className="grain font-sans antialiased">

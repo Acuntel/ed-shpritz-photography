@@ -8,8 +8,10 @@ export const metadata: Metadata = {
   description: "Get in touch with Chicago fine art photographer Ed Shpritz.",
 };
 
-export default function ContactPage() {
-  const site = getSite();
+export const dynamic = "force-dynamic";
+
+export default async function ContactPage() {
+  const site = await getSite();
 
   return (
     <article className="pt-28">

@@ -7,7 +7,7 @@
     "optimize": "node scripts/optimize.mjs",
     "gallery": "node scripts/gallery.mjs",
     "qr": "node scripts/qr.mjs",
-    "prebuild": "node scripts/optimize.mjs",
+    "seed-blob": "node scripts/seed-blob.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

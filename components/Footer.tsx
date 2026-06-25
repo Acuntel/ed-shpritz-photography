@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { getSite } from "@/lib/data";
 
-export default function Footer() {
-  const site = getSite();
+export default async function Footer() {
+  const site = await getSite();
   const year = 2026;
 
   return (

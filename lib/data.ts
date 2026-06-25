@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import type {
   ClientGallery,
   Collection,
@@ -7,62 +5,48 @@ import type {
   Photo,
   SiteContent,
 } from "./types";
+import { loadContent } from "./content";
+import imetaJson from "@/public/data/imeta.json";
 
-const dataDir = path.join(process.cwd(), "public", "data");
-
-function read<T>(file: string): T {
-  const raw = fs.readFileSync(path.join(dataDir, file), "utf8");
-  return JSON.parse(raw) as T;
-}
-
-// Optional image metadata produced by scripts/optimize.mjs. Missing is fine —
-// the site simply falls back to the original images.
+// Image metadata produced long ago by scripts/optimize.mjs for the original
+// gallery images — gives them width/height/lqip so they get a correct aspect
+// ratio and blur-up. New photos Ed uploads carry their own width/height/lqip
+// (captured in the browser at upload time), so they never need this map.
 type IMeta = Record<
   string,
   { widths: number[]; lqip: string; width: number; height: number }
 >;
-
-function readMeta(): IMeta {
-  try {
-    return read<IMeta>("imeta.json");
-  } catch {
-    return {};
-  }
-}
+const meta = imetaJson as unknown as IMeta;
 
 function baseFromSrc(src: string): string {
   const file = src.split("/").pop() ?? "";
   return file.replace(/\.[a-z0-9]+$/i, "");
 }
 
-function enrichPhoto(p: Photo, meta: IMeta): Photo {
-  const base = baseFromSrc(p.src);
-  const m = meta[base];
+// Fill width/height/lqip from the legacy meta map ONLY when the photo doesn't
+// already describe itself.
+function enrichPhoto<
+  T extends { src: string; width?: number; height?: number; lqip?: string },
+>(p: T): T {
+  if (p.width && p.height) return p;
+  const m = meta[baseFromSrc(p.src)];
   if (!m) return p;
-  return {
-    ...p,
-    optBase: base,
-    optWidths: m.widths,
-    lqip: m.lqip,
-    width: m.width,
-    height: m.height,
-  };
+  return { ...p, lqip: p.lqip ?? m.lqip, width: m.width, height: m.height };
 }
 
-export function getSite(): SiteContent {
-  return read<SiteContent>("site.json");
+export async function getSite(): Promise<SiteContent> {
+  return (await loadContent()).site;
 }
 
-export function getPhotos(): Photo[] {
-  const meta = readMeta();
-  return read<Photo[]>("photos.json")
-    .map((p) => enrichPhoto(p, meta))
-    .sort((a, b) => a.order - b.order);
+export async function getPhotos(): Promise<Photo[]> {
+  const { photos } = await loadContent();
+  return photos.map(enrichPhoto).sort((a, b) => a.order - b.order);
 }
 
-export function getCollections(): Collection[] {
-  const photos = getPhotos();
-  return read<Collection[]>("collections.json").map((c) => {
+export async function getCollections(): Promise<Collection[]> {
+  const { collections } = await loadContent();
+  const photos = await getPhotos();
+  return collections.map((c) => {
     const inIt = photos.filter((p) => p.collection === c.slug);
     const coverExists = !!c.cover && photos.some((p) => p.src === c.cover);
     return {
@@ -75,47 +59,32 @@ export function getCollections(): Collection[] {
   });
 }
 
-export function getTriggerPhotos(): Photo[] {
-  return getPhotos().filter((p) => p.trigger);
+export async function getTriggerPhotos(): Promise<Photo[]> {
+  return (await getPhotos()).filter((p) => p.trigger);
 }
 
-export function getCollection(slug: string): Collection | undefined {
-  return getCollections().find((c) => c.slug === slug);
+export async function getCollection(
+  slug: string,
+): Promise<Collection | undefined> {
+  return (await getCollections()).find((c) => c.slug === slug);
 }
 
-export function getPhotosByCollection(slug: string): Photo[] {
-  return getPhotos().filter((p) => p.collection === slug);
+export async function getPhotosByCollection(slug: string): Promise<Photo[]> {
+  return (await getPhotos()).filter((p) => p.collection === slug);
 }
 
-function enrichGalleryPhoto(p: GalleryPhoto, meta: IMeta): GalleryPhoto {
-  const base = baseFromSrc(p.src);
-  const m = meta[base];
-  if (!m) return p;
-  return {
-    ...p,
-    optBase: base,
-    optWidths: m.widths,
-    lqip: m.lqip,
-    width: m.width,
-    height: m.height,
-  };
-}
-
-// Private client galleries. Missing galleries.json is fine — returns [].
-export function getGalleries(): ClientGallery[] {
-  const meta = readMeta();
-  let raw: ClientGallery[];
-  try {
-    raw = read<ClientGallery[]>("galleries.json");
-  } catch {
-    return [];
-  }
-  return raw.map((g) => ({
+// Private client galleries. Missing/empty is fine — returns [].
+export async function getGalleries(): Promise<ClientGallery[]> {
+  const { galleries } = await loadContent();
+  if (!Array.isArray(galleries)) return [];
+  return galleries.map((g) => ({
     ...g,
-    photos: (g.photos ?? []).map((p) => enrichGalleryPhoto(p, meta)),
+    photos: (g.photos ?? []).map((p) => enrichPhoto<GalleryPhoto>(p)),
   }));
 }
 
-export function getGallery(token: string): ClientGallery | undefined {
-  return getGalleries().find((g) => g.token === token);
+export async function getGallery(
+  token: string,
+): Promise<ClientGallery | undefined> {
+  return (await getGalleries()).find((g) => g.token === token);
 }

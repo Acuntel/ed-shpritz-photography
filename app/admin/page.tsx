@@ -12,8 +12,8 @@ import AdminEditor, {
   type AdminDraft,
 } from "@/components/AdminEditor";
 
-const PASSWORD = "1111";
-const KEY = "edshpritz-admin";
+const AUTH_KEY = "edshpritz-admin";
+const PASS_KEY = "edshpritz-admin-pass";
 
 type Loaded = {
   site: SiteContent;
@@ -29,8 +29,7 @@ function readDraft(live: Loaded): AdminDraft | null {
     const d = JSON.parse(raw) as AdminDraft;
     if (!d?.site || !Array.isArray(d.photos) || !Array.isArray(d.collections))
       return null;
-    // If the draft matches the live site (Brady already published it), it has
-    // nothing to restore — clear it so Ed starts clean.
+    // If the draft matches what's already live, there's nothing to restore.
     const strip = (x: Loaded | AdminDraft) =>
       JSON.stringify([x.site, x.collections, x.photos, x.galleries]);
     if (strip(d) === strip(live)) {
@@ -45,29 +44,32 @@ function readDraft(live: Loaded): AdminDraft | null {
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
+  const [passcode, setPasscode] = useState("");
   const [pass, setPass] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
 
   const [live, setLive] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<AdminDraft | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
 
+  // Restore a signed-in session across reloads.
   useEffect(() => {
-    if (sessionStorage.getItem(KEY) === "1") setAuthed(true);
+    if (sessionStorage.getItem(AUTH_KEY) === "1") {
+      setPasscode(sessionStorage.getItem(PASS_KEY) ?? "");
+      setAuthed(true);
+    }
   }, []);
 
+  // Load the LIVE content (from Blob via the API), not the bundled files.
   useEffect(() => {
     if (!authed) return;
-    Promise.all([
-      fetch("/data/site.json").then((r) => r.json()),
-      fetch("/data/collections.json").then((r) => r.json()),
-      fetch("/data/photos.json").then((r) => r.json()),
-      fetch("/data/galleries.json")
-        .then((r) => (r.ok ? r.json() : []))
-        .catch(() => []),
-    ])
-      .then(([site, collections, photos, galleries]) => {
-        const loaded: Loaded = { site, collections, photos, galleries };
+    fetch("/api/content/", { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) throw new Error("load failed");
+        return r.json();
+      })
+      .then((loaded: Loaded) => {
         setDraft(readDraft(loaded));
         setLive(loaded);
       })
@@ -78,18 +80,34 @@ export default function AdminPage() {
     try {
       localStorage.removeItem(DRAFT_KEY);
     } catch {
-      // Storage blocked — the draft will simply be offered again next time.
+      // ignore
     }
     setDraft(null);
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pass === PASSWORD) {
-      sessionStorage.setItem(KEY, "1");
-      setAuthed(true);
-    } else {
-      setError(true);
+    setError(null);
+    setChecking(true);
+    try {
+      const res = await fetch("/api/content/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode: pass, verify: true }),
+      });
+      if (res.ok) {
+        sessionStorage.setItem(AUTH_KEY, "1");
+        sessionStorage.setItem(PASS_KEY, pass);
+        setPasscode(pass);
+        setAuthed(true);
+      } else {
+        const e2 = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(e2.error || "That password is not right.");
+      }
+    } catch {
+      setError("Could not reach the website. Check your internet and retry.");
+    } finally {
+      setChecking(false);
     }
   };
 
@@ -107,21 +125,20 @@ export default function AdminPage() {
             autoFocus
             onChange={(e) => {
               setPass(e.target.value);
-              setError(false);
+              setError(null);
             }}
             placeholder="Password"
             className="mt-8 w-full border-b border-ink/30 bg-transparent py-3 text-center font-sans text-lg text-ink outline-none focus:border-ink"
           />
           {error && (
-            <p className="mt-3 font-sans text-sm text-red-700">
-              That password is not right.
-            </p>
+            <p className="mt-3 font-sans text-sm text-red-700">{error}</p>
           )}
           <button
             type="submit"
-            className="mt-8 w-full rounded-full bg-ink px-7 py-3 font-sans text-sm text-paper transition-colors hover:bg-ink-soft"
+            disabled={checking || !pass}
+            className="mt-8 w-full rounded-full bg-ink px-7 py-3 font-sans text-sm text-paper transition-colors hover:bg-ink-soft disabled:opacity-60"
           >
-            Enter
+            {checking ? "Checking..." : "Enter"}
           </button>
         </form>
       </section>
@@ -153,13 +170,12 @@ export default function AdminPage() {
   return (
     <AdminEditor
       key={d ? `draft-${d.savedAt}` : "live"}
+      passcode={passcode}
       initialSite={d ? d.site : live.site}
       initialCollections={d ? d.collections : live.collections}
       initialPhotos={d ? d.photos : live.photos}
       initialGalleries={d ? d.galleries : live.galleries}
-      restored={
-        d ? { savedAt: d.savedAt, pendingFiles: d.pendingFiles ?? {} } : null
-      }
+      restored={d ? { savedAt: d.savedAt } : null}
       onDiscardDraft={discardDraft}
     />
   );
