@@ -142,7 +142,7 @@ export default function Lightbox({
                   )}
                 </h2>
                 {photo.title && (
-                  <p className="mt-1 font-sans text-xs uppercase tracking-widest2 text-ink-faint">
+                  <p className="mt-1 font-sans text-xs uppercase tracking-widest2 text-ink-soft [text-shadow:0_1px_3px_rgba(0,0,0,0.75)]">
                     {photo.title}
                   </p>
                 )}

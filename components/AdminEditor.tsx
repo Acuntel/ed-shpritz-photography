@@ -42,6 +42,9 @@ export default function AdminEditor({
   initialPhotos,
   initialGalleries,
   restored,
+  pendingDraft,
+  paused,
+  onRestoreDraft,
   onDiscardDraft,
 }: {
   passcode: string;
@@ -49,7 +52,15 @@ export default function AdminEditor({
   initialCollections: Collection[];
   initialPhotos: Photo[];
   initialGalleries: ClientGallery[];
+  // Set when the editor is currently showing a restored draft (opt-in).
   restored?: { savedAt: number } | null;
+  // Set when an unsaved draft exists but the editor is showing LIVE content.
+  // We OFFER the draft here — we never load it as the base automatically, so a
+  // Save can no longer republish a stale draft over the live site.
+  pendingDraft?: { savedAt: number } | null;
+  // While an undecided draft offer is showing, don't autosave over it.
+  paused?: boolean;
+  onRestoreDraft?: () => void;
   onDiscardDraft?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("Photographs");
@@ -80,7 +91,10 @@ export default function AdminEditor({
   );
 
   // Autosave edits to this device so a closed tab or a reload never loses work.
+  // Suspended while an unresolved draft offer is on screen, so showing the live
+  // site does not overwrite the draft Ed may still want to bring back.
   useEffect(() => {
+    if (paused) return;
     const t = setTimeout(() => {
       const draft: AdminDraft = {
         savedAt: Date.now(),
@@ -97,7 +111,7 @@ export default function AdminEditor({
       }
     }, 800);
     return () => clearTimeout(t);
-  }, [site, collections, photos, galleries]);
+  }, [site, collections, photos, galleries, paused]);
 
   const patchPhoto = (id: string, patch: Partial<Photo>) =>
     setPhotos((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
@@ -325,17 +339,50 @@ export default function AdminEditor({
           </div>
         </div>
 
+        {pendingDraft && (
+          <div className="mt-5 border border-amber-600/40 bg-paper-soft p-4 font-sans text-sm text-ink-soft">
+            <p>
+              You are looking at <strong className="text-ink">your live
+              website</strong> — exactly what visitors see right now.
+            </p>
+            <p className="mt-2">
+              You also have some unsaved changes from{" "}
+              {new Date(pendingDraft.savedAt).toLocaleString(undefined, {
+                dateStyle: "long",
+                timeStyle: "short",
+              })}{" "}
+              that were never saved to your website. They are{" "}
+              <strong className="text-ink">not</strong> shown below.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-4">
+              <button
+                onClick={() => onRestoreDraft?.()}
+                className="underline hover:text-ink"
+              >
+                Bring those changes back
+              </button>
+              <button
+                onClick={discardDraft}
+                className="underline hover:text-ink"
+              >
+                Throw them away
+              </button>
+            </div>
+          </div>
+        )}
+
         {restored && (
           <div className="mt-5 border border-ink/15 bg-paper-soft p-4 font-sans text-sm text-ink-soft">
-            Welcome back — the changes you made on{" "}
+            You are looking at your unsaved changes from{" "}
             {new Date(restored.savedAt).toLocaleString(undefined, {
               dateStyle: "long",
               timeStyle: "short",
-            })}{" "}
-            were brought back for you.{" "}
+            })}
+            . Press “Save to my website” to put them live, or{" "}
             <button onClick={discardDraft} className="underline hover:text-ink">
-              Start over from the live site
+              start over from the live site
             </button>
+            .
           </div>
         )}
 

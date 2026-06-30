@@ -5,7 +5,7 @@ import { useState } from "react";
 const field =
   "w-full border border-ink/20 bg-paper-soft px-4 py-3 font-sans text-sm text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/60";
 
-type State = "idle" | "sending" | "sent" | "error";
+type State = "idle" | "sending" | "sent" | "error" | "mailto";
 
 export default function InquiryForm({
   email,
@@ -27,12 +27,18 @@ export default function InquiryForm({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // No form service configured — fall back to the visitor's mail client.
+    // No form service configured — fall back to the visitor's mail client and
+    // ALWAYS show a confirmation with a direct address, so a device without a
+    // configured mail app never leaves the visitor staring at a dead button.
     if (!formEndpoint) {
       const body = `${form.message}\n\n— ${form.name} (${form.email})`;
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(
-        defaultSubject,
-      )}&body=${encodeURIComponent(body)}`;
+      window.open(
+        `mailto:${email}?subject=${encodeURIComponent(
+          defaultSubject,
+        )}&body=${encodeURIComponent(body)}`,
+        "_blank",
+      );
+      setState("mailto");
       return;
     }
 
@@ -64,6 +70,24 @@ export default function InquiryForm({
       <p className="font-serif text-xl font-light text-ink-soft">
         Thank you — your note is on its way. Ed will be in touch soon.
       </p>
+    );
+  }
+
+  if (state === "mailto") {
+    return (
+      <div className="space-y-3 font-sans text-sm text-ink-soft">
+        <p className="font-serif text-xl font-light">
+          Your email is ready to send.
+        </p>
+        <p>
+          Your message should have opened in your email app — just press send
+          there. If nothing opened, please email Ed directly at{" "}
+          <a className="underline hover:text-ink" href={`mailto:${email}`}>
+            {email}
+          </a>
+          .
+        </p>
+      </div>
     );
   }
 

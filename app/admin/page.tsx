@@ -51,6 +51,10 @@ export default function AdminPage() {
 
   const [live, setLive] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<AdminDraft | null>(null);
+  // The editor ALWAYS starts from live content. A detected draft is only an
+  // offer; it becomes the editor base when Ed explicitly chooses to restore it.
+  // This is what prevents a stale draft from clobbering the live site on Save.
+  const [useDraft, setUseDraft] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
 
   // Restore a signed-in session across reloads.
@@ -83,7 +87,11 @@ export default function AdminPage() {
       // ignore
     }
     setDraft(null);
+    setUseDraft(false);
   };
+
+  // Ed explicitly chose to bring his unsaved draft back into the editor.
+  const restoreDraft = () => setUseDraft(true);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,16 +174,22 @@ export default function AdminPage() {
     );
   }
 
-  const d = draft;
+  // Default base = LIVE content. Only when Ed opts in does the draft become the
+  // base (and only then can a Save publish it).
+  const showingDraft = useDraft && draft;
+  const source = showingDraft ? draft : live;
   return (
     <AdminEditor
-      key={d ? `draft-${d.savedAt}` : "live"}
+      key={showingDraft ? `draft-${draft.savedAt}` : "live"}
       passcode={passcode}
-      initialSite={d ? d.site : live.site}
-      initialCollections={d ? d.collections : live.collections}
-      initialPhotos={d ? d.photos : live.photos}
-      initialGalleries={d ? d.galleries : live.galleries}
-      restored={d ? { savedAt: d.savedAt } : null}
+      initialSite={source.site}
+      initialCollections={source.collections}
+      initialPhotos={source.photos}
+      initialGalleries={source.galleries}
+      restored={showingDraft ? { savedAt: draft.savedAt } : null}
+      pendingDraft={!useDraft && draft ? { savedAt: draft.savedAt } : null}
+      paused={!useDraft && !!draft}
+      onRestoreDraft={restoreDraft}
       onDiscardDraft={discardDraft}
     />
   );
