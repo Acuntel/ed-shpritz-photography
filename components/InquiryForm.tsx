@@ -18,50 +18,53 @@ export default function InquiryForm({
 }) {
   const [state, setState] = useState<State>("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  // Honeypot: hidden from people, catnip for bots. Non-empty → we drop it.
+  const [honey, setHoney] = useState("");
 
   const set =
     (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  // Fall back to the visitor's mail app and confirm clearly, so a message is
+  // never silently swallowed if the send service is unreachable.
+  const mailtoFallback = () => {
+    const body = `${form.message}\n\n— ${form.name} (${form.email})`;
+    window.open(
+      `mailto:${email}?subject=${encodeURIComponent(
+        defaultSubject,
+      )}&body=${encodeURIComponent(body)}`,
+      "_blank",
+    );
+    setState("mailto");
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // No form service configured — fall back to the visitor's mail client and
-    // ALWAYS show a confirmation with a direct address, so a device without a
-    // configured mail app never leaves the visitor staring at a dead button.
-    if (!formEndpoint) {
-      const body = `${form.message}\n\n— ${form.name} (${form.email})`;
-      window.open(
-        `mailto:${email}?subject=${encodeURIComponent(
-          defaultSubject,
-        )}&body=${encodeURIComponent(body)}`,
-        "_blank",
-      );
-      setState("mailto");
-      return;
-    }
-
     setState("sending");
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
+      // Server-side send via /api/contact (FormSubmit, no key needed).
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         body: JSON.stringify({
-          access_key: formEndpoint,
-          subject: defaultSubject,
           name: form.name,
           email: form.email,
           message: form.message,
+          _honey: honey,
         }),
       });
-      setState(res.ok ? "sent" : "error");
-      if (res.ok) setForm({ name: "", email: "", message: "" });
+      if (res.ok) {
+        setState("sent");
+        setForm({ name: "", email: "", message: "" });
+      } else {
+        mailtoFallback();
+      }
     } catch {
-      setState("error");
+      mailtoFallback();
     }
   };
 
@@ -93,6 +96,15 @@ export default function InquiryForm({
 
   return (
     <form onSubmit={submit} className="space-y-4">
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        value={honey}
+        onChange={(e) => setHoney(e.target.value)}
+        className="hidden"
+        aria-hidden="true"
+      />
       <input
         required
         className={field}

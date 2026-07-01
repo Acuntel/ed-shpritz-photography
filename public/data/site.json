@@ -2,7 +2,10 @@
   "name": "Ed Shpritz",
   "role": "Photography",
   "titleQuestion": "We Look… But Do We See?",
-  "concepts": ["Do You See What I See?", "Less is always more"],
+  "concepts": [
+    "Do You See What I See?",
+    "Less is always more"
+  ],
   "heroLine": "Do You See What I See?",
   "tagline": "Less… so you may see more.",
   "heroSub": "Fine-art photography from Chicago, the lakefront, and the wild places between.",
@@ -13,10 +16,9 @@
     "portrait": "/images/portrait.jpg",
     "heading": "Welcome to my world",
     "body": [
-      "For me, photography is not about recording what is in front of the camera. It is about discovering what others may pass by.",
-      "Whether I am photographing wildlife at sunrise, the streets of Chicago, a beloved pet, or a quiet moment between people, I am drawn to images that tell a story, evoke an emotion, or reveal beauty in the ordinary.",
-      "My goal is simple: to create photographs that encourage us to slow down, look closer, and see more.",
-      "After a lifetime of caring for patients as an optometrist, photography has become another way of helping people see the beauty of the world.",
+      "For me, photography is not about recording what is in front of the camera. It is about discovering what others may pass by. Whether I am photographing wildlife at sunrise, the streets of Chicago, architecture, a beloved pet, or a quiet moment between people, I am drawn to images that tell a story, evoke emotion, or reveal beauty in the ordinary.",
+      "Over the years, my work has been recognized with awards in juried photography competitions and has appeared in editorial publications, including Crain’s Chicago Business. While I appreciate the recognition, my greatest satisfaction comes from creating photographs that make people pause, look a little longer, and perhaps see something they hadn’t noticed before.",
+      "My goal is simple: to create photographs that encourage us to slow down, look closer, and see more. After a lifetime of caring for patients as an optometrist, photography has become another way of helping people see the beauty of the world.",
       "Less… is always more."
     ]
   },

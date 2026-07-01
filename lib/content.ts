@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { list, put } from "@vercel/blob";
+import { del, list, put } from "@vercel/blob";
 import type { ClientGallery, Collection, Photo, SiteContent } from "./types";
 
 // Fallback content bundled from the repo. Used at build time and any time the
@@ -20,6 +20,12 @@ export type Content = {
 // The single source of truth for everything Ed can edit. One JSON object means
 // every publish is atomic — the site never shows a half-applied state.
 export const CONTENT_PATH = "content/data.json";
+
+// Every publish first snapshots the CURRENT live content here, so any save
+// (even an accidental or stale-draft one) can be rolled back. Ed's work is
+// never permanently lost again.
+const BACKUP_PREFIX = "content/backups/";
+const BACKUP_KEEP = 60;
 
 function bundledContent(): Content {
   return {
@@ -53,37 +59,75 @@ function isContent(x: unknown): x is Content {
   );
 }
 
-// Read Ed's live content from Blob, fresh on every request (no-store) so a
-// publish is visible immediately. Falls back to the bundled repo content if
-// Blob is empty/unreachable (e.g. local build with no token, or before the
-// first seed). Wrapped in React cache() so the many getSite/getPhotos/... calls
+// Read the live content straight from Blob, or null if the store is empty or
+// unreachable. Kept separate from loadContent() so callers that must NOT fall
+// back to the bundled copy (e.g. the pre-save backup) can tell "no live data"
+// apart from "here is the bundled default".
+async function readLiveBlob(): Promise<Content | null> {
+  try {
+    const url = await contentUrl();
+    if (!url) return null;
+    // A unique query param forces the read past any edge/CDN cache straight to
+    // the (strongly consistent) blob origin, so a publish is visible
+    // immediately rather than a few seconds later on some POPs.
+    const fresh = `${url}${url.includes("?") ? "&" : "?"}cb=${Date.now()}`;
+    const res = await fetch(fresh, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return isContent(data) ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+// Read Ed's live content, fresh on every request (no-store) so a publish is
+// visible immediately. Falls back to the bundled repo content if Blob is
+// empty/unreachable (e.g. local build with no token, or before the first
+// seed). Wrapped in React cache() so the many getSite/getPhotos/... calls
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    try {
-      const url = await contentUrl();
-      if (url) {
-        // A unique query param forces the read past any edge/CDN cache straight
-        // to the (strongly consistent) blob origin, so a publish is visible
-        // immediately rather than a few seconds later on some POPs.
-        const fresh = `${url}${url.includes("?") ? "&" : "?"}cb=${Date.now()}`;
-        const res = await fetch(fresh, { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          if (isContent(data)) return data;
-        }
-      }
-    } catch {
-      // No token, store empty, or network hiccup — use the bundled copy.
-    }
-    return bundledContent();
+    return (await readLiveBlob()) ?? bundledContent();
   },
 );
 
+// Snapshot the CURRENT live content to a timestamped backup before it is
+// overwritten. Best-effort: if anything here throws, the real save still
+// proceeds — a backup failure must never block Ed from publishing.
+async function backupCurrent(): Promise<void> {
+  try {
+    const current = await readLiveBlob();
+    if (!current) return; // nothing live yet (first seed) — nothing to back up
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    await put(
+      `${BACKUP_PREFIX}data-${stamp}.json`,
+      JSON.stringify(current),
+      {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: "application/json",
+        cacheControlMaxAge: 0,
+      },
+    );
+    // Keep the newest BACKUP_KEEP snapshots; prune the rest. ISO timestamps
+    // sort lexicographically, so newest = highest pathname.
+    const { blobs } = await list({ prefix: BACKUP_PREFIX });
+    const stale = blobs
+      .sort((a, b) => b.pathname.localeCompare(a.pathname))
+      .slice(BACKUP_KEEP);
+    if (stale.length) await del(stale.map((b) => b.url));
+  } catch {
+    // ignore — backups are a safety net, not a publish requirement
+  }
+}
+
 // Write Ed's content back to Blob. cacheControlMaxAge:0 keeps the CDN from
 // serving a stale copy after he publishes. addRandomSuffix:false keeps the URL
-// stable so reads always find it.
+// stable so reads always find it. The current live copy is snapshotted first so
+// the previous state is always recoverable.
 export async function saveContent(content: Content): Promise<void> {
+  await backupCurrent();
   const result = await put(CONTENT_PATH, JSON.stringify(content), {
     access: "public",
     addRandomSuffix: false,
