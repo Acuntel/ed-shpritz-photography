@@ -5,11 +5,10 @@ export const dynamic = "force-dynamic";
 
 // Where contact-form messages go. Same pattern as the Paradise Home Design
 // site: a free FormSubmit.co inbox, no API key, no SMTP, no domain to verify —
-// GoDaddy/Vercel can't block it because it's a plain HTTPS POST. Primary
-// recipient is Brady (who manages the site + will click the one-time FormSubmit
-// activation email); Ed is cc'd on every message.
-const TO = "bradyschwartz25@gmail.com";
-const CC = "ed@edshpritzphotography.com";
+// GoDaddy/Vercel can't block it because it's a plain HTTPS POST. Messages go
+// ONLY to Ed — the one-time FormSubmit activation email therefore lands in Ed's
+// inbox, and he clicks "Activate Form" once for sends to start working.
+const TO = "ed@edshpritzphotography.com";
 
 export async function POST(req: NextRequest) {
   let body: {
@@ -63,7 +62,6 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           _subject: `New message from your photography website — ${name}`,
-          _cc: CC,
           _template: "table",
           _captcha: "false",
           name,
