@@ -4,6 +4,7 @@ import { useState } from "react";
 import Reveal from "@/components/Reveal";
 import Lightbox from "@/components/Lightbox";
 import Picture from "@/components/Picture";
+import { photoLabel } from "@/lib/caption";
 import type { Photo } from "@/lib/types";
 
 type Group = { section?: string; items: { photo: Photo; index: number }[] };
@@ -57,7 +58,7 @@ export default function PhotoGrid({
                   type="button"
                   onClick={() => setIndex(gIndex)}
                   className="group block w-full text-left"
-                  aria-label={`Open ${p.name}`}
+                  aria-label={`Open ${photoLabel(p)}`}
                 >
                   <span className="block overflow-hidden bg-paper-soft">
                     <Picture
@@ -68,7 +69,7 @@ export default function PhotoGrid({
                   </span>
                   <span className="mt-3 flex items-baseline justify-between gap-3">
                     <span className="flex items-baseline gap-1.5 font-serif text-base text-ink-soft transition-colors group-hover:text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
-                      {p.name}
+                      {photoLabel(p)}
                       {p.award && (
                         <span
                           aria-label="Award-winning"

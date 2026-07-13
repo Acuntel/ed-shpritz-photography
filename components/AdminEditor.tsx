@@ -24,6 +24,25 @@ export const DRAFT_KEY = "edshpritz-admin-draft";
 // convert HEIC to JPEG automatically when Ed picks from Photos.
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
+// A private gallery's URL IS its token. The trailing random hex is the real
+// access control (unguessable); the name prefix just makes the link readable.
+function slugify(s: string): string {
+  return (
+    (s || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 24) || "guest"
+  );
+}
+
+function newGalleryToken(seed: string): string {
+  const hex = Array.from(crypto.getRandomValues(new Uint8Array(5)))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `${slugify(seed)}-${hex}`;
+}
+
 // Unsaved edits autosaved to this device. Image bytes are NOT kept here — by
 // the time a photo is in the list its picture already lives in Blob and `src`
 // is a permanent URL, so a reload simply reloads it.
@@ -86,8 +105,13 @@ export default function AdminEditor({
     [uploading],
   );
   const needPhotoCount = useMemo(
-    () => photos.filter((p) => !p.src || failed[p.id]).length,
-    [photos, failed],
+    () =>
+      photos.filter((p) => !p.src || failed[p.id]).length +
+      galleries.reduce(
+        (n, g) => n + g.photos.filter((p) => !p.src || failed[p.id]).length,
+        0,
+      ),
+    [photos, galleries, failed],
   );
 
   // Autosave edits to this device so a closed tab or a reload never loses work.
@@ -226,6 +250,106 @@ export default function AdminEditor({
 
   const removePhoto = (id: string) =>
     setPhotos((ps) => ps.filter((p) => p.id !== id));
+
+  // --- Private client galleries (for the people whose dogs Ed photographs) ---
+  // Ed can now make one himself: a new gallery gets an unguessable secret link,
+  // and he adds the person's photos the same upload-on-pick way as the site.
+  const addGallery = () => {
+    const token = newGalleryToken("guest");
+    setGalleries((gs) => [
+      { token, client: "", dog: "", intro: "", photos: [] },
+      ...gs,
+    ]);
+    setTab("Galleries");
+  };
+
+  // Upload one picked file straight to Blob and stamp its URL + dimensions onto
+  // the matching gallery photo. Full quality — a client gallery is the person's
+  // own photos to keep and download.
+  const ingestGalleryPhoto = async (token: string, id: string, file: File) => {
+    setPreviews((p) => ({ ...p, [id]: URL.createObjectURL(file) }));
+    setFailed((f) => {
+      const c = { ...f };
+      delete c[id];
+      return c;
+    });
+    setUploading((u) => ({ ...u, [id]: true }));
+    try {
+      const meta = await measureImage(file);
+      const blob = await upload(
+        `private/${token}/${id}-${sanitizeFilename(file.name)}`,
+        file,
+        {
+          access: "public",
+          handleUploadUrl: "/api/upload/",
+          contentType: file.type,
+          clientPayload: passcode,
+        },
+      );
+      setGalleries((gs) =>
+        gs.map((g) =>
+          g.token === token
+            ? {
+                ...g,
+                photos: g.photos.map((ph) =>
+                  ph.id === id
+                    ? {
+                        ...ph,
+                        src: blob.url,
+                        width: meta.width,
+                        height: meta.height,
+                        lqip: meta.lqip,
+                      }
+                    : ph,
+                ),
+              }
+            : g,
+        ),
+      );
+    } catch {
+      setFailed((f) => ({ ...f, [id]: true }));
+      setNotice(
+        "That picture could not be saved just now. Please check your internet and choose it again.",
+      );
+    } finally {
+      setUploading((u) => {
+        const c = { ...u };
+        delete c[id];
+        return c;
+      });
+    }
+  };
+
+  const addGalleryPhotos = (token: string, list: FileList | null) => {
+    if (!list || list.length === 0) return;
+    const picked = Array.from(list);
+    const rejected = picked.filter((f) => !ACCEPTED_TYPES.includes(f.type));
+    const accepted = picked.filter((f) => ACCEPTED_TYPES.includes(f.type));
+    if (rejected.length) {
+      setNotice(
+        `${rejected.length} picture${rejected.length === 1 ? "" : "s"} could not be added ` +
+          "(probably Apple's HEIC format). Export them as JPEG from Photos and try again.",
+      );
+    }
+    if (!accepted.length) return;
+    const base = Date.now();
+    const items = accepted.map((file, i) => ({
+      id: `${token}-${base}-${i}`,
+      file,
+    }));
+    const rows = items.map(({ id }) => ({
+      id,
+      src: "",
+      alt: "Photograph by Ed Shpritz",
+      name: "",
+    }));
+    setGalleries((gs) =>
+      gs.map((g) =>
+        g.token === token ? { ...g, photos: [...g.photos, ...rows] } : g,
+      ),
+    );
+    items.forEach(({ id, file }) => void ingestGalleryPhoto(token, id, file));
+  };
 
   const triggerCount = useMemo(
     () => photos.filter((p) => p.trigger).length,
@@ -560,7 +684,14 @@ export default function AdminEditor({
         )}
 
         {tab === "Galleries" && (
-          <AdminGalleries galleries={galleries} setGalleries={setGalleries} />
+          <AdminGalleries
+            galleries={galleries}
+            setGalleries={setGalleries}
+            previews={previews}
+            uploading={uploading}
+            addGallery={addGallery}
+            addGalleryPhotos={addGalleryPhotos}
+          />
         )}
       </div>
     </div>

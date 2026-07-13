@@ -1,8 +1,9 @@
 "use client";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import type { Collection, Photo } from "@/lib/types";
-import { Area, Select, Text } from "@/components/AdminFields";
+import { Area, Text } from "@/components/AdminFields";
+import { photoLabel } from "@/lib/caption";
 
 // The Collections tab: edit each collection's words, choose which photograph is
 // its cover, and set the order the collections appear in across the site.
@@ -97,31 +98,52 @@ export default function AdminCollections({
               onChange={(v) => patch(i, { intro: v.trim() ? v : undefined })}
             />
 
-            <div className="flex items-end gap-4">
-              <div className="h-16 w-16 shrink-0 overflow-hidden bg-paper">
-                {resolvedCover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={thumbFor(resolvedCover)}
-                    alt={`${c.name} cover`}
-                    className="h-full w-full object-cover"
-                  />
-                ) : null}
-              </div>
-              <div className="flex-1">
-                <Select
-                  label="Cover photograph"
-                  value={c.cover ?? ""}
-                  options={[
-                    { value: "", label: "First photo in the collection" },
-                    ...inIt.map((p) => ({
-                      value: p.src,
-                      label: p.name || p.title || p.src.split("/").pop() || "",
-                    })),
-                  ]}
-                  onChange={(v) => patch(i, { cover: v })}
-                />
-              </div>
+            <div>
+              <span className="font-sans text-[11px] uppercase tracking-widest2 text-ink-muted">
+                Cover photo — the picture shown for this collection. Tap one to
+                choose it.
+              </span>
+              {inIt.length === 0 ? (
+                <p className="mt-2 font-sans text-sm text-ink-muted">
+                  Add some photographs to this collection first, then pick a
+                  cover here.
+                </p>
+              ) : (
+                <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-6">
+                  {inIt.map((p) => {
+                    const selected = resolvedCover === p.src;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        title={photoLabel(p)}
+                        aria-label={`Use “${photoLabel(p) || "this photo"}” as the cover`}
+                        aria-pressed={selected}
+                        onClick={() => patch(i, { cover: p.src })}
+                        className={`relative aspect-square overflow-hidden rounded-sm border-2 transition-colors ${
+                          selected
+                            ? "border-ink"
+                            : "border-transparent hover:border-ink/40"
+                        }`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={thumbFor(p.src)}
+                          alt={photoLabel(p)}
+                          className={`h-full w-full object-cover transition-opacity ${
+                            selected ? "" : "opacity-75 hover:opacity-100"
+                          }`}
+                        />
+                        {selected && (
+                          <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-paper">
+                            <Check size={13} />
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         );

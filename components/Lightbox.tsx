@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Picture from "@/components/Picture";
+import { photoLabel } from "@/lib/caption";
 import type { Photo } from "@/lib/types";
 
 type Props = {
@@ -32,6 +33,14 @@ export default function Lightbox({
   // floating tiny in the middle; full-resolution photos fill crisply.
   const aspect =
     photo && photo.width && photo.height ? photo.width / photo.height : 3 / 2;
+  // The caption shown as the heading (falls back to the working title when Ed
+  // left the name blank). The small subtitle line only shows the working title
+  // when it adds something the heading doesn't already say.
+  const label = photo ? photoLabel(photo) : "";
+  const subtitle =
+    photo?.title && photo.title.trim() && photo.title.trim() !== label
+      ? photo.title
+      : null;
   const touchX = useRef<number | null>(null);
 
   const go = useCallback(
@@ -72,7 +81,7 @@ export default function Lightbox({
     <AnimatePresence>
       {open && photo && (
         <motion.div
-          className="protect fixed inset-0 z-[60] flex flex-col bg-paper/97 backdrop-blur-xl"
+          className="protect fixed inset-0 z-[60] flex flex-col bg-paper/98 backdrop-blur-2xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -129,8 +138,8 @@ export default function Lightbox({
                 />
               </div>
               <figcaption className="mt-6 max-w-prose2 text-center">
-                <h2 className="flex items-center justify-center gap-2 font-serif text-2xl text-ink">
-                  {photo.name}
+                <h2 className="flex items-center justify-center gap-2 font-serif text-2xl text-ink [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_2px_rgba(0,0,0,0.7)]">
+                  {label}
                   {photo.award && (
                     <span
                       aria-label="Award-winning"
@@ -141,13 +150,13 @@ export default function Lightbox({
                     </span>
                   )}
                 </h2>
-                {photo.title && (
-                  <p className="mt-1 font-sans text-xs uppercase tracking-widest2 text-ink-soft [text-shadow:0_1px_3px_rgba(0,0,0,0.75)]">
-                    {photo.title}
+                {subtitle && (
+                  <p className="mt-1 font-sans text-xs uppercase tracking-widest2 text-ink-soft [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">
+                    {subtitle}
                   </p>
                 )}
                 {photo.description && (
-                  <p className="mt-2 font-sans text-sm leading-relaxed text-ink-muted">
+                  <p className="mt-2 font-sans text-sm leading-relaxed text-ink-soft [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">
                     {photo.description}
                   </p>
                 )}
@@ -162,7 +171,7 @@ export default function Lightbox({
                 ) : (
                   <a
                     href={`mailto:${email}?subject=${encodeURIComponent(
-                      "Print inquiry: " + photo.name,
+                      "Print inquiry: " + label,
                     )}`}
                     className="mt-5 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
                   >

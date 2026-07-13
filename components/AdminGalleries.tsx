@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Check, Copy, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  Copy,
+  ImagePlus,
+  Loader2,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import type { ClientGallery } from "@/lib/types";
 
 const field =
@@ -21,9 +30,17 @@ async function sha256(text: string): Promise<string> {
 export default function AdminGalleries({
   galleries,
   setGalleries,
+  previews,
+  uploading,
+  addGallery,
+  addGalleryPhotos,
 }: {
   galleries: ClientGallery[];
   setGalleries: React.Dispatch<React.SetStateAction<ClientGallery[]>>;
+  previews: Record<string, string>;
+  uploading: Record<string, boolean>;
+  addGallery: () => void;
+  addGalleryPhotos: (token: string, list: FileList | null) => void;
 }) {
   const [origin, setOrigin] = useState("");
   const [codes, setCodes] = useState<Record<string, string>>({});
@@ -95,26 +112,36 @@ export default function AdminGalleries({
     }
   };
 
-  if (galleries.length === 0) {
-    return (
-      <div className="max-w-2xl">
-        <p className="font-sans text-sm leading-relaxed text-ink-muted">
-          No private galleries yet. New ones are set up by Brady with{" "}
-          <code className="text-ink">npm run gallery</code> (it makes the secret
-          link, copies the photos, and sets the passcode). Once a gallery
-          exists, you can edit its words, passcode, and photo order here.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
-      <p className="max-w-2xl font-sans text-sm leading-relaxed text-ink-muted">
-        Private galleries for the people whose dogs you photograph. Each has a
-        secret link — share it (and the passcode) only with that person. They
-        are never listed on the site or found by Google.
-      </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <p className="max-w-2xl font-sans text-sm leading-relaxed text-ink-muted">
+          Private galleries for the people whose dogs you photograph. Each has a
+          secret link — share it (and the passcode, if you set one) only with
+          that person. They are never listed on your site or found by Google.
+        </p>
+        <button
+          onClick={addGallery}
+          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-ink px-4 py-2 font-sans text-sm text-paper transition-colors hover:bg-ink-soft"
+        >
+          <Plus size={16} /> New gallery
+        </button>
+      </div>
+
+      {galleries.length === 0 && (
+        <div className="max-w-2xl border border-dashed border-ink/25 bg-paper-soft p-6 text-center">
+          <p className="font-sans text-sm leading-relaxed text-ink-muted">
+            No private galleries yet. Press{" "}
+            <strong className="text-ink">New gallery</strong> to make one: add
+            the person’s name and their dog, press{" "}
+            <strong className="text-ink">Add photos</strong> to put in their
+            pictures, then <strong className="text-ink">Copy link</strong> and
+            text or email it to them. Press{" "}
+            <strong className="text-ink">Save to my website</strong> when you’re
+            done so the link works.
+          </p>
+        </div>
+      )}
 
       {galleries.map((g) => (
         <div
@@ -207,18 +234,52 @@ export default function AdminGalleries({
           </div>
 
           <div className="space-y-2 border-t border-ink/10 pt-4">
-            <p className={label}>{g.photos.length} photos</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className={label}>
+                {g.photos.length === 1
+                  ? "1 photo"
+                  : `${g.photos.length} photos`}
+              </p>
+              <label className="inline-flex cursor-pointer items-center gap-2 border border-ink/20 px-3 py-1.5 font-sans text-xs text-ink transition-colors hover:border-ink">
+                <ImagePlus size={14} /> Add photos
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    addGalleryPhotos(g.token, e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
+            {g.photos.length === 0 && (
+              <p className="font-sans text-xs text-ink-muted">
+                No photos yet — press “Add photos” to put in their pictures.
+              </p>
+            )}
             {g.photos.map((ph, i) => (
               <div
                 key={ph.id}
                 className="flex flex-wrap items-center gap-2 bg-paper p-2"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={ph.src}
-                  alt=""
-                  className="h-12 w-12 shrink-0 object-cover"
-                />
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden bg-paper-soft">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previews[ph.id] || ph.src}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                  {uploading[ph.id] && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-paper/70">
+                      <Loader2
+                        size={14}
+                        className="animate-spin text-ink-soft"
+                      />
+                    </div>
+                  )}
+                </div>
                 <input
                   className={`${field} grow`}
                   value={ph.name ?? ""}
