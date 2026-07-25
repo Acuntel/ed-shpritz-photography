@@ -3,7 +3,7 @@ import { getSite } from "@/lib/data";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
-  title: "Prints | Ed Shpritz Photography",
+  title: "Prints",
   description:
     "Archival, signed fine art prints by Chicago photographer Ed Shpritz, available on request.",
 };

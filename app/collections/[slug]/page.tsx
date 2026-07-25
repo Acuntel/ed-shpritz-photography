@@ -22,9 +22,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const c = await getCollection(params.slug);
   if (!c) return { title: "Collection" };
+  // Bare name only — the root layout's title template appends the brand.
   return {
-    title: `${c.name} | Ed Shpritz Photography`,
+    title: c.name,
     description: c.blurb || c.intro,
+    openGraph: {
+      title: c.name,
+      description: c.blurb || c.intro || undefined,
+      images: c.cover ? [c.cover] : undefined,
+    },
   };
 }
 

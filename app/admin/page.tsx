@@ -65,6 +65,16 @@ export default function AdminPage() {
     }
   }, []);
 
+  // Anyone who opens the admin is Ed (or Brady) — stop counting this browser
+  // in "Who's looking" so his own visits never inflate the numbers.
+  useEffect(() => {
+    try {
+      localStorage.setItem("umami.disabled", "1");
+    } catch {
+      // private-mode storage failures are fine; worst case he gets counted
+    }
+  }, []);
+
   // Load the LIVE content (from Blob via the API), not the bundled files.
   useEffect(() => {
     if (!authed) return;

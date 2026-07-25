@@ -4,7 +4,7 @@ import { getSite } from "@/lib/data";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
-  title: "About | Ed Shpritz Photography",
+  title: "About",
   description: "A few words from Ed Shpritz, and the idea behind the pictures.",
 };
 

@@ -11,12 +11,19 @@ import type {
 import AdminGalleries from "@/components/AdminGalleries";
 import AdminPhotographs from "@/components/AdminPhotographs";
 import AdminCollections from "@/components/AdminCollections";
+import AdminStats from "@/components/AdminStats";
 import { Area, Select, Text } from "@/components/AdminFields";
 import { sanitizeFilename } from "@/lib/download";
 import { measureImage } from "@/lib/measure";
 import { upload } from "@vercel/blob/client";
 
-const tabs = ["Photographs", "Words", "Collections", "Galleries"] as const;
+const tabs = [
+  "Photographs",
+  "Words",
+  "Collections",
+  "Galleries",
+  "Who's looking",
+] as const;
 type Tab = (typeof tabs)[number];
 
 export const DRAFT_KEY = "edshpritz-admin-draft";
@@ -668,6 +675,8 @@ export default function AdminEditor({
             />
           </div>
         )}
+
+        {tab === "Who's looking" && <AdminStats passcode={passcode} />}
 
         {tab === "Collections" && (
           <AdminCollections

@@ -102,6 +102,13 @@ export default async function RootLayout({
         <main>{children}</main>
         <Footer />
         <Analytics />
+        {process.env.UMAMI_WEBSITE_ID && (
+          <script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id={process.env.UMAMI_WEBSITE_ID}
+          />
+        )}
       </body>
     </html>
   );
