@@ -12,11 +12,17 @@ export function analyticsConfigured(): boolean {
   return !!(process.env.GC_SITE && process.env.GC_TOKEN);
 }
 
+// Counting began the day the GoatCounter site was created; it rejects ranges
+// that start before then ("before the site's creation").
+const SINCE = Date.UTC(2026, 6, 25);
+
 // GoatCounter's start/end are DATETIMES — a bare date parses as midnight, so
 // an end of "today" would silently exclude the whole current day. Send full
-// RFC3339 timestamps, clamped to now (future ends are rejected).
+// RFC3339 timestamps, clamped to [site creation, now] (both ends rejected
+// outside that window).
 function ts(ms: number): string {
-  return new Date(Math.min(ms, Date.now())).toISOString().slice(0, 19) + "Z";
+  const clamped = Math.min(Math.max(ms, SINCE), Date.now());
+  return new Date(clamped).toISOString().slice(0, 19) + "Z";
 }
 
 async function get(
