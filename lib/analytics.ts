@@ -25,6 +25,35 @@ function ts(ms: number): string {
   return new Date(clamped).toISOString().slice(0, 19) + "Z";
 }
 
+// GoatCounter rate-limits its API (bursts of ~4-5 get 429s), and one stats
+// request from the admin fans out to several range queries. All calls go
+// through a paced serial queue with a 429 retry, and identical queries within
+// 30s are memoised so repeated ranges cost one network call.
+const memo = new Map<string, { at: number; data: unknown }>();
+let queue: Promise<unknown> = Promise.resolve();
+let lastCallAt = 0;
+const GAP_MS = 550;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchPaced(url: string): Promise<unknown> {
+  for (let attempt = 0; ; attempt++) {
+    const wait = lastCallAt + GAP_MS - Date.now();
+    if (wait > 0) await sleep(wait);
+    lastCallAt = Date.now();
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${process.env.GC_TOKEN}` },
+      cache: "no-store",
+    });
+    if (res.status === 429 && attempt < 3) {
+      await sleep(1200);
+      continue;
+    }
+    if (!res.ok) throw new Error(`goatcounter ${res.status} for ${url}`);
+    return res.json();
+  }
+}
+
 async function get(
   path: string,
   params: Record<string, string | number>,
@@ -32,15 +61,14 @@ async function get(
   const qs = new URLSearchParams(
     Object.entries(params).map(([k, v]) => [k, String(v)]),
   );
-  const res = await fetch(
-    `https://${process.env.GC_SITE}.goatcounter.com/api/v0/${path}?${qs}`,
-    {
-      headers: { Authorization: `Bearer ${process.env.GC_TOKEN}` },
-      cache: "no-store",
-    },
-  );
-  if (!res.ok) throw new Error(`goatcounter ${path} ${res.status}`);
-  return res.json();
+  const url = `https://${process.env.GC_SITE}.goatcounter.com/api/v0/${path}?${qs}`;
+  const hit = memo.get(url);
+  if (hit && Date.now() - hit.at < 30_000) return hit.data;
+  const run = queue.then(() => fetchPaced(url));
+  queue = run.catch(() => undefined);
+  const data = await run;
+  memo.set(url, { at: Date.now(), data });
+  return data;
 }
 
 type HitRow = { path: string; title?: string; count: number; event?: boolean };
