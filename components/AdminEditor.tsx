@@ -666,11 +666,6 @@ export default function AdminEditor({
                 setSite({ ...site, watermark: v as "none" | "subtle" })
               }
             />
-            <Text
-              label="Contact form key (Web3Forms access key — leave blank to use email)"
-              value={site.formEndpoint}
-              onChange={(v) => setSite({ ...site, formEndpoint: v })}
-            />
           </div>
         )}
 

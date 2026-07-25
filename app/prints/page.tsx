@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getSite } from "@/lib/data";
 import Reveal from "@/components/Reveal";
-import InquiryForm from "@/components/InquiryForm";
 
 export const metadata: Metadata = {
   title: "Prints | Ed Shpritz Photography",
@@ -29,14 +28,21 @@ export default async function PrintsPage() {
       </section>
 
       <section className="container-rail mt-16">
-        <div className="mx-auto max-w-xl">
+        <div className="mx-auto max-w-xl text-center">
           <Reveal>
-            <p className="kicker mb-6 text-center">Inquire about a print</p>
-            <InquiryForm
-              email={site.contactEmail}
-              formEndpoint={site.formEndpoint}
-              defaultSubject="Print inquiry"
-            />
+            <p className="kicker mb-6">Inquire about a print</p>
+            <a
+              href={`mailto:${site.contactEmail}?subject=${encodeURIComponent(
+                "Print inquiry",
+              )}`}
+              className="inline-block break-all border-b border-ink/30 pb-2 font-serif text-2xl font-light text-ink transition-colors hover:border-ink"
+            >
+              {site.contactEmail}
+            </a>
+            <p className="mt-4 font-sans text-sm text-ink-muted">
+              Email Ed the picture&apos;s name and where it will live — he will
+              take it from there.
+            </p>
           </Reveal>
         </div>
       </section>

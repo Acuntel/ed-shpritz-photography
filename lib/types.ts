@@ -113,6 +113,7 @@ export type SiteContent = {
   };
   // "none" or "subtle" — applied to the full-size image at optimize time.
   watermark: "none" | "subtle";
-  // Web3Forms access key. Empty string falls back to a mailto: link.
+  // Legacy — the contact form was replaced by a direct email link; kept only
+  // because saved content still carries the field.
   formEndpoint: string;
 };
