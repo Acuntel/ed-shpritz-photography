@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { loadContent } from "@/lib/content";
 import {
+  analyticsConfigured,
   friendlyPages,
   rangeStats,
   topMetrics,
-  umamiConfigured,
-} from "@/lib/umami";
+} from "@/lib/analytics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,7 +29,7 @@ export async function GET(req: Request) {
 
   // Before analytics is switched on there is nothing to report — succeed
   // quietly so the cron doesn't register failures.
-  if (!umamiConfigured() || !process.env.DIGEST_KEY) {
+  if (!analyticsConfigured() || !process.env.DIGEST_KEY) {
     return NextResponse.json({ skipped: "analytics not configured" });
   }
 
@@ -64,6 +64,11 @@ export async function GET(req: Request) {
     "",
     "— Your website, edshpritzphotography.com",
   );
+
+  // ?dry=1 returns the composed email without sending — for safe testing.
+  if (url.searchParams.get("dry")) {
+    return NextResponse.json({ dry: true, text: lines.join("\n") });
+  }
 
   const res = await fetch(`${SENDER}/api/digest-send`, {
     method: "POST",

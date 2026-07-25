@@ -66,10 +66,11 @@ export default function AdminPage() {
   }, []);
 
   // Anyone who opens the admin is Ed (or Brady) — stop counting this browser
-  // in "Who's looking" so his own visits never inflate the numbers.
+  // in "Who's looking" so his own visits never inflate the numbers. "skipgc"
+  // is GoatCounter's documented opt-out key.
   useEffect(() => {
     try {
-      localStorage.setItem("umami.disabled", "1");
+      localStorage.setItem("skipgc", "t");
     } catch {
       // private-mode storage failures are fine; worst case he gets counted
     }

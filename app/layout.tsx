@@ -102,11 +102,11 @@ export default async function RootLayout({
         <main>{children}</main>
         <Footer />
         <Analytics />
-        {process.env.UMAMI_WEBSITE_ID && (
+        {process.env.GC_SITE && (
           <script
-            defer
-            src="https://cloud.umami.is/script.js"
-            data-website-id={process.env.UMAMI_WEBSITE_ID}
+            async
+            src="https://gc.zgo.at/count.js"
+            data-goatcounter={`https://${process.env.GC_SITE}.goatcounter.com/count`}
           />
         )}
       </body>

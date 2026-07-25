@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { loadContent } from "@/lib/content";
 import {
+  analyticsConfigured,
   countryNames,
   friendlyPages,
   rangeStats,
   topMetrics,
-  umamiConfigured,
-} from "@/lib/umami";
+} from "@/lib/analytics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!umamiConfigured()) {
+  if (!analyticsConfigured()) {
     return NextResponse.json({ error: "not-configured" }, { status: 503 });
   }
 
