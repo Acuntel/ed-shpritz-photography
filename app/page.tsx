@@ -5,7 +5,7 @@ import CollectionsIndex from "@/components/CollectionsIndex";
 import Edism from "@/components/Edism";
 import Reveal from "@/components/Reveal";
 
-// Read EDward's live content from Blob on every request so his published changes
+// Read Edward's live content from Blob on every request so his published changes
 // appear instantly with no rebuild.
 export const dynamic = "force-dynamic";
 
@@ -57,7 +57,7 @@ export default async function Home() {
               href="/about"
               className="mt-8 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
             >
-              Read more about EDward
+              Read more about Edward
             </Link>
           </Reveal>
         </div>

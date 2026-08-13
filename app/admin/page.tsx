@@ -52,7 +52,7 @@ export default function AdminPage() {
   const [live, setLive] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<AdminDraft | null>(null);
   // The editor ALWAYS starts from live content. A detected draft is only an
-  // offer; it becomes the editor base when EDward explicitly chooses to restore it.
+  // offer; it becomes the editor base when Edward explicitly chooses to restore it.
   // This is what prevents a stale draft from clobbering the live site on Save.
   const [useDraft, setUseDraft] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -65,7 +65,7 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Anyone who opens the admin is EDward (or Brady) — stop counting this browser
+  // Anyone who opens the admin is Edward (or Brady) — stop counting this browser
   // in "Who's looking" so his own visits never inflate the numbers. "skipgc"
   // is GoatCounter's documented opt-out key.
   useEffect(() => {
@@ -101,7 +101,7 @@ export default function AdminPage() {
     setUseDraft(false);
   };
 
-  // EDward explicitly chose to bring his unsaved draft back into the editor.
+  // Edward explicitly chose to bring his unsaved draft back into the editor.
   const restoreDraft = () => setUseDraft(true);
 
   const submit = async (e: React.FormEvent) => {
@@ -134,7 +134,7 @@ export default function AdminPage() {
     return (
       <section className="container-rail flex min-h-screen flex-col items-center justify-center">
         <form onSubmit={submit} className="w-full max-w-sm text-center">
-          <p className="kicker">EDward Shpritz Photography</p>
+          <p className="kicker">Edward Shpritz Photography</p>
           <h1 className="mt-3 font-serif text-3xl font-light text-ink">
             Admin
           </h1>
@@ -185,7 +185,7 @@ export default function AdminPage() {
     );
   }
 
-  // Default base = LIVE content. Only when EDward opts in does the draft become the
+  // Default base = LIVE content. Only when Edward opts in does the draft become the
   // base (and only then can a Save publish it).
   const showingDraft = useDraft && draft;
   const source = showingDraft ? draft : live;

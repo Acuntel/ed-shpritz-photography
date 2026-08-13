@@ -28,7 +28,7 @@ type Tab = (typeof tabs)[number];
 
 export const DRAFT_KEY = "edshpritz-admin-draft";
 // Only formats every browser can show. Restricting `accept` also makes iPads
-// convert HEIC to JPEG automatically when EDward picks from Photos.
+// convert HEIC to JPEG automatically when Edward picks from Photos.
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 // A private gallery's URL IS its token. The trailing random hex is the real
@@ -123,7 +123,7 @@ export default function AdminEditor({
 
   // Autosave edits to this device so a closed tab or a reload never loses work.
   // Suspended while an unresolved draft offer is on screen, so showing the live
-  // site does not overwrite the draft EDward may still want to bring back.
+  // site does not overwrite the draft Edward may still want to bring back.
   useEffect(() => {
     if (paused) return;
     const t = setTimeout(() => {
@@ -229,7 +229,7 @@ export default function AdminEditor({
     const rows: Photo[] = items.map(({ id }) => ({
       id,
       src: "",
-      alt: "Photograph by EDward Shpritz",
+      alt: "Photograph by Edward Shpritz",
       name: "Untitled",
       title: "untitled",
       description: "",
@@ -258,8 +258,8 @@ export default function AdminEditor({
   const removePhoto = (id: string) =>
     setPhotos((ps) => ps.filter((p) => p.id !== id));
 
-  // --- Private client galleries (for the people whose dogs EDward photographs) ---
-  // EDward can now make one himself: a new gallery gets an unguessable secret link,
+  // --- Private client galleries (for the people whose dogs Edward photographs) ---
+  // Edward can now make one himself: a new gallery gets an unguessable secret link,
   // and he adds the person's photos the same upload-on-pick way as the site.
   const addGallery = () => {
     const token = newGalleryToken("guest");
@@ -347,7 +347,7 @@ export default function AdminEditor({
     const rows = items.map(({ id }) => ({
       id,
       src: "",
-      alt: "Photograph by EDward Shpritz",
+      alt: "Photograph by Edward Shpritz",
       name: "",
     }));
     setGalleries((gs) =>
@@ -432,7 +432,7 @@ export default function AdminEditor({
       <div className="container-rail">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-5">
           <div>
-            <p className="kicker">EDward Shpritz Photography</p>
+            <p className="kicker">Edward Shpritz Photography</p>
             <h1 className="mt-1 font-serif text-3xl font-light text-ink">
               Manage the site
             </h1>
@@ -632,7 +632,7 @@ export default function AdminEditor({
               }
             />
             <Area
-              label="EDward'isms (one per line)"
+              label="Edward'isms (one per line)"
               value={site.edisms.join("\n")}
               rows={6}
               onChange={(v) =>

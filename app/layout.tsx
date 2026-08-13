@@ -25,7 +25,7 @@ const SITE_URL = "https://edshpritzphotography.com";
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getSite();
   const BRAND = `${site.name} Photography`;
-  // Home/default title leads with EDward's question; subpages use "%s | Brand".
+  // Home/default title leads with Edward's question; subpages use "%s | Brand".
   const TITLE = `${site.titleQuestion} — ${BRAND}`;
   return {
     metadataBase: new URL(SITE_URL),
@@ -35,8 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: `${site.heroLine} Fine art photography from Chicago by ${site.name} — skyline, lakefront, wildlife, and intentional camera movement.`,
     keywords: [
-      "EDward Shpritz",
-      "EDward Shpritz photography",
+      "Edward Shpritz",
+      "Edward Shpritz photography",
       "Chicago photographer",
       "fine art photography",
       "Chicago fine art photography",

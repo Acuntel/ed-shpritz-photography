@@ -4,7 +4,7 @@ import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Get in touch with Chicago fine art photographer EDward Shpritz.",
+  description: "Get in touch with Chicago fine art photographer Edward Shpritz.",
 };
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export default async function ContactPage() {
             Contact
           </h1>
           <p className="mx-auto mt-6 max-w-prose2 font-sans text-base leading-relaxed text-ink-soft">
-            Questions about a picture, a print, or anything else — email EDward
+            Questions about a picture, a print, or anything else — email Edward
             directly.
           </p>
           <a
