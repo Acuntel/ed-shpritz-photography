@@ -35,7 +35,7 @@ export default function Header() {
           onClick={() => setOpen(false)}
         >
           <span className="font-serif text-lg tracking-tight text-ink">
-            Ed Shpritz
+            EDward Shpritz
           </span>
           <span className="kicker hidden sm:inline">Photography</span>
         </Link>

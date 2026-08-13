@@ -17,12 +17,12 @@ export type Content = {
   galleries: ClientGallery[];
 };
 
-// The single source of truth for everything Ed can edit. One JSON object means
+// The single source of truth for everything EDward can edit. One JSON object means
 // every publish is atomic — the site never shows a half-applied state.
 export const CONTENT_PATH = "content/data.json";
 
 // Every publish first snapshots the CURRENT live content here, so any save
-// (even an accidental or stale-draft one) can be rolled back. Ed's work is
+// (even an accidental or stale-draft one) can be rolled back. EDward's work is
 // never permanently lost again.
 const BACKUP_PREFIX = "content/backups/";
 const BACKUP_KEEP = 60;
@@ -34,6 +34,23 @@ function bundledContent(): Content {
     photos: photosJson as unknown as Photo[],
     galleries: galleriesJson as unknown as ClientGallery[],
   };
+}
+
+// Normalize the legacy first name wherever it appears in live Blob content.
+// This also updates photo alt text and future admin saves without changing URLs.
+function renameEd<T>(value: T): T {
+  if (typeof value === "string") {
+    return value.replace(/\bEd\b/g, "EDward") as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => renameEd(item)) as T;
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, renameEd(item)]),
+    ) as T;
+  }
+  return value;
 }
 
 // The public URL of the content blob is stable (addRandomSuffix:false), so we
@@ -80,20 +97,21 @@ async function readLiveBlob(): Promise<Content | null> {
   }
 }
 
-// Read Ed's live content, fresh on every request (no-store) so a publish is
+// Read EDward's live content, fresh on every request (no-store) so a publish is
 // visible immediately. Falls back to the bundled repo content if Blob is
 // empty/unreachable (e.g. local build with no token, or before the first
 // seed). Wrapped in React cache() so the many getSite/getPhotos/... calls
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    return (await readLiveBlob()) ?? bundledContent();
+    const content = (await readLiveBlob()) ?? bundledContent();
+    return renameEd(content);
   },
 );
 
 // Snapshot the CURRENT live content to a timestamped backup before it is
 // overwritten. Best-effort: if anything here throws, the real save still
-// proceeds — a backup failure must never block Ed from publishing.
+// proceeds — a backup failure must never block EDward from publishing.
 async function backupCurrent(): Promise<void> {
   try {
     const current = await readLiveBlob();
@@ -122,7 +140,7 @@ async function backupCurrent(): Promise<void> {
   }
 }
 
-// Write Ed's content back to Blob. cacheControlMaxAge:0 keeps the CDN from
+// Write EDward's content back to Blob. cacheControlMaxAge:0 keeps the CDN from
 // serving a stale copy after he publishes. addRandomSuffix:false keeps the URL
 // stable so reads always find it. The current live copy is snapshotted first so
 // the previous state is always recoverable.
