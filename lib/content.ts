@@ -38,17 +38,17 @@ function bundledContent(): Content {
 
 // Normalize the legacy first name wherever it appears in live Blob content.
 // This also updates photo alt text and future admin saves without changing URLs.
-function renameEd<T>(value: T): T {
+function renameEd(value: unknown): unknown {
   if (typeof value === "string") {
-    return value.replace(/\bEd\b/g, "EDward") as T;
+    return value.replace(/\bEd\b/g, "EDward");
   }
   if (Array.isArray(value)) {
-    return value.map((item) => renameEd(item)) as T;
+    return value.map((item) => renameEd(item));
   }
   if (value && typeof value === "object") {
     return Object.fromEntries(
       Object.entries(value).map(([key, item]) => [key, renameEd(item)]),
-    ) as T;
+    );
   }
   return value;
 }
@@ -105,7 +105,7 @@ async function readLiveBlob(): Promise<Content | null> {
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
     const content = (await readLiveBlob()) ?? bundledContent();
-    return renameEd(content);
+    return renameEd(content) as Content;
   },
 );
 
