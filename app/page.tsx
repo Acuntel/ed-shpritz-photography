@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getSite, getCollections, getPhotos } from "@/lib/data";
 import Hero from "@/components/Hero";
@@ -7,6 +8,10 @@ import Reveal from "@/components/Reveal";
 
 // Read Edward's live content from Blob on every request so his published changes
 // appear instantly with no rebuild.
+export const metadata: Metadata = {
+  title: { absolute: "Do You See What I See? — Ed Shpritz Photography" },
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
@@ -43,7 +48,7 @@ export default async function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={site.bio.portrait}
-              alt={`A portrait of ${site.name}`}
+              alt="A portrait of Ed Shpritz"
               loading="lazy"
               className="w-full max-w-xs rounded-sm shadow-[0_30px_70px_-50px_rgba(0,0,0,0.8)]"
             />
@@ -57,7 +62,7 @@ export default async function Home() {
               href="/about"
               className="mt-8 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
             >
-              Read more about Edward
+              Read more about Ed
             </Link>
           </Reveal>
         </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSite } from "@/lib/data";
+import HomePageName from "@/components/HomePageName";
 
 export default async function Footer() {
   const site = await getSite();
@@ -10,7 +11,7 @@ export default async function Footer() {
       <div className="container-rail flex flex-col gap-10 py-16 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="font-serif text-2xl text-ink">
-            {site.name} Photography
+            <HomePageName /> Photography
           </p>
           <p className="mt-1 font-serif text-lg font-light italic text-ink-soft">
             {site.tagline}
@@ -39,7 +40,7 @@ export default async function Footer() {
       </div>
       <div className="container-rail flex items-center justify-between pb-8 text-[11px] text-ink-faint">
         <span>
-          {site.name} Photography, {year}
+          <HomePageName /> Photography, {year}
         </span>
         <Link href="/admin" className="transition-colors hover:text-ink-muted">
           Admin

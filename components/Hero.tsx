@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { SiteContent } from "@/lib/types";
+import HomePageName from "@/components/HomePageName";
 
 export default function Hero({ site }: { site: SiteContent }) {
   return (
     <section className="container-rail relative flex min-h-[78vh] flex-col items-center justify-center pt-16 text-center">
-      <p className="kicker animate-fade-up">{site.name} Photography</p>
+      <p className="kicker animate-fade-up"><HomePageName /> Photography</p>
       <h1 className="mt-6 animate-fade-up font-serif text-[clamp(2.6rem,8vw,6rem)] font-light leading-[0.98] tracking-tight text-ink [animation-delay:80ms]">
         {site.heroLine}
       </h1>

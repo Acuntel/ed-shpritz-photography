@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import HomePageName from "@/components/HomePageName";
 
 const links = [
   { href: "/#collections", label: "Collections" },
@@ -35,7 +36,7 @@ export default function Header() {
           onClick={() => setOpen(false)}
         >
           <span className="font-serif text-lg tracking-tight text-ink">
-            Edward Shpritz
+            <HomePageName />
           </span>
           <span className="kicker hidden sm:inline">Photography</span>
         </Link>
