@@ -21,6 +21,11 @@ export default async function Home() {
     getPhotos(),
   ]);
 
+  const homePhotos = photos.map((photo) => ({
+    ...photo,
+    alt: photo.alt.replace(/\bEdward\b/g, "Ed"),
+  }));
+
   return (
     <>
       <Hero site={site} />
@@ -36,7 +41,7 @@ export default async function Home() {
             Choose a picture. It opens the rest of its kind.
           </h2>
         </Reveal>
-        <CollectionsIndex collections={collections} photos={photos} />
+        <CollectionsIndex collections={collections} photos={homePhotos} />
       </section>
 
       <Edism quote={site.edisms[0] ?? "We look… but do we see?"} />
