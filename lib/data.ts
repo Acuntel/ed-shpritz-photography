@@ -93,6 +93,44 @@ function numberPhotosByCollection(photos: Photo[]): Photo[] {
   });
 }
 
+const CURATED_COLLECTION_ORDER = [
+  "minimal-white",
+  "birds",
+  "people-of-the-world",
+  "wildlife",
+  "icm",
+  "the-white-city",
+  "watercolor",
+  "our-best-friends",
+  "natures-beauty-and-flight",
+  "places-and-reflections",
+  "air-and-water-show",
+  "time-preserved",
+  "natures-fury",
+  "life-observed"
+] as const;
+
+const CURATED_COLLECTION_COVERS: Record<string, string> = {
+  "minimal-white": "/images/gallery/baby-elephant.jpg",
+  "birds": "/images/gallery/two-down.jpg",
+  "people-of-the-world": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1782910215549-0-troubadour-GSH9PPnK5nMatfkDH05bWDuLu8R87g.jpg",
+  "wildlife": "/images/gallery/lions-pair.jpg",
+  "icm": "/images/gallery/icm-flowers.jpg",
+  "the-white-city": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1781352725076-0-_dsc1226-6UUpJ3R5iur4CbbndULu51TqStlfiK.jpg",
+  "watercolor": "/images/gallery/winter-reflection.jpg",
+  "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
+  "natures-beauty-and-flight": "/images/gallery/swallowtail-pink.jpg",
+  "places-and-reflections": "/images/gallery/garden-bridge.jpg",
+  "air-and-water-show": "/images/gallery/thunderbirds-climb.jpg",
+  "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
+  "natures-fury": "/images/uploads/nf03.jpg",
+  "life-observed": "/images/gallery/summer-jump.jpg"
+};
+
+const COLLECTION_RANK = new Map<string, number>(
+  CURATED_COLLECTION_ORDER.map((slug, index) => [slug, index]),
+);
+
 export async function getSite(): Promise<SiteContent> {
   return (await loadContent()).site;
 }
@@ -109,18 +147,26 @@ export async function getPhotos(): Promise<Photo[]> {
 export async function getCollections(): Promise<Collection[]> {
   const { collections } = await loadContent();
   const photos = await getPhotos();
-  return collections.map((c) => {
-    const inIt = photos.filter((p) => p.collection === c.slug);
-    const coverExists = !!c.cover && photos.some((p) => p.src === c.cover);
-    return {
-      ...c,
-      name: c.slug === "time-preserved" ? "Lost in Time" : c.name,
-      count: inIt.length,
-      // Always resolve to a real photo: the named cover if it still exists,
-      // otherwise the first photo in the collection, otherwise empty.
-      cover: coverExists ? c.cover : (inIt[0]?.src ?? ""),
-    };
-  });
+  return collections
+    .map((c) => {
+      const inIt = photos.filter((p) => p.collection === c.slug);
+      const preferredCover = CURATED_COLLECTION_COVERS[c.slug] ?? c.cover;
+      const coverExists =
+        !!preferredCover && photos.some((p) => p.src === preferredCover);
+      return {
+        ...c,
+        name: c.slug === "time-preserved" ? "Lost in Time" : c.name,
+        count: inIt.length,
+        // Use the curated cover when available, then safely fall back to a
+        // real photograph from the collection.
+        cover: coverExists ? preferredCover : (inIt[0]?.src ?? ""),
+      };
+    })
+    .sort(
+      (a, b) =>
+        (COLLECTION_RANK.get(a.slug) ?? Number.MAX_SAFE_INTEGER) -
+        (COLLECTION_RANK.get(b.slug) ?? Number.MAX_SAFE_INTEGER),
+    );
 }
 
 export async function getTriggerPhotos(): Promise<Photo[]> {

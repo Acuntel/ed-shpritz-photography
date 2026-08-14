@@ -8,28 +8,20 @@
   "cover": "/images/gallery/baby-elephant.jpg"
  },
  {
-  "slug": "watercolor",
-  "name": "WaterColor",
-  "kicker": "Soft color",
+  "slug": "birds",
+  "name": "Birds",
+  "kicker": "Mid-turn",
   "blurb": "",
-  "intro": "To enjoy photography, is to try different techniques, subjects and the spontaneity of life. I used less technique in editing these moments and pictures of Chicago to create an impression of Water Color painting.",
-  "cover": "/images/gallery/winter-reflection.jpg"
+  "intro": "My first love is capturing birds and their colorful beauty. Whenever possible, I like to show them in motion and in their natural environment.",
+  "cover": "/images/gallery/two-down.jpg"
  },
  {
-  "slug": "places-and-reflections",
-  "name": "Places and Reflections",
-  "kicker": "Stillness, doubled",
-  "blurb": "Quiet places and the water that gives them back — a city, a temple, a shoreline, mirrored.",
-  "intro": "We look, we see, then we look again and find the reflection. Beautiful buildings, trees, and much more. Architecture, sculpture, and nature creating art.",
-  "cover": "/images/gallery/garden-bridge.jpg"
- },
- {
-  "slug": "the-white-city",
-  "name": "Black and White",
+  "slug": "people-of-the-world",
+  "name": "People of the World",
   "kicker": "",
-  "blurb": "No color just black and white photography ",
-  "intro": "Chicago's architecture, lakefront, river, parks, public art, and the city that continues to reinvent itself. A city more than beautiful.",
-  "cover": "/images/uploads/twc25.jpg"
+  "blurb": "",
+  "intro": "People at work, at play, in celebration, in tradition, and in everyday life. Different cultures, different places, and different stories observed through my travels and camera. And the faces of the world!",
+  "cover": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1782910215549-0-troubadour-GSH9PPnK5nMatfkDH05bWDuLu8R87g.jpg"
  },
  {
   "slug": "wildlife",
@@ -40,22 +32,6 @@
   "cover": "/images/gallery/lions-pair.jpg"
  },
  {
-  "slug": "natures-beauty-and-flight",
-  "name": "Nature's Beauty and Flight",
-  "kicker": "Petals and wings",
-  "blurb": "",
-  "intro": "Nature paints pictures from her wonderful palette of colors, and the result is flowers. To help the flowers, butterflies arrive in all shapes and sizes, with as many colors and color combinations as Nature can imagine.",
-  "cover": "/images/gallery/monarch-sunflower.jpg"
- },
- {
-  "slug": "birds",
-  "name": "Birds",
-  "kicker": "Mid-turn",
-  "blurb": "",
-  "intro": "My first love is capturing birds and their colorful beauty. Whenever possible, I like to show them in motion and in their natural environment.",
-  "cover": "/images/gallery/two-down.jpg"
- },
- {
   "slug": "icm",
   "name": "ICM – Intentional Camera Movement",
   "kicker": "The camera moves",
@@ -64,20 +40,44 @@
   "cover": "/images/gallery/icm-flowers.jpg"
  },
  {
+  "slug": "the-white-city",
+  "name": "Black and White",
+  "kicker": "",
+  "blurb": "No color just black and white photography ",
+  "intro": "Chicago's architecture, lakefront, river, parks, public art, and the city that continues to reinvent itself. A city more than beautiful.",
+  "cover": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1781352725076-0-_dsc1226-6UUpJ3R5iur4CbbndULu51TqStlfiK.jpg"
+ },
+ {
+  "slug": "watercolor",
+  "name": "WaterColor",
+  "kicker": "Soft color",
+  "blurb": "",
+  "intro": "To enjoy photography, is to try different techniques, subjects and the spontaneity of life. I used less technique in editing these moments and pictures of Chicago to create an impression of Water Color painting.",
+  "cover": "/images/gallery/winter-reflection.jpg"
+ },
+ {
   "slug": "our-best-friends",
   "name": "Our Best Friends",
   "kicker": "Good dogs",
   "blurb": "",
   "intro": "Mug shots of adorable loving companions. Their beauty, sweetness, and energy.",
-  "cover": "/images/gallery/aussie-pup.jpg"
+  "cover": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg"
  },
  {
-  "slug": "people-of-the-world",
-  "name": "People of the World",
-  "kicker": "",
+  "slug": "natures-beauty-and-flight",
+  "name": "Nature's Beauty and Flight",
+  "kicker": "Petals and wings",
   "blurb": "",
-  "intro": "People at work, at play, in celebration, in tradition, and in everyday life. Different cultures, different places, and different stories observed through my travels and camera. And the faces of the world!",
-  "cover": ""
+  "intro": "Nature paints pictures from her wonderful palette of colors, and the result is flowers. To help the flowers, butterflies arrive in all shapes and sizes, with as many colors and color combinations as Nature can imagine.",
+  "cover": "/images/gallery/swallowtail-pink.jpg"
+ },
+ {
+  "slug": "places-and-reflections",
+  "name": "Places and Reflections",
+  "kicker": "Stillness, doubled",
+  "blurb": "Quiet places and the water that gives them back — a city, a temple, a shoreline, mirrored.",
+  "intro": "We look, we see, then we look again and find the reflection. Beautiful buildings, trees, and much more. Architecture, sculpture, and nature creating art.",
+  "cover": "/images/gallery/garden-bridge.jpg"
  },
  {
   "slug": "air-and-water-show",
@@ -88,20 +88,20 @@
   "cover": "/images/gallery/thunderbirds-climb.jpg"
  },
  {
-  "slug": "natures-fury",
-  "name": "Nature's Fury",
-  "kicker": "",
-  "blurb": "",
-  "intro": "",
-  "cover": "/images/uploads/nf01.jpg"
- },
- {
   "slug": "time-preserved",
   "name": "Lost in Time",
   "kicker": "",
   "blurb": "",
   "intro": "",
-  "cover": "/images/uploads/tp01.jpg"
+  "cover": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg"
+ },
+ {
+  "slug": "natures-fury",
+  "name": "Nature's Fury",
+  "kicker": "",
+  "blurb": "",
+  "intro": "",
+  "cover": "/images/uploads/nf03.jpg"
  },
  {
   "slug": "life-observed",
@@ -109,6 +109,6 @@
   "kicker": "A quiet moment",
   "blurb": "",
   "intro": "I always wonder what will be next. With camera in hand, I look for moments that often go unnoticed. Kids jumping into a lake, a statue decorated for the season, an animal smiling, or trees sharing their geometry. I encourage everyone to look and really see. You might even smile or giggle too!",
-  "cover": "/images/gallery/plein-air.jpg"
+  "cover": "/images/gallery/summer-jump.jpg"
  }
 ]
