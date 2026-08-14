@@ -39,19 +39,6 @@
     "height": 1955
   },
   {
-    "id": "obf-import-13",
-    "src": "/images/uploads/our-best-friends/bf13-ehs7656.jpg",
-    "alt": "Photograph by Edward Shpritz",
-    "name": "",
-    "title": "",
-    "description": "",
-    "collection": "our-best-friends",
-    "trigger": false,
-    "order": 0,
-    "width": 2000,
-    "height": 1696
-  },
-  {
     "id": "obf-import-14",
     "src": "/images/uploads/our-best-friends/bf14-ehs4152-2.jpg",
     "alt": "Photograph by Edward Shpritz",
@@ -63,19 +50,6 @@
     "order": 0,
     "width": 2000,
     "height": 1680
-  },
-  {
-    "id": "obf-import-15",
-    "src": "/images/uploads/our-best-friends/bf15-dsc8936.jpg",
-    "alt": "Photograph by Edward Shpritz",
-    "name": "",
-    "title": "",
-    "description": "",
-    "collection": "our-best-friends",
-    "trigger": false,
-    "order": 0,
-    "width": 2000,
-    "height": 1343
   },
   {
     "id": "obf-import-16",
@@ -102,19 +76,6 @@
     "order": 0,
     "width": 2000,
     "height": 1832
-  },
-  {
-    "id": "obf-import-18",
-    "src": "/images/uploads/our-best-friends/bf18-dsc07948.jpg",
-    "alt": "Photograph by Edward Shpritz",
-    "name": "",
-    "title": "",
-    "description": "",
-    "collection": "our-best-friends",
-    "trigger": false,
-    "order": 0,
-    "width": 1624,
-    "height": 2000
   },
   {
     "id": "obf-import-19",
@@ -169,19 +130,6 @@
     "height": 1771
   },
   {
-    "id": "obf-import-23",
-    "src": "/images/uploads/our-best-friends/bf23-hippo-75.jpg",
-    "alt": "Photograph by Edward Shpritz",
-    "name": "",
-    "title": "",
-    "description": "",
-    "collection": "our-best-friends",
-    "trigger": false,
-    "order": 0,
-    "width": 2000,
-    "height": 1812
-  },
-  {
     "id": "obf-import-24",
     "src": "/images/uploads/our-best-friends/bf24-samoyed-5.jpg",
     "alt": "Photograph by Edward Shpritz",
@@ -208,8 +156,8 @@
     "height": 1879
   },
   {
-    "id": "obf-import-26",
-    "src": "/images/uploads/our-best-friends/bf26-ehs0009-2.jpg",
+    "id": "obf-import-27",
+    "src": "/images/uploads/our-best-friends/obf-ehs4540.jpg",
     "alt": "Photograph by Edward Shpritz",
     "name": "",
     "title": "",
@@ -217,7 +165,7 @@
     "collection": "our-best-friends",
     "trigger": false,
     "order": 0,
-    "width": 2000,
-    "height": 1948
+    "width": 1605,
+    "height": 2000
   }
 ]
