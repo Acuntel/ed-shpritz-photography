@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "A few words from Edward Shpritz, and the idea behind the pictures.",
+  description: "A few words from Ed Shpritz, and the idea behind the pictures.",
 };
 
 export const dynamic = "force-dynamic";

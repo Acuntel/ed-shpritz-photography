@@ -6,7 +6,7 @@ import CollectionsIndex from "@/components/CollectionsIndex";
 import Edism from "@/components/Edism";
 import Reveal from "@/components/Reveal";
 
-// Read Edward's live content from Blob on every request so his published changes
+// Read Ed's live content from Blob on every request so his published changes
 // appear instantly with no rebuild.
 export const metadata: Metadata = {
   title: { absolute: "Do You See What I See? — Ed Shpritz Photography" },

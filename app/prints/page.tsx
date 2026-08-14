@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 export const metadata: Metadata = {
   title: "Prints",
   description:
-    "Archival, signed fine art prints by Chicago photographer Edward Shpritz, available on request.",
+    "Archival, signed fine art prints by Chicago photographer Ed Shpritz, available on request.",
 };
 
 export const dynamic = "force-dynamic";
@@ -40,7 +40,7 @@ export default async function PrintsPage() {
               {site.contactEmail}
             </a>
             <p className="mt-4 font-sans text-sm text-ink-muted">
-              Email Edward the picture&apos;s name and where it will live — he will
+              Email Ed the picture&apos;s name and where it will live — he will
               take it from there.
             </p>
           </Reveal>

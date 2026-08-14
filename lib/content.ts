@@ -18,12 +18,12 @@ export type Content = {
   galleries: ClientGallery[];
 };
 
-// The single source of truth for everything Edward can edit. One JSON object means
+// The single source of truth for everything Ed can edit. One JSON object means
 // every publish is atomic — the site never shows a half-applied state.
 export const CONTENT_PATH = "content/data.json";
 
 // Every publish first snapshots the CURRENT live content here, so any save
-// (even an accidental or stale-draft one) can be rolled back. Edward's work is
+// (even an accidental or stale-draft one) can be rolled back. Ed's work is
 // never permanently lost again.
 const BACKUP_PREFIX = "content/backups/";
 const BACKUP_KEEP = 60;
@@ -65,16 +65,16 @@ function mergeBundledImports(content: Content): Content {
 
 // Normalize the legacy first name wherever it appears in live Blob content.
 // This also updates photo alt text and future admin saves without changing URLs.
-function renameEd(value: unknown): unknown {
+function normalizeEd(value: unknown): unknown {
   if (typeof value === "string") {
-    return value.replace(/\bEd\b/g, "Edward");
+    return value.replace(/\bEdward\b/g, "Ed");
   }
   if (Array.isArray(value)) {
-    return value.map((item) => renameEd(item));
+    return value.map((item) => normalizeEd(item));
   }
   if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value).map(([key, item]) => [key, renameEd(item)]),
+      Object.entries(value).map(([key, item]) => [key, normalizeEd(item)]),
     );
   }
   return value;
@@ -124,7 +124,7 @@ async function readLiveBlob(): Promise<Content | null> {
   }
 }
 
-// Read Edward's live content, fresh on every request (no-store) so a publish is
+// Read Ed's live content, fresh on every request (no-store) so a publish is
 // visible immediately. Falls back to the bundled repo content if Blob is
 // empty/unreachable (e.g. local build with no token, or before the first
 // seed). Wrapped in React cache() so the many getSite/getPhotos/... calls
@@ -134,13 +134,13 @@ export const loadContent = cache(
     const content = mergeBundledImports(
       (await readLiveBlob()) ?? bundledContent(),
     );
-    return renameEd(content) as Content;
+    return normalizeEd(content) as Content;
   },
 );
 
 // Snapshot the CURRENT live content to a timestamped backup before it is
 // overwritten. Best-effort: if anything here throws, the real save still
-// proceeds — a backup failure must never block Edward from publishing.
+// proceeds — a backup failure must never block Ed from publishing.
 async function backupCurrent(): Promise<void> {
   try {
     const current = await readLiveBlob();
@@ -169,7 +169,7 @@ async function backupCurrent(): Promise<void> {
   }
 }
 
-// Write Edward's content back to Blob. cacheControlMaxAge:0 keeps the CDN from
+// Write Ed's content back to Blob. cacheControlMaxAge:0 keeps the CDN from
 // serving a stale copy after he publishes. addRandomSuffix:false keeps the URL
 // stable so reads always find it. The current live copy is snapshotted first so
 // the previous state is always recoverable.
