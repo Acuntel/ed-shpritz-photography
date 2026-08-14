@@ -68,6 +68,17 @@ function collectionCode(collection: string): string {
 // Give every public photo a stable-looking catalog label while keeping the
 // collection's existing display order. Each collection has its own counter, so
 // Minimal White is MO01, MO02, ... and WaterColor starts over at WC01.
+function fixCaptionTypos(photo: Photo): Photo {
+  if (photo.id !== "p-1786020015256-0") return photo;
+  return {
+    ...photo,
+    description: photo.description.replace(
+      "Franklin Street Bridge0",
+      "Franklin Street Bridge)",
+    ),
+  };
+}
+
 function numberPhotosByCollection(photos: Photo[]): Photo[] {
   const counters = new Map<string, number>();
 
@@ -88,7 +99,10 @@ export async function getSite(): Promise<SiteContent> {
 
 export async function getPhotos(): Promise<Photo[]> {
   const { photos } = await loadContent();
-  const ordered = photos.map(enrichPhoto).sort((a, b) => a.order - b.order);
+  const ordered = photos
+    .map(enrichPhoto)
+    .map(fixCaptionTypos)
+    .sort((a, b) => a.order - b.order);
   return numberPhotosByCollection(ordered);
 }
 
