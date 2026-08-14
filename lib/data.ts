@@ -6,6 +6,7 @@ import type {
   SiteContent,
 } from "./types";
 import { loadContent } from "./content";
+import { recoverBirdCaptions } from "./recover-bird-captions";
 import imetaJson from "@/public/data/imeta.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
@@ -137,7 +138,8 @@ export async function getSite(): Promise<SiteContent> {
 
 export async function getPhotos(): Promise<Photo[]> {
   const { photos } = await loadContent();
-  const ordered = photos
+  const withRecoveredBirdCaptions = await recoverBirdCaptions(photos);
+  const ordered = withRecoveredBirdCaptions
     .map(enrichPhoto)
     .map(fixCaptionTypos)
     .sort((a, b) => a.order - b.order);
