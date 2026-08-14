@@ -30,6 +30,14 @@ async function findPreviousBirdCaptions(
       b.pathname.localeCompare(a.pathname),
     );
 
+    const currentBirds = current.filter(
+      (photo) => photo.collection === "birds",
+    );
+    const currentById = new Map(currentBirds.map((photo) => [photo.id, photo]));
+    const currentBySrc = new Map(currentBirds.map((photo) => [photo.src, photo]));
+    let best: BirdCaption[] | null = null;
+    let bestScore = 0;
+
     for (const blob of ordered) {
       const response = await fetch(`${blob.url}?cb=${Date.now()}`, {
         cache: "no-store",
@@ -44,18 +52,37 @@ async function findPreviousBirdCaptions(
         .filter((photo) => photo.collection === "birds")
         .sort((a, b) => a.order - b.order);
 
-      if (birds.length === 0 || captionSignature(photos) === currentSignature) {
+      if (
+        birds.length !== currentBirds.length ||
+        captionSignature(photos) === currentSignature
+      ) {
         continue;
       }
 
-      return birds.map(({ id, src, title, description, alt }) => ({
-        id,
-        src,
-        title,
-        description,
-        alt,
-      }));
+      let matches = 0;
+      let score = 0;
+      for (const bird of birds) {
+        const live = currentById.get(bird.id) ?? currentBySrc.get(bird.src);
+        if (!live) continue;
+        matches += 1;
+        if (bird.title !== live.title) score += 1;
+        if (bird.description !== live.description) score += 1;
+        if (bird.alt !== live.alt) score += 1;
+      }
+
+      if (matches === currentBirds.length && score > bestScore) {
+        bestScore = score;
+        best = birds.map(({ id, src, title, description, alt }) => ({
+          id,
+          src,
+          title,
+          description,
+          alt,
+        }));
+      }
     }
+
+    return best;
   } catch {
     // If recovery storage is unavailable, keep the current public captions.
   }
