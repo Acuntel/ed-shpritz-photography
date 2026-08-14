@@ -24,6 +24,14 @@
   "cover": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1782910215549-0-troubadour-GSH9PPnK5nMatfkDH05bWDuLu8R87g.jpg"
  },
  {
+  "slug": "natures-fury",
+  "name": "Nature's Fury",
+  "kicker": "",
+  "blurb": "",
+  "intro": "",
+  "cover": "/images/uploads/nf03.jpg"
+ },
+ {
   "slug": "wildlife",
   "name": "Wildlife",
   "kicker": "The wild ones",
@@ -94,14 +102,6 @@
   "blurb": "",
   "intro": "",
   "cover": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg"
- },
- {
-  "slug": "natures-fury",
-  "name": "Nature's Fury",
-  "kicker": "",
-  "blurb": "",
-  "intro": "",
-  "cover": "/images/uploads/nf03.jpg"
  },
  {
   "slug": "life-observed",
