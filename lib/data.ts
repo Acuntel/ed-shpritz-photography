@@ -34,6 +34,32 @@ function enrichPhoto<
   return { ...p, lqip: p.lqip ?? m.lqip, width: m.width, height: m.height };
 }
 
+// These ten descriptions came from the original site draft, not Ed. Hide only
+// those exact sentences so Ed can rebuild the Birds captions without an old
+// draft reappearing. Any new wording entered later passes through unchanged.
+const BRADY_BIRD_DESCRIPTIONS = new Set([
+  "A huddle of goslings tucked into the grass.",
+  "A single gosling and its reflection on green water.",
+  "Two drakes drop in, feet reaching for the water.",
+  "A drake dips his bill and rings the water.",
+  "A cardinal holds his branch against the gray.",
+  "A chickadee swings down for a single seed.",
+  "A green heron stands still, waiting out the water.",
+  "Wings open full, coming straight on.",
+  "Low and fast over open water.",
+  "One goose, low across the water, and gone.",
+]);
+
+function removeBradyBirdDescription(photo: Photo): Photo {
+  if (
+    photo.collection !== "birds" ||
+    !BRADY_BIRD_DESCRIPTIONS.has(photo.description.trim())
+  ) {
+    return photo;
+  }
+  return { ...photo, description: "" };
+}
+
 const PHOTO_COLLECTION_CODES: Record<string, string> = {
   "minimal-white": "MO",
   watercolor: "WC",
@@ -139,6 +165,7 @@ export async function getPhotos(): Promise<Photo[]> {
   const { photos } = await loadContent();
   const ordered = photos
     .map(enrichPhoto)
+    .map(removeBradyBirdDescription)
     .map(fixCaptionTypos)
     .sort((a, b) => a.order - b.order);
   return numberPhotosByCollection(ordered);

@@ -145,7 +145,7 @@
   "alt": "Four downy goslings huddled together in green grass",
   "name": "The Clutch",
   "title": "Goslings",
-  "description": "A huddle of goslings tucked into the grass.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 10
@@ -156,7 +156,7 @@
   "alt": "A single gosling swimming with its reflection on still green water",
   "name": "First Swim",
   "title": "Gosling",
-  "description": "A single gosling and its reflection on green water.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 11
@@ -167,7 +167,7 @@
   "alt": "Two mallard drakes coming in to land on the water with their reflections",
   "name": "Touchdown",
   "title": "Mallards landing",
-  "description": "Two drakes drop in, feet reaching for the water.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 12
@@ -178,7 +178,7 @@
   "alt": "Close up of a mallard drake's green head dipping into rippling blue water",
   "name": "The Drake",
   "title": "Mallard",
-  "description": "A drake dips his bill and rings the water.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 13
@@ -189,7 +189,7 @@
   "alt": "A male northern cardinal perched on a bare branch",
   "name": "Cardinal",
   "title": "Northern cardinal",
-  "description": "A cardinal holds his branch against the gray.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 14
@@ -200,7 +200,7 @@
   "alt": "A black capped chickadee hanging from a twig with a seed in its bill",
   "name": "Chickadee",
   "title": "Black-capped chickadee",
-  "description": "A chickadee swings down for a single seed.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 15
@@ -211,7 +211,7 @@
   "alt": "A green heron standing in shallow water with its reflection",
   "name": "Green Heron",
   "title": "Green heron",
-  "description": "A green heron stands still, waiting out the water.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 16
@@ -222,7 +222,7 @@
   "alt": "A goose flying directly toward the camera with wings fully spread, high key",
   "name": "Wingspan",
   "title": "Goose in flight",
-  "description": "Wings open full, coming straight on.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 17
@@ -233,7 +233,7 @@
   "alt": "A Canada goose flying head on, low over gray water",
   "name": "Incoming",
   "title": "Goose in flight",
-  "description": "Low and fast over open water.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 18
@@ -244,7 +244,7 @@
   "alt": "A single Canada goose flying low over water at dusk with its reflection",
   "name": "Solo",
   "title": "Goose at dusk",
-  "description": "One goose, low across the water, and gone.",
+  "description": "",
   "collection": "birds",
   "trigger": true,
   "order": 19
