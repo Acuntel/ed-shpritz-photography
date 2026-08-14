@@ -5,7 +5,7 @@
 // GoatCounter has no per-person tracking at all: "visits" are short-lived
 // sessions, "views" are pageviews. That's the honest vocabulary the UI uses.
 
-export type RangeStats = { visitors: number; views: number };
+export type RangeStats = { visits: number; views: number };
 export type NamedCount = { name: string; count: number };
 
 export function analyticsConfigured(): boolean {
@@ -94,7 +94,7 @@ export async function rangeStats(
   ]);
   // stats/total.total = pageviews; per-path hit counts = visits.
   const visits = hits.reduce((n, h) => n + (h.count ?? 0), 0);
-  return { visitors: visits, views: Number(totals.total ?? 0) };
+  return { visits, views: Number(totals.total ?? 0) };
 }
 
 export async function topMetrics(
@@ -106,6 +106,7 @@ export async function topMetrics(
   if (type === "url") {
     const hits = await hitRows(startAt, endAt);
     return hits
+      .sort((a, b) => Number(b.count ?? 0) - Number(a.count ?? 0))
       .slice(0, limit)
       .map((h) => ({ name: h.path, count: Number(h.count ?? 0) }));
   }

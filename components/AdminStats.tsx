@@ -3,18 +3,22 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
-type Range = { visitors: number; views: number };
+type Range = { visits: number; views: number };
 type NamedCount = { name: string; count: number };
 type Stats = {
   week: Range;
   month: Range;
   allTime: Range;
-  topPages: NamedCount[];
+  topCollections: NamedCount[];
   countries: NamedCount[];
 };
 
-function looks(n: number): string {
-  return `${n.toLocaleString()} ${n === 1 ? "look" : "looks"}`;
+function visits(n: number): string {
+  return `${n.toLocaleString()} ${n === 1 ? "visit" : "visits"}`;
+}
+
+function views(n: number): string {
+  return `${n.toLocaleString()} page ${n === 1 ? "view" : "views"}`;
 }
 
 function Tile({ label, range }: { label: string; range: Range }) {
@@ -22,10 +26,10 @@ function Tile({ label, range }: { label: string; range: Range }) {
     <div className="border border-ink/10 p-6">
       <p className="kicker">{label}</p>
       <p className="mt-3 font-serif text-5xl font-light text-ink">
-        {range.visitors.toLocaleString()}
+        {range.visits.toLocaleString()}
       </p>
       <p className="mt-1 font-sans text-sm text-ink-muted">
-        {range.visitors === 1 ? "person" : "people"} · {looks(range.views)}
+        {range.visits === 1 ? "visit" : "visits"} · {views(range.views)}
       </p>
     </div>
   );
@@ -44,7 +48,7 @@ function CountList({ title, rows }: { title: string; rows: NamedCount[] }) {
           >
             <span className="font-sans text-sm text-ink">{r.name}</span>
             <span className="shrink-0 font-sans text-sm text-ink-muted">
-              {looks(r.count)}
+              {visits(r.count)}
             </span>
           </li>
         ))}
@@ -53,7 +57,7 @@ function CountList({ title, rows }: { title: string; rows: NamedCount[] }) {
   );
 }
 
-// The "Who's looking" tab: Ed's visitor numbers in plain words. Read-only —
+// The "Who's looking" tab: Ed's visit numbers in plain words. Read-only —
 // nothing here touches his photographs or publishes anything.
 export default function AdminStats({ passcode }: { passcode: string }) {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -79,8 +83,8 @@ export default function AdminStats({ passcode }: { passcode: string }) {
   if (state === "loading") {
     return (
       <p className="flex items-center gap-2 font-sans text-sm text-ink-muted">
-        <Loader2 size={16} className="animate-spin" /> Counting your
-        visitors...
+        <Loader2 size={16} className="animate-spin" /> Counting website
+        visits...
       </p>
     );
   }
@@ -88,7 +92,8 @@ export default function AdminStats({ passcode }: { passcode: string }) {
     return (
       <p className="max-w-prose2 font-sans text-sm leading-relaxed text-ink-muted">
         Counting has not been switched on yet. Once it is, this page fills with
-        real numbers — how many people looked, and what they looked at.
+        real numbers — how many visits there were and which collections were
+        viewed.
       </p>
     );
   }
@@ -110,14 +115,15 @@ export default function AdminStats({ passcode }: { passcode: string }) {
       </div>
 
       <CountList
-        title="What people looked at most (last 30 days)"
-        rows={stats.topPages}
+        title="Collections visited most (last 30 days)"
+        rows={stats.topCollections}
       />
       <CountList title="Where they are" rows={stats.countries} />
 
       <p className="font-sans text-xs leading-relaxed text-ink-faint">
-        These counts are anonymous — the website can only ever see numbers,
-        never names. Your own visits from this device are not counted.
+        These counts are anonymous. One person can create more than one visit by
+        looking at several pages; the website never knows anyone&apos;s name.
+        Your own visits from this device are not counted.
       </p>
     </div>
   );

@@ -47,12 +47,19 @@ export async function POST(req: Request) {
         topMetrics("country", now - 30 * DAY, now, 12),
         loadContent(),
       ]);
+    const collectionNames = new Set(
+      content.collections.map((collection) => collection.name),
+    );
+    const topCollections = friendlyPages(pages, content.collections)
+      .filter((row) => collectionNames.has(row.name))
+      .slice(0, 8);
+
     return NextResponse.json(
       {
         week,
         month,
         allTime,
-        topPages: friendlyPages(pages, content.collections).slice(0, 8),
+        topCollections,
         countries: countryNames(countries).slice(0, 8),
       },
       { headers: { "Cache-Control": "no-store" } },
