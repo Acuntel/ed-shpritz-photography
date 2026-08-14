@@ -34,13 +34,62 @@ function enrichPhoto<
   return { ...p, lqip: p.lqip ?? m.lqip, width: m.width, height: m.height };
 }
 
+const PHOTO_COLLECTION_CODES: Record<string, string> = {
+  "minimal-white": "MO",
+  watercolor: "WC",
+  "places-and-reflections": "PR",
+  "the-white-city": "BW",
+  wildlife: "WL",
+  "natures-beauty-and-flight": "NB",
+  birds: "BI",
+  icm: "IC",
+  "our-best-friends": "BF",
+  "people-of-the-world": "PW",
+  "air-and-water-show": "AW",
+  "natures-fury": "NF",
+  "time-preserved": "TP",
+  "life-observed": "LO",
+};
+
+function collectionCode(collection: string): string {
+  return (
+    PHOTO_COLLECTION_CODES[collection] ??
+    collection
+      .split("-")
+      .filter(Boolean)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() ??
+    "PH"
+  );
+}
+
+// Give every public photo a stable-looking catalog label while keeping the
+// collection's existing display order. Each collection has its own counter, so
+// Minimal White is MO01, MO02, ... and WaterColor starts over at WC01.
+function numberPhotosByCollection(photos: Photo[]): Photo[] {
+  const counters = new Map<string, number>();
+
+  return photos.map((photo) => {
+    const sequence = (counters.get(photo.collection) ?? 0) + 1;
+    counters.set(photo.collection, sequence);
+
+    return {
+      ...photo,
+      name: `${collectionCode(photo.collection)}${String(sequence).padStart(2, "0")}`,
+    };
+  });
+}
+
 export async function getSite(): Promise<SiteContent> {
   return (await loadContent()).site;
 }
 
 export async function getPhotos(): Promise<Photo[]> {
   const { photos } = await loadContent();
-  return photos.map(enrichPhoto).sort((a, b) => a.order - b.order);
+  const ordered = photos.map(enrichPhoto).sort((a, b) => a.order - b.order);
+  return numberPhotosByCollection(ordered);
 }
 
 export async function getCollections(): Promise<Collection[]> {
