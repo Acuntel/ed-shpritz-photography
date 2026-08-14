@@ -9,6 +9,7 @@ import siteJson from "@/public/data/site.json";
 import collectionsJson from "@/public/data/collections.json";
 import photosJson from "@/public/data/photos.json";
 import galleriesJson from "@/public/data/galleries.json";
+import importedBestFriendsJson from "@/public/data/imported-our-best-friends.json";
 
 export type Content = {
   site: SiteContent;
@@ -33,6 +34,32 @@ function bundledContent(): Content {
     collections: collectionsJson as unknown as Collection[],
     photos: photosJson as unknown as Photo[],
     galleries: galleriesJson as unknown as ClientGallery[],
+  };
+}
+
+const importedBestFriends =
+  importedBestFriendsJson as unknown as Photo[];
+
+function mergeBundledImports(content: Content): Content {
+  const existingIds = new Set(content.photos.map((photo) => photo.id));
+  const missing = importedBestFriends.filter(
+    (photo) => !existingIds.has(photo.id),
+  );
+  if (missing.length === 0) return content;
+
+  const nextOrder =
+    content.photos.reduce((highest, photo) => Math.max(highest, photo.order), -1) +
+    1;
+
+  return {
+    ...content,
+    photos: [
+      ...content.photos,
+      ...missing.map((photo, index) => ({
+        ...photo,
+        order: nextOrder + index,
+      })),
+    ],
   };
 }
 
@@ -104,7 +131,9 @@ async function readLiveBlob(): Promise<Content | null> {
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    const content = (await readLiveBlob()) ?? bundledContent();
+    const content = mergeBundledImports(
+      (await readLiveBlob()) ?? bundledContent(),
+    );
     return renameEd(content) as Content;
   },
 );
