@@ -81,7 +81,7 @@ export default function Lightbox({
     <AnimatePresence>
       {open && photo && (
         <motion.div
-          className="protect fixed inset-0 z-[60] flex flex-col bg-paper/98 backdrop-blur-2xl"
+          className="protect fixed inset-0 z-[60] flex flex-col bg-paper"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -137,7 +137,7 @@ export default function Lightbox({
                   style={{ aspectRatio: `${aspect}` }}
                 />
               </div>
-              <figcaption className="mt-6 max-w-prose2 text-center">
+              <figcaption className="mt-5 w-full max-w-prose2 rounded-sm border border-ink/15 bg-paper-soft px-6 py-4 text-center shadow-[0_18px_45px_-30px_rgba(0,0,0,0.9)]">
                 <h2 className="flex items-center justify-center gap-2 font-serif text-2xl text-ink [text-shadow:0_1px_4px_rgba(0,0,0,0.9),0_0_2px_rgba(0,0,0,0.7)]">
                   {label}
                   {photo.award && (
@@ -151,12 +151,12 @@ export default function Lightbox({
                   )}
                 </h2>
                 {subtitle && (
-                  <p className="mt-1 font-sans text-xs uppercase tracking-widest2 text-ink-soft [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">
+                  <p className="mt-1 font-sans text-xs uppercase tracking-widest2 text-ink">
                     {subtitle}
                   </p>
                 )}
                 {photo.description && (
-                  <p className="mt-2 font-sans text-sm leading-relaxed text-ink-soft [text-shadow:0_1px_3px_rgba(0,0,0,0.85)]">
+                  <p className="mt-2 font-sans text-sm leading-relaxed text-ink">
                     {photo.description}
                   </p>
                 )}

@@ -68,7 +68,7 @@ export default function PhotoGrid({
                     />
                   </span>
                   <span className="mt-3 flex items-baseline justify-between gap-3">
-                    <span className="flex items-baseline gap-1.5 font-serif text-base text-ink-soft transition-colors group-hover:text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
+                    <span className="flex items-baseline gap-1.5 font-serif text-base text-ink transition-colors group-hover:text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
                       {photoLabel(p)}
                       {p.award && (
                         <span

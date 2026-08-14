@@ -100,6 +100,7 @@ export async function getCollections(): Promise<Collection[]> {
     const coverExists = !!c.cover && photos.some((p) => p.src === c.cover);
     return {
       ...c,
+      name: c.slug === "time-preserved" ? "Lost in Time" : c.name,
       count: inIt.length,
       // Always resolve to a real photo: the named cover if it still exists,
       // otherwise the first photo in the collection, otherwise empty.
