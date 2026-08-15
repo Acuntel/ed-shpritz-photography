@@ -12,6 +12,12 @@ import importedAirWaterJson from "@/public/data/imported-air-water.json";
 import importedAirWater2Json from "@/public/data/imported-air-water-2.json";
 import importedBeautyFlightJson from "@/public/data/imported-beauty-flight.json";
 import importedLifeObservedJson from "@/public/data/imported-life-observed.json";
+import importedBlackWhiteJson from "@/public/data/imported-black-and-white.json";
+import importedIcmJson from "@/public/data/imported-icm.json";
+import importedOurBestFriendsJson from "@/public/data/imported-our-best-friends.json";
+import importedPeopleWorldJson from "@/public/data/imported-people-world.json";
+import importedPlacesReflectionsJson from "@/public/data/imported-places-reflections.json";
+import importedWildlifeJson from "@/public/data/imported-wildlife.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -284,12 +290,24 @@ export async function getPhotos(): Promise<Photo[]> {
   const importedAirWater2 = (importedAirWater2Json as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedBeautyFlight = (importedBeautyFlightJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedLifeObserved = importedLifeObservedJson as unknown as Photo[];
+  const importedBlackWhite = (importedBlackWhiteJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const importedIcm = (importedIcmJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const importedOurBestFriends = (importedOurBestFriendsJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const importedPeopleWorld = (importedPeopleWorldJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const importedPlacesReflections = (importedPlacesReflectionsJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const importedWildlife = (importedWildlifeJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const photos = [
     ...livePhotos.filter((photo) => photo.collection !== "life-observed"),
     ...importedAirWater,
     ...importedAirWater2,
     ...importedBeautyFlight,
     ...importedLifeObserved,
+    ...importedBlackWhite,
+    ...importedIcm,
+    ...importedOurBestFriends,
+    ...importedPeopleWorld,
+    ...importedPlacesReflections,
+    ...importedWildlife,
   ];
   const ordered = centerAirWaterHighlights(
     applyCuratedPhotoOrder(
