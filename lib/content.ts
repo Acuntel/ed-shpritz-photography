@@ -13,6 +13,7 @@ import importedBestFriendsJson from "@/public/data/imported-our-best-friends.jso
 import importedIcmJson from "@/public/data/imported-icm.json";
 import importedPlacesReflectionsJson from "@/public/data/imported-places-reflections.json";
 import importedBlackAndWhiteJson from "@/public/data/imported-black-and-white.json";
+import importedPeopleWorldJson from "@/public/data/imported-people-world.json";
 
 export type Content = {
   site: SiteContent;
@@ -45,6 +46,7 @@ const bundledImports = [
   ...(importedIcmJson as unknown as Photo[]),
   ...(importedPlacesReflectionsJson as unknown as Photo[]),
   ...(importedBlackAndWhiteJson as unknown as Photo[]),
+  ...(importedPeopleWorldJson as unknown as Photo[]),
 ];
 
 function mergeBundledImports(content: Content): Content {
