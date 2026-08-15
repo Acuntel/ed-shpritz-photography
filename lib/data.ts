@@ -152,6 +152,33 @@ const PLACES_AND_REFLECTIONS_RANK = new Map<string, number>(
   CURATED_PLACES_AND_REFLECTIONS_ORDER.map((id, index) => [id, index]),
 );
 
+const CURATED_BEAUTY_FLIGHT_ORDER = [
+  "nb-city-tulip-boulevard",
+  "monarch-sunflower",
+  "nb-blue-hydrangeas",
+  "giant-swallowtail",
+  "nb-spring-crocus",
+  "swallowtail-pink",
+  "nb-purple-clematis",
+  "skipper-orange",
+  "nb-red-bee-balm",
+  "cabbage-white",
+  "nb-striped-tulip",
+  "skipper-zinnia",
+  "nb-purple-dahlia",
+  "skipper-leaf",
+  "nb-pink-hibiscus",
+  "tulips-bw",
+  "nb-yellow-hibiscus",
+  "yellow-blooms",
+  "nb-orange-zinnia-spider",
+  "nb-rain-kissed-pink",
+] as const;
+
+const BEAUTY_FLIGHT_RANK = new Map<string, number>(
+  CURATED_BEAUTY_FLIGHT_ORDER.map((id, index) => [id, index]),
+);
+
 function applyCuratedPhotoOrder(photos: Photo[]): Photo[] {
   const curated = photos
     .filter((photo) => photo.collection === "places-and-reflections")
@@ -167,14 +194,29 @@ function applyCuratedPhotoOrder(photos: Photo[]): Photo[] {
       ? curated[cursor++]
       : photo,
   );
-  const bw = placed.filter((photo) => photo.collection === "the-white-city");
+  const beauty = placed
+    .filter((photo) => photo.collection === "natures-beauty-and-flight")
+    .sort(
+      (a, b) =>
+        (BEAUTY_FLIGHT_RANK.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+          (BEAUTY_FLIGHT_RANK.get(b.id) ?? Number.MAX_SAFE_INTEGER) ||
+        a.order - b.order,
+    );
+  let beautyCursor = 0;
+  const beautyPlaced = placed.map((photo) =>
+    photo.collection === "natures-beauty-and-flight"
+      ? beauty[beautyCursor++]
+      : photo,
+  );
+
+  const bw = beautyPlaced.filter((photo) => photo.collection === "the-white-city");
   const newPhoto = bw.find((photo) => photo.id === "bw-so-close-so-far-away");
-  if (!newPhoto) return placed;
+  if (!newPhoto) return beautyPlaced;
   const withoutNew = bw.filter((photo) => photo.id !== "bw-so-close-so-far-away");
   const skylineIndex = withoutNew.findIndex((photo) => photo.id === "twc-15");
   withoutNew.splice(skylineIndex >= 0 ? skylineIndex + 1 : withoutNew.length, 0, newPhoto);
   let bwCursor = 0;
-  return placed.map((photo) =>
+  return beautyPlaced.map((photo) =>
     photo.collection === "the-white-city" ? withoutNew[bwCursor++] : photo,
   );
 }
@@ -205,7 +247,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "the-white-city": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1781352725076-0-_dsc1226-6UUpJ3R5iur4CbbndULu51TqStlfiK.jpg",
   "watercolor": "/images/gallery/winter-reflection.jpg",
   "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
-  "natures-beauty-and-flight": "/images/uploads/beauty-flight/red-tulip-garden.jpg",
+  "natures-beauty-and-flight": "/images/uploads/beauty-flight/city-tulip-boulevard.jpg",
   "places-and-reflections": "/images/uploads/places-reflections/new-england-church-reflection.jpg",
   "air-and-water-show": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1783449602721-0-hurry-up--2-vXMDSeAOFqsTJG0R70ESEcT5gnX66W.jpg",
   "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
