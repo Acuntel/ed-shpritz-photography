@@ -7,6 +7,7 @@ import type {
 } from "./types";
 import { loadContent } from "./content";
 import imetaJson from "@/public/data/imeta.json";
+import bradyDescriptionsJson from "@/public/data/brady-descriptions.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -34,27 +35,14 @@ function enrichPhoto<
   return { ...p, lqip: p.lqip ?? m.lqip, width: m.width, height: m.height };
 }
 
-// These ten descriptions came from the original site draft, not Ed. Hide only
-// those exact sentences so Ed can rebuild the Birds captions without an old
-// draft reappearing. Any new wording entered later passes through unchanged.
-const BRADY_BIRD_DESCRIPTIONS = new Set([
-  "A huddle of goslings tucked into the grass.",
-  "A single gosling and its reflection on green water.",
-  "Two drakes drop in, feet reaching for the water.",
-  "A drake dips his bill and rings the water.",
-  "A cardinal holds his branch against the gray.",
-  "A chickadee swings down for a single seed.",
-  "A green heron stands still, waiting out the water.",
-  "Wings open full, coming straight on.",
-  "Low and fast over open water.",
-  "One goose, low across the water, and gone.",
-]);
+// Hide only Brady's original catalog descriptions. Matching by both photo ID
+// and exact wording protects any description Ed has replaced or adds later.
+const bradyDescriptionsByPhotoId =
+  bradyDescriptionsJson as Record<string, string>;
 
-function removeBradyBirdDescription(photo: Photo): Photo {
-  if (
-    photo.collection !== "birds" ||
-    !BRADY_BIRD_DESCRIPTIONS.has(photo.description.trim())
-  ) {
+function removeBradyDescription(photo: Photo): Photo {
+  const original = bradyDescriptionsByPhotoId[photo.id];
+  if (!original || photo.description.trim() !== original.trim()) {
     return photo;
   }
   return { ...photo, description: "" };
@@ -165,7 +153,7 @@ export async function getPhotos(): Promise<Photo[]> {
   const { photos } = await loadContent();
   const ordered = photos
     .map(enrichPhoto)
-    .map(removeBradyBirdDescription)
+    .map(removeBradyDescription)
     .map(fixCaptionTypos)
     .sort((a, b) => a.order - b.order);
   return numberPhotosByCollection(ordered);
