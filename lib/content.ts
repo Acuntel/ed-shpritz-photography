@@ -10,6 +10,7 @@ import collectionsJson from "@/public/data/collections.json";
 import photosJson from "@/public/data/photos.json";
 import galleriesJson from "@/public/data/galleries.json";
 import importedBestFriendsJson from "@/public/data/imported-our-best-friends.json";
+import importedIcmJson from "@/public/data/imported-icm.json";
 
 export type Content = {
   site: SiteContent;
@@ -37,12 +38,14 @@ function bundledContent(): Content {
   };
 }
 
-const importedBestFriends =
-  importedBestFriendsJson as unknown as Photo[];
+const bundledImports = [
+  ...(importedBestFriendsJson as unknown as Photo[]),
+  ...(importedIcmJson as unknown as Photo[]),
+];
 
 function mergeBundledImports(content: Content): Content {
   const existingIds = new Set(content.photos.map((photo) => photo.id));
-  const missing = importedBestFriends.filter(
+  const missing = bundledImports.filter(
     (photo) => !existingIds.has(photo.id),
   );
   if (missing.length === 0) return content;
