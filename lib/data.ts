@@ -9,6 +9,7 @@ import { loadContent } from "./content";
 import imetaJson from "@/public/data/imeta.json";
 import bradyDescriptionsJson from "@/public/data/brady-descriptions.json";
 import importedAirWaterJson from "@/public/data/imported-air-water.json";
+import importedAirWater2Json from "@/public/data/imported-air-water-2.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -223,7 +224,8 @@ export async function getPhotos(): Promise<Photo[]> {
   const { photos: livePhotos } = await loadContent();
   const existingIds = new Set(livePhotos.map((photo) => photo.id));
   const importedAirWater = (importedAirWaterJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const photos = [...livePhotos, ...importedAirWater];
+  const importedAirWater2 = (importedAirWater2Json as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const photos = [...livePhotos, ...importedAirWater, ...importedAirWater2];
   const ordered = applyCuratedPhotoOrder(
     photos
       .map(enrichPhoto)
