@@ -197,7 +197,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "minimal-white": "/images/gallery/baby-elephant.jpg",
   "birds": "/images/gallery/two-down.jpg",
   "people-of-the-world": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1782910215549-0-troubadour-GSH9PPnK5nMatfkDH05bWDuLu8R87g.jpg",
-  "wildlife": "/images/gallery/deer-twins.jpg",
+  "wildlife": "/images/uploads/wildlife/gorilla-in-leaves.jpg",
   "icm": "/images/gallery/icm-flowers.jpg",
   "the-white-city": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1781352725076-0-_dsc1226-6UUpJ3R5iur4CbbndULu51TqStlfiK.jpg",
   "watercolor": "/images/gallery/winter-reflection.jpg",
