@@ -11,6 +11,7 @@ import bradyDescriptionsJson from "@/public/data/brady-descriptions.json";
 import importedAirWaterJson from "@/public/data/imported-air-water.json";
 import importedAirWater2Json from "@/public/data/imported-air-water-2.json";
 import importedBeautyFlightJson from "@/public/data/imported-beauty-flight.json";
+import importedLifeObservedJson from "@/public/data/imported-life-observed.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -252,7 +253,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "air-and-water-show": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1783449602721-0-hurry-up--2-vXMDSeAOFqsTJG0R70ESEcT5gnX66W.jpg",
   "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
   "natures-fury": "/images/uploads/nf03.jpg",
-  "life-observed": "/images/gallery/summer-jump.jpg"
+  "life-observed": "/images/uploads/lo-girl-umbrella.jpg"
 };
 
 const COLLECTION_RANK = new Map<string, number>(
@@ -282,7 +283,14 @@ export async function getPhotos(): Promise<Photo[]> {
   const importedAirWater = (importedAirWaterJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedAirWater2 = (importedAirWater2Json as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedBeautyFlight = (importedBeautyFlightJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const photos = [...livePhotos, ...importedAirWater, ...importedAirWater2, ...importedBeautyFlight];
+  const importedLifeObserved = importedLifeObservedJson as unknown as Photo[];
+  const photos = [
+    ...livePhotos.filter((photo) => photo.collection !== "life-observed"),
+    ...importedAirWater,
+    ...importedAirWater2,
+    ...importedBeautyFlight,
+    ...importedLifeObserved,
+  ];
   const ordered = centerAirWaterHighlights(
     applyCuratedPhotoOrder(
       photos
