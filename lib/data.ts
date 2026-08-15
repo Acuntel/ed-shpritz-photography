@@ -10,6 +10,7 @@ import imetaJson from "@/public/data/imeta.json";
 import bradyDescriptionsJson from "@/public/data/brady-descriptions.json";
 import importedAirWaterJson from "@/public/data/imported-air-water.json";
 import importedAirWater2Json from "@/public/data/imported-air-water-2.json";
+import importedBeautyFlightJson from "@/public/data/imported-beauty-flight.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -204,7 +205,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "the-white-city": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1781352725076-0-_dsc1226-6UUpJ3R5iur4CbbndULu51TqStlfiK.jpg",
   "watercolor": "/images/gallery/winter-reflection.jpg",
   "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
-  "natures-beauty-and-flight": "/images/gallery/swallowtail-pink.jpg",
+  "natures-beauty-and-flight": "/images/uploads/beauty-flight/red-tulip-garden.jpg",
   "places-and-reflections": "/images/uploads/places-reflections/new-england-church-reflection.jpg",
   "air-and-water-show": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1783449602721-0-hurry-up--2-vXMDSeAOFqsTJG0R70ESEcT5gnX66W.jpg",
   "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
@@ -238,7 +239,8 @@ export async function getPhotos(): Promise<Photo[]> {
   const existingIds = new Set(livePhotos.map((photo) => photo.id));
   const importedAirWater = (importedAirWaterJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedAirWater2 = (importedAirWater2Json as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const photos = [...livePhotos, ...importedAirWater, ...importedAirWater2];
+  const importedBeautyFlight = (importedBeautyFlightJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const photos = [...livePhotos, ...importedAirWater, ...importedAirWater2, ...importedBeautyFlight];
   const ordered = centerAirWaterHighlights(
     applyCuratedPhotoOrder(
       photos
