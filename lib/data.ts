@@ -107,6 +107,65 @@ function numberPhotosByCollection(photos: Photo[]): Photo[] {
   });
 }
 
+const CURATED_PLACES_AND_REFLECTIONS_ORDER = [
+  "pr-new-england-church",
+  "pr-sagrada-familia",
+  "pr-dawn-chicago",
+  "pr-sail-under-storm",
+  "pr-osaka-reflection",
+  "pr-peel-a-boo",
+  "pr-portofino-harbor",
+  "pr-still-pond",
+  "pr-lagoon-reflection",
+  "pr-charlevoix-light",
+  "pr-navy-pier-fireworks",
+  "pr-cartagena-city-hall",
+  "pr-painted-rock",
+  "forest-light",
+  "pr-lincoln-park-autumn",
+  "pavilion-frame",
+  "pr-rays-over-shore",
+  "temple-moon",
+  "pr-autumn-fountain",
+  "mackerel-dawn",
+  "pr-riverboat-reflections",
+  "beacon-blue",
+  "pr-cloud-gate",
+  "spiral-stair",
+  "pr-painted-jungle",
+  "skyline-wave",
+  "pr-covered-bridge",
+  "autumn-island",
+  "pr-white-lighthouse",
+  "red-lighthouse",
+  "pr-oak-street-winter",
+  "river-clouds",
+  "pr-lake-sunset",
+  "masts-sunset",
+  "garden-bridge",
+] as const;
+
+const PLACES_AND_REFLECTIONS_RANK = new Map<string, number>(
+  CURATED_PLACES_AND_REFLECTIONS_ORDER.map((id, index) => [id, index]),
+);
+
+function applyCuratedPhotoOrder(photos: Photo[]): Photo[] {
+  const curated = photos
+    .filter((photo) => photo.collection === "places-and-reflections")
+    .sort(
+      (a, b) =>
+        (PLACES_AND_REFLECTIONS_RANK.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+          (PLACES_AND_REFLECTIONS_RANK.get(b.id) ?? Number.MAX_SAFE_INTEGER) ||
+        a.order - b.order,
+    );
+  let cursor = 0;
+  return photos.map((photo) =>
+    photo.collection === "places-and-reflections"
+      ? curated[cursor++]
+      : photo,
+  );
+}
+
 const CURATED_COLLECTION_ORDER = [
   "minimal-white",
   "birds",
@@ -134,7 +193,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "watercolor": "/images/gallery/winter-reflection.jpg",
   "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
   "natures-beauty-and-flight": "/images/gallery/swallowtail-pink.jpg",
-  "places-and-reflections": "/images/gallery/garden-bridge.jpg",
+  "places-and-reflections": "/images/uploads/places-reflections/new-england-church-reflection.jpg",
   "air-and-water-show": "/images/gallery/thunderbirds-climb.jpg",
   "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
   "natures-fury": "/images/uploads/nf03.jpg",
@@ -151,11 +210,13 @@ export async function getSite(): Promise<SiteContent> {
 
 export async function getPhotos(): Promise<Photo[]> {
   const { photos } = await loadContent();
-  const ordered = photos
-    .map(enrichPhoto)
-    .map(removeBradyDescription)
-    .map(fixCaptionTypos)
-    .sort((a, b) => a.order - b.order);
+  const ordered = applyCuratedPhotoOrder(
+    photos
+      .map(enrichPhoto)
+      .map(removeBradyDescription)
+      .map(fixCaptionTypos)
+      .sort((a, b) => a.order - b.order),
+  );
   return numberPhotosByCollection(ordered);
 }
 

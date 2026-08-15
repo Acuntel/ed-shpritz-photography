@@ -24,7 +24,11 @@ export default function CollectionsIndex({
                   <Picture
                     photo={cover}
                     variant="tile"
-                    className="h-full w-full object-cover transition-transform duration-[1.4s] ease-gallery group-hover:scale-105"
+                    className={`h-full w-full object-cover transition-transform duration-[1.4s] ease-gallery group-hover:scale-105 ${
+                      c.slug === "places-and-reflections"
+                        ? "object-[68%_center]"
+                        : "object-center"
+                    }`}
                     style={{ aspectRatio: undefined }}
                   />
                 ) : (
