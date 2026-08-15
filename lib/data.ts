@@ -8,6 +8,7 @@ import type {
 import { loadContent } from "./content";
 import imetaJson from "@/public/data/imeta.json";
 import bradyDescriptionsJson from "@/public/data/brady-descriptions.json";
+import importedAirWaterJson from "@/public/data/imported-air-water.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -204,7 +205,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
   "natures-beauty-and-flight": "/images/gallery/swallowtail-pink.jpg",
   "places-and-reflections": "/images/uploads/places-reflections/new-england-church-reflection.jpg",
-  "air-and-water-show": "/images/gallery/thunderbirds-climb.jpg",
+  "air-and-water-show": "/images/uploads/air-water/five-ship-diamond.jpg",
   "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
   "natures-fury": "/images/uploads/nf03.jpg",
   "life-observed": "/images/gallery/summer-jump.jpg"
@@ -219,7 +220,10 @@ export async function getSite(): Promise<SiteContent> {
 }
 
 export async function getPhotos(): Promise<Photo[]> {
-  const { photos } = await loadContent();
+  const { photos: livePhotos } = await loadContent();
+  const existingIds = new Set(livePhotos.map((photo) => photo.id));
+  const importedAirWater = (importedAirWaterJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
+  const photos = [...livePhotos, ...importedAirWater];
   const ordered = applyCuratedPhotoOrder(
     photos
       .map(enrichPhoto)
