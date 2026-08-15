@@ -159,10 +159,20 @@ function applyCuratedPhotoOrder(photos: Photo[]): Photo[] {
         a.order - b.order,
     );
   let cursor = 0;
-  return photos.map((photo) =>
+  const placed = photos.map((photo) =>
     photo.collection === "places-and-reflections"
       ? curated[cursor++]
       : photo,
+  );
+  const bw = placed.filter((photo) => photo.collection === "the-white-city");
+  const newPhoto = bw.find((photo) => photo.id === "bw-so-close-so-far-away");
+  if (!newPhoto) return placed;
+  const withoutNew = bw.filter((photo) => photo.id !== "bw-so-close-so-far-away");
+  const skylineIndex = withoutNew.findIndex((photo) => photo.id === "twc-15");
+  withoutNew.splice(skylineIndex >= 0 ? skylineIndex + 1 : withoutNew.length, 0, newPhoto);
+  let bwCursor = 0;
+  return placed.map((photo) =>
+    photo.collection === "the-white-city" ? withoutNew[bwCursor++] : photo,
   );
 }
 
