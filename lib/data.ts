@@ -239,12 +239,14 @@ export async function getPhotos(): Promise<Photo[]> {
   const importedAirWater = (importedAirWaterJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedAirWater2 = (importedAirWater2Json as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const photos = [...livePhotos, ...importedAirWater, ...importedAirWater2];
-  const ordered = applyCuratedPhotoOrder(
-    photos
-      .map(enrichPhoto)
-      .map(removeBradyDescription)
-      .map(fixCaptionTypos)
-      .sort((a, b) => a.order - b.order),
+  const ordered = centerAirWaterHighlights(
+    applyCuratedPhotoOrder(
+      photos
+        .map(enrichPhoto)
+        .map(removeBradyDescription)
+        .map(fixCaptionTypos)
+        .sort((a, b) => a.order - b.order),
+    ),
   );
   return numberPhotosByCollection(ordered);
 }
