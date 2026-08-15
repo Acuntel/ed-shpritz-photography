@@ -246,7 +246,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "wildlife": "/images/uploads/wildlife/gorilla-in-leaves.jpg",
   "icm": "/images/gallery/icm-flowers.jpg",
   "the-white-city": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1781352725076-0-_dsc1226-6UUpJ3R5iur4CbbndULu51TqStlfiK.jpg",
-  "watercolor": "/images/gallery/winter-reflection.jpg",
+  "watercolor": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1783779938982-0-9b97ad70-f171-49bf-bddb-67284916cc84-2-BSB1pVe4uH49iygiVlBLCRlo2Em6Ky.jpeg",
   "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
   "natures-beauty-and-flight": "/images/uploads/beauty-flight/city-tulip-boulevard.jpg",
   "places-and-reflections": "/images/uploads/places-reflections/new-england-church-reflection.jpg",
