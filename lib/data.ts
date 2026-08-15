@@ -206,7 +206,7 @@ const CURATED_COLLECTION_COVERS: Record<string, string> = {
   "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
   "natures-beauty-and-flight": "/images/gallery/swallowtail-pink.jpg",
   "places-and-reflections": "/images/uploads/places-reflections/new-england-church-reflection.jpg",
-  "air-and-water-show": "/images/uploads/air-water/blue-angels-rise.jpg",
+  "air-and-water-show": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1783449602721-0-hurry-up--2-vXMDSeAOFqsTJG0R70ESEcT5gnX66W.jpg",
   "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
   "natures-fury": "/images/uploads/nf03.jpg",
   "life-observed": "/images/gallery/summer-jump.jpg"
@@ -219,7 +219,7 @@ const COLLECTION_RANK = new Map<string, number>(
 function centerAirWaterHighlights(photos: Photo[]): Photo[] {
   const air = photos.filter((photo) => photo.collection === "air-and-water-show");
   if (air.length < 3) return photos;
-  const highlights = new Set(["not-a-blue-angel", "p-1783449757657-0"]);
+  const highlights = new Set(["not-a-blue-angel", "p-1783449757657-0", "p-1783449602721-0", "p-1783449391379-0"]);
   const remaining = air.filter((photo) => !highlights.has(photo.id));
   const midpoint = Math.floor(remaining.length / 2);
   remaining.splice(midpoint, 0, ...air.filter((photo) => highlights.has(photo.id)));
