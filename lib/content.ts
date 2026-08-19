@@ -74,6 +74,53 @@ function mergeBundledImports(content: Content): Content {
   };
 }
 
+// Restore Ed's original "Animals Have Spoken" sayings to the wildlife photos
+// he matched by collection number. Positions 16 and 18 are confirmed duplicate
+// pictures of 9 and 8 respectively, so they are hidden from both the public
+// collection and the admin editor. The original numbers are calculated before
+// filtering so later captions do not shift when the duplicates disappear.
+function applyWildlifeSayings(content: Content): Content {
+  const wildlife = content.photos
+    .filter((photo) => photo.collection === "wildlife")
+    .sort((a, b) => a.order - b.order);
+
+  const positionById = new Map(
+    wildlife.map((photo, index) => [photo.id, index + 1] as const),
+  );
+
+  const sayings: Record<number, string> = {
+    2: "What tall tale do you want next?",
+    8: "Splish Splash...",
+    9: "You want to hear about Custer?\nWe were there.",
+    10: "Bambi? ... Which One?",
+    13: "Finish the story already!",
+    14: "OH ... NUTS to all of you!",
+    17: "Am I in the story?\nI LOVE George!",
+    21: "If a woodchuck could chuck wood...",
+    25: "Where is George...\nGracie?\nI'm lost!",
+    26: "Leave me hanging again...\nTired of these no-ending stories!",
+    27: "Baaaaaaaa...\nI'm a goat.\nKeep me out of the story!",
+  };
+
+  const duplicatePositions = new Set([16, 18]);
+
+  return {
+    ...content,
+    photos: content.photos
+      .filter((photo) => {
+        if (photo.collection !== "wildlife") return true;
+        const position = positionById.get(photo.id);
+        return position === undefined || !duplicatePositions.has(position);
+      })
+      .map((photo) => {
+        if (photo.collection !== "wildlife") return photo;
+        const position = positionById.get(photo.id);
+        const description = position === undefined ? undefined : sayings[position];
+        return description === undefined ? photo : { ...photo, description };
+      }),
+  };
+}
+
 // Normalize the legacy first name wherever it appears in live Blob content.
 // This also updates photo alt text and future admin saves without changing URLs.
 function normalizeEd(value: unknown): unknown {
@@ -142,8 +189,8 @@ async function readLiveBlob(): Promise<Content | null> {
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    const content = mergeBundledImports(
-      (await readLiveBlob()) ?? bundledContent(),
+    const content = applyWildlifeSayings(
+      mergeBundledImports((await readLiveBlob()) ?? bundledContent()),
     );
     return normalizeEd(content) as Content;
   },
