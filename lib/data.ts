@@ -17,7 +17,6 @@ import importedIcmJson from "@/public/data/imported-icm.json";
 import importedOurBestFriendsJson from "@/public/data/imported-our-best-friends.json";
 import importedPeopleWorldJson from "@/public/data/imported-people-world.json";
 import importedPlacesReflectionsJson from "@/public/data/imported-places-reflections.json";
-import importedWildlifeJson from "@/public/data/imported-wildlife.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -110,9 +109,18 @@ function numberPhotosByCollection(photos: Photo[]): Photo[] {
     const sequence = (counters.get(photo.collection) ?? 0) + 1;
     counters.set(photo.collection, sequence);
 
+    const generated = `${collectionCode(photo.collection)}${String(sequence).padStart(2, "0")}`;
+    const wildlifeNumber = photo.name.trim();
+
     return {
       ...photo,
-      name: `${collectionCode(photo.collection)}${String(sequence).padStart(2, "0")}`,
+      // Wildlife uses Ed's own catalog numbers (including WL42, WL31, etc.),
+      // which do not follow the page's visual order. Other collections keep
+      // their automatically generated sequential labels.
+      name:
+        photo.collection === "wildlife" && /^WL\d+$/i.test(wildlifeNumber)
+          ? wildlifeNumber.toUpperCase()
+          : generated,
     };
   });
 }
@@ -295,7 +303,6 @@ export async function getPhotos(): Promise<Photo[]> {
   const importedOurBestFriends = (importedOurBestFriendsJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedPeopleWorld = (importedPeopleWorldJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const importedPlacesReflections = (importedPlacesReflectionsJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedWildlife = (importedWildlifeJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
   const photos = [
     ...livePhotos.filter((photo) => photo.collection !== "life-observed"),
     ...importedAirWater,
@@ -307,7 +314,6 @@ export async function getPhotos(): Promise<Photo[]> {
     ...importedOurBestFriends,
     ...importedPeopleWorld,
     ...importedPlacesReflections,
-    ...importedWildlife,
   ];
   const ordered = centerAirWaterHighlights(
     applyCuratedPhotoOrder(
