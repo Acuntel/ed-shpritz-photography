@@ -74,49 +74,176 @@ function mergeBundledImports(content: Content): Content {
   };
 }
 
-// Restore Ed's original "Animals Have Spoken" sayings to the wildlife photos
-// he matched by collection number. Positions 16 and 18 are confirmed duplicate
-// pictures of 9 and 8 respectively, so they are hidden from both the public
-// collection and the admin editor. The original numbers are calculated before
-// filtering so later captions do not shift when the duplicates disappear.
-function applyWildlifeSayings(content: Content): Content {
-  const wildlife = content.photos
-    .filter((photo) => photo.collection === "wildlife")
-    .sort((a, b) => a.order - b.order);
+// Ed's August 2026 Wildlife list is applied exactly once, by stable photo ID.
+// The migration marker lives inside the site object because the admin editor
+// preserves that object on every publish. After the first corrected save,
+// future title and description edits remain Ed's source of truth.
+const WILDLIFE_LIST_MIGRATION = "wildlife-list-2026-08-20";
+const CONFIRMED_WILDLIFE_DUPLICATES = new Set([
+  "wl-lone-bison",
+  "wl-hippos-at-rest",
+]);
 
-  const positionById = new Map(
-    wildlife.map((photo, index) => [photo.id, index + 1] as const),
-  );
+const WILDLIFE_CORRECTIONS: Record<
+  string,
+  Pick<Photo, "name" | "title" | "description">
+> = {
+  "lions-pair": {
+    name: "WL01",
+    title: "MODELS",
+    description: "Why’s everyone looking at us?",
+  },
+  giraffes: {
+    name: "WL02",
+    title: "Let’s take a walk",
+    description: "What tall tale do you want next?",
+  },
+  zebras: {
+    name: "WL03",
+    title: "Finally…",
+    description: "a little peace for a cool drink",
+  },
+  "elephant-portrait": {
+    name: "WL04",
+    title: "HEY Guys….",
+    description: "so now I know how to rest that schnoz…",
+  },
+  "elephants-walking": {
+    name: "WL05",
+    title: "NOW…",
+    description: "… all together .. Stop… Smile ! Thank you!",
+  },
+  rhinos: { name: "WL08", title: "MY-", description: "MINI ME!" },
+  "hippo-yawn": {
+    name: "WL07",
+    title: "Splish ..splash ..",
+    description: "JUST…Taking … A ….",
+  },
+  wildebeest: {
+    name: "WL42",
+    title: "Boy do I have a story!",
+    description: "Did you hear the one about Custer?",
+  },
+  "deer-twins": {
+    name: "WL09",
+    title: "Twins",
+    description: "We’d prefer our story—“Bambi”!",
+  },
+  turtles: { name: "WL10", title: "BABY!", description: "Hugs coming!" },
+  "wl-elephant-at-water": {
+    name: "WL11",
+    title: "DONT BOTHER ME…",
+    description:
+      "A LITTLE SALAD.. THEN A DRINK.. MORE SALAD.. GREAT LUNCH!",
+  },
+  "wl-young-gorilla": {
+    name: "WL12",
+    title: "What a face",
+    description: "Take the picture already.. I can’t hold on forever",
+  },
+  "wl-tree-squirrel": {
+    name: "WL13",
+    title: "Oh Nuts..",
+    description: "finish the story already!",
+  },
+  "wl-baboons-in-mist": {
+    name: "WL14",
+    title: "A special moment.",
+    description: "Love is forever…",
+  },
+  "wl-giraffe-in-tree": {
+    name: "WL15",
+    title: "Just a little snack..",
+    description: "Those Darn Thorns..",
+  },
+  "wl-zebras-at-water": {
+    name: "WL31",
+    title: "Family Time",
+    description: "Let me tell you a story.. Am I in the story?",
+  },
+  "wl-baboon-and-young": {
+    name: "WL40",
+    title: "Mother’s Day",
+    description: "Love!",
+  },
+  "wl-hippo-in-reeds": {
+    name: "WL28",
+    title: "HIDING",
+    description: "“Peek-a-boo!” I see….",
+  },
+  "wl-protected-baby": {
+    name: "WL21",
+    title: "Cute",
+    description: "Just Cute!",
+  },
+  "wl-gorilla-in-leaves": {
+    name: "WL22",
+    title: "Marco",
+    description: "Polo… Bet cant find me!",
+  },
+  "wl-leopard-in-tree": {
+    name: "WL23",
+    title: "Waiting for the Story",
+    description:
+      "Don’t leave me hanging again…I’m tired of these no-ending stories!",
+  },
+  "wl-mountain-goat": {
+    name: "WL24",
+    title: "BAAAAA….",
+    description: "I’m a goat. Keep me out of the story!",
+  },
+  "wl-bison-in-snow": {
+    name: "WL25",
+    title: "On your Mark, Get set….",
+    description:
+      "My turn to Win! OH- let’s just see where that Custer story happened!",
+  },
+  "wl-lion-portrait": {
+    name: "WL26",
+    title: "KING",
+    description: "Nothing more said!",
+  },
+  "elephant-line": {
+    name: "WL27",
+    title: "The End.. but not over!",
+    description: "",
+  },
+  "wl-camel-rider": {
+    name: "WL39",
+    title: "I brushed my teeth…",
+    description: "Where do I spit?",
+  },
+  "wl-water-visitor": {
+    name: "WL30",
+    title: "My turn!",
+    description: "If a woodchuck could chuck wood...",
+  },
+};
 
-  const sayings: Record<number, string> = {
-    2: "What tall tale do you want next?",
-    8: "Splish Splash...",
-    9: "You want to hear about Custer?\nWe were there.",
-    10: "Bambi? ... Which One?",
-    13: "Finish the story already!",
-    14: "OH ... NUTS to all of you!",
-    17: "Am I in the story?\nI LOVE George!",
-    21: "If a woodchuck could chuck wood...",
-    25: "Where is George...\nGracie?\nI'm lost!",
-    26: "Leave me hanging again...\nTired of these no-ending stories!",
-    27: "Baaaaaaaa...\nI'm a goat.\nKeep me out of the story!",
-  };
+type SiteWithMigrations = SiteContent & { migrations?: string[] };
 
-  const duplicatePositions = new Set([16, 18]);
+function applyWildlifeMigration(content: Content): Content {
+  const site = content.site as SiteWithMigrations;
+  const alreadyApplied =
+    site.migrations?.includes(WILDLIFE_LIST_MIGRATION) ?? false;
 
   return {
     ...content,
+    site: alreadyApplied
+      ? site
+      : {
+          ...site,
+          migrations: [
+            ...(site.migrations ?? []),
+            WILDLIFE_LIST_MIGRATION,
+          ],
+        },
     photos: content.photos
-      .filter((photo) => {
-        if (photo.collection !== "wildlife") return true;
-        const position = positionById.get(photo.id);
-        return position === undefined || !duplicatePositions.has(position);
-      })
+      .filter((photo) => !CONFIRMED_WILDLIFE_DUPLICATES.has(photo.id))
       .map((photo) => {
-        if (photo.collection !== "wildlife") return photo;
-        const position = positionById.get(photo.id);
-        const description = position === undefined ? undefined : sayings[position];
-        return description === undefined ? photo : { ...photo, description };
+        if (alreadyApplied || photo.collection !== "wildlife") return photo;
+        const correction = WILDLIFE_CORRECTIONS[photo.id];
+        return correction ? { ...photo, ...correction } : photo;
       }),
   };
 }
@@ -189,7 +316,7 @@ async function readLiveBlob(): Promise<Content | null> {
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    const content = applyWildlifeSayings(
+    const content = applyWildlifeMigration(
       mergeBundledImports((await readLiveBlob()) ?? bundledContent()),
     );
     return normalizeEd(content) as Content;
@@ -232,8 +359,12 @@ async function backupCurrent(): Promise<void> {
 // stable so reads always find it. The current live copy is snapshotted first so
 // the previous state is always recoverable.
 export async function saveContent(content: Content): Promise<void> {
+  // A stale admin tab may publish once after this fix deploys. Running the
+  // migration here as well makes that first save safe; after its marker is
+  // stored, later Ed edits pass through unchanged.
+  const safeContent = applyWildlifeMigration(content);
   await backupCurrent();
-  const result = await put(CONTENT_PATH, JSON.stringify(content), {
+  const result = await put(CONTENT_PATH, JSON.stringify(safeContent), {
     access: "public",
     addRandomSuffix: false,
     allowOverwrite: true,
