@@ -220,12 +220,44 @@ const WILDLIFE_CORRECTIONS: Record<
   },
 };
 
+// This original, high-resolution solo-buffalo record was removed by the old
+// position-based duplicate filter. Restore it only during the one-time repair;
+// after the migration marker is saved, Ed can delete or edit it normally.
+const RECOVERABLE_WILDLIFE_IDS = new Set(["wildebeest"]);
+
 type SiteWithMigrations = SiteContent & { migrations?: string[] };
 
 function applyWildlifeMigration(content: Content): Content {
   const site = content.site as SiteWithMigrations;
   const alreadyApplied =
     site.migrations?.includes(WILDLIFE_LIST_MIGRATION) ?? false;
+
+  let photos = content.photos;
+  if (!alreadyApplied) {
+    const existingIds = new Set(photos.map((photo) => photo.id));
+    const recover = (photosJson as unknown as Photo[]).filter(
+      (photo) =>
+        RECOVERABLE_WILDLIFE_IDS.has(photo.id) && !existingIds.has(photo.id),
+    );
+    if (recover.length > 0) {
+      const before = photos.find((photo) => photo.id === "hippo-yawn")?.order;
+      const after = photos.find((photo) => photo.id === "deer-twins")?.order;
+      const recoveredOrder =
+        before !== undefined && after !== undefined
+          ? (before + after) / 2
+          : photos.reduce(
+              (highest, photo) => Math.max(highest, photo.order),
+              -1,
+            ) + 1;
+      photos = [
+        ...photos,
+        ...recover.map((photo, index) => ({
+          ...photo,
+          order: recoveredOrder + index / 100,
+        })),
+      ];
+    }
+  }
 
   return {
     ...content,
@@ -238,7 +270,7 @@ function applyWildlifeMigration(content: Content): Content {
             WILDLIFE_LIST_MIGRATION,
           ],
         },
-    photos: content.photos
+    photos: photos
       .filter((photo) => !CONFIRMED_WILDLIFE_DUPLICATES.has(photo.id))
       .map((photo) => {
         if (alreadyApplied || photo.collection !== "wildlife") return photo;
