@@ -335,7 +335,7 @@ function applyPhotoNumberMigration(content: Content): Content {
         ...(site.migrations ?? []),
         PHOTO_NUMBERING_MIGRATION,
       ],
-    },
+    } as SiteWithMigrations,
     photos: content.photos.map((photo) => {
       const name = numberById.get(photo.id);
       return name ? { ...photo, name } : photo;
