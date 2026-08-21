@@ -279,8 +279,13 @@ function centerAirWaterHighlights(photos: Photo[]): Photo[] {
   if (air.length < 3) return photos;
   const highlights = new Set(["not-a-blue-angel", "p-1783449757657-0", "p-1783449602721-0", "p-1783449391379-0"]);
   const remaining = air.filter((photo) => !highlights.has(photo.id));
-  const midpoint = Math.floor(remaining.length / 2);
-  remaining.splice(midpoint, 0, ...air.filter((photo) => highlights.has(photo.id)));
+  // Keep these four photos anchored after the five-ship image. Using the
+  // collection midpoint made them jump whenever duplicates were removed.
+  const anchor = remaining.findIndex(
+    (photo) => photo.id === "aw-five-ship-diamond",
+  );
+  const insertAt = anchor >= 0 ? anchor + 1 : Math.floor(remaining.length / 2);
+  remaining.splice(insertAt, 0, ...air.filter((photo) => highlights.has(photo.id)));
   let cursor = 0;
   return photos.map((photo) =>
     photo.collection === "air-and-water-show" ? remaining[cursor++] : photo,
