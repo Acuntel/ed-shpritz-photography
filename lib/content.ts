@@ -280,6 +280,68 @@ function applyWildlifeMigration(content: Content): Content {
   };
 }
 
+// Number every photograph once, collection by collection, without touching its
+// title, description, image, collection, or order. The marker follows the same
+// safe pattern as the Wildlife repair: once an admin save stores it in Blob,
+// later edits to photo names remain Ed's source of truth.
+const PHOTO_NUMBERING_MIGRATION = "photo-numbers-2026-08-20";
+const COLLECTION_NUMBER_PREFIXES: Record<string, string> = {
+  "minimal-white": "MW",
+  watercolor: "WC",
+  "places-and-reflections": "PR",
+  "the-white-city": "BW",
+  wildlife: "WL",
+  "natures-beauty-and-flight": "NBF",
+  birds: "B",
+  icm: "ICM",
+  "our-best-friends": "OBF",
+  "people-of-the-world": "PW",
+  "air-and-water-show": "AWS",
+  "natures-fury": "NF",
+  "time-preserved": "TP",
+  "life-observed": "LO",
+};
+
+function applyPhotoNumberMigration(content: Content): Content {
+  const site = content.site as SiteWithMigrations;
+  const alreadyApplied =
+    site.migrations?.includes(PHOTO_NUMBERING_MIGRATION) ?? false;
+  if (alreadyApplied) return content;
+
+  const numberById = new Map<string, string>();
+  for (const [collection, prefix] of Object.entries(
+    COLLECTION_NUMBER_PREFIXES,
+  )) {
+    content.photos
+      .map((photo, index) => ({ photo, index }))
+      .filter(({ photo }) => photo.collection === collection)
+      .sort(
+        (a, b) =>
+          a.photo.order - b.photo.order || a.index - b.index,
+      )
+      .forEach(({ photo }, index) =>
+        numberById.set(
+          photo.id,
+          `${prefix} ${String(index + 1).padStart(2, "0")}`,
+        ),
+      );
+  }
+
+  return {
+    ...content,
+    site: {
+      ...site,
+      migrations: [
+        ...(site.migrations ?? []),
+        PHOTO_NUMBERING_MIGRATION,
+      ],
+    },
+    photos: content.photos.map((photo) => {
+      const name = numberById.get(photo.id);
+      return name ? { ...photo, name } : photo;
+    }),
+  };
+}
 // Normalize the legacy first name wherever it appears in live Blob content.
 // This also updates photo alt text and future admin saves without changing URLs.
 function normalizeEd(value: unknown): unknown {
@@ -348,8 +410,10 @@ async function readLiveBlob(): Promise<Content | null> {
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    const content = applyWildlifeMigration(
-      mergeBundledImports((await readLiveBlob()) ?? bundledContent()),
+    const content = applyPhotoNumberMigration(
+      applyWildlifeMigration(
+        mergeBundledImports((await readLiveBlob()) ?? bundledContent()),
+      ),
     );
     return normalizeEd(content) as Content;
   },
@@ -394,7 +458,9 @@ export async function saveContent(content: Content): Promise<void> {
   // A stale admin tab may publish once after this fix deploys. Running the
   // migration here as well makes that first save safe; after its marker is
   // stored, later Ed edits pass through unchanged.
-  const safeContent = applyWildlifeMigration(content);
+  const safeContent = applyPhotoNumberMigration(
+    applyWildlifeMigration(content),
+  );
   await backupCurrent();
   const result = await put(CONTENT_PATH, JSON.stringify(safeContent), {
     access: "public",
