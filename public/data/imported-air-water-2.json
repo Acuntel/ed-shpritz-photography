@@ -1,35 +1,5 @@
 [
   {
-    "id": "aw2-blue-angels-pair",
-    "src": "/images/uploads/air-water/blue-angels-pair.jpg",
-    "alt": "Two Blue Angels jets fly together across a clear blue sky. — by Ed Shpritz",
-    "name": "Blue Angels Pair",
-    "title": "Blue Angels Pair",
-    "description": "",
-    "collection": "air-and-water-show",
-    "trigger": false,
-    "award": false,
-    "order": 3500,
-    "width": 320,
-    "height": 194,
-    "lqip": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAPABgDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAMEAv/EACEQAAICAgIBBQAAAAAAAAAAAAEDAAIEERIhMRMzQWFx/8QAFwEAAwEAAAAAAAAAAAAAAAAAAAEEBf/EABgRAAMBAQAAAAAAAAAAAAAAAAABESFB/9oADAMBAAIRAxEAPwDdjUHibAWPgEyZr2Y3blG6/HJQ2R+iWMXRlOLKVtU/BG5KvDal9bLymFQPt3OwB9GaLvCFQbjNplK9RRPHeu+jCOFQN6AG+zCNUMP/2Q=="
-  },
-  {
-    "id": "aw2-three-way-climb",
-    "src": "/images/uploads/air-water/three-way-climb.jpg",
-    "alt": "Three jets rise in a V-shaped formation with smoke trails. — by Ed Shpritz",
-    "name": "Three-Way Climb",
-    "title": "Three-Way Climb",
-    "description": "",
-    "collection": "air-and-water-show",
-    "trigger": false,
-    "award": false,
-    "order": 3501,
-    "width": 240,
-    "height": 265,
-    "lqip": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAYABYDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAIDBQb/xAAiEAACAgICAAcAAAAAAAAAAAAAAQIDETEEEgUhQVJxgaH/xAAXAQEBAQEAAAAAAAAAAAAAAAABAgQF/8QAFhEBAQEAAAAAAAAAAAAAAAAAAQAh/9oADAMBAAIRAxEAPwDlaqsrLLnUsE6IObjGO3oudT6Vv3Jy+snSCyrZ9leH5AvtBKSNLhWdeRU36SRqeKSjRVXWtuKi/jb/AFgCMJti2TywAStV/9k="
-  },
-  {
     "id": "aw2-smoke-diagonal",
     "src": "/images/uploads/air-water/smoke-diagonal.jpg",
     "alt": "A line of jets sweeps diagonally through a veil of smoke. — by Ed Shpritz",
@@ -43,21 +13,6 @@
     "width": 1974,
     "height": 2369,
     "lqip": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAYABQDASIAAhEBAxEB/8QAGAABAQADAAAAAAAAAAAAAAAAAAUBAgT/xAAjEAACAgIBAgcAAAAAAAAAAAABAgADESEFBBIUQlJhsdHw/8QAGAEBAAMBAAAAAAAAAAAAAAAAAQACBAX/xAAYEQEBAQEBAAAAAAAAAAAAAAAAASEREv/aAAwDAQACEQMRAD8AjStwhKNa+M6+PwktEZ2CqMkzptuCU+HoJ7PO3rP1OhdxnildzZqsKdPWliLruYncSJEPETtbBiFIGs6PvMREsCIiIf/Z"
-  },
-  {
-    "id": "aw2-three-jet-rise",
-    "src": "/images/uploads/air-water/three-jet-rise.jpg",
-    "alt": "Three Blue Angels jets climb together with smoke trails. — by Ed Shpritz",
-    "name": "Three-Jet Rise",
-    "title": "Three-Jet Rise",
-    "description": "",
-    "collection": "air-and-water-show",
-    "trigger": false,
-    "award": false,
-    "order": 3503,
-    "width": 260,
-    "height": 240,
-    "lqip": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAWABgDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAQBBQP/xAAkEAACAgECBQUAAAAAAAAAAAABAgADEQQhEjJCUYEFExRBwf/EABkBAAIDAQAAAAAAAAAAAAAAAAIDAAEEBf/EABcRAQEBAQAAAAAAAAAAAAAAAAABMQL/2gAMAwEAAhEDEQA/AORMLKAd842OJ70U+65yeFEHE7dhKrtMtS5dMWBOOwHpB5E/TOpawxANxkbiJuIlo7vp+mREprfdSnybcdWOVfGMyLXWlqKy276gm5z3+gPERF86K4giIjAv/9k="
   },
   {
     "id": "aw2-crossing-smoke",
