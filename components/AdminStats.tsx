@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
-type Range = { visits: number; views: number };
+type Range = { visits: number; pageVisits: number };
 type NamedCount = { name: string; count: number };
 type Stats = {
   week: Range;
@@ -17,8 +17,8 @@ function visits(n: number): string {
   return `${n.toLocaleString()} ${n === 1 ? "visit" : "visits"}`;
 }
 
-function views(n: number): string {
-  return `${n.toLocaleString()} page ${n === 1 ? "view" : "views"}`;
+function pageVisits(n: number): string {
+  return `${n.toLocaleString()} page ${n === 1 ? "visit" : "visits"}`;
 }
 
 function Tile({ label, range }: { label: string; range: Range }) {
@@ -29,7 +29,7 @@ function Tile({ label, range }: { label: string; range: Range }) {
         {range.visits.toLocaleString()}
       </p>
       <p className="mt-1 font-sans text-sm text-ink-muted">
-        {range.visits === 1 ? "visit" : "visits"} · {views(range.views)}
+        {range.visits === 1 ? "visit" : "visits"} · {pageVisits(range.pageVisits)}
       </p>
     </div>
   );
