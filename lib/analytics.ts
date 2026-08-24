@@ -2,10 +2,10 @@
 // Used by /api/stats (the admin "Who's looking" tab) and /api/digest (Ed's
 // weekly email). Both stay dormant until GC_SITE + GC_TOKEN are set.
 //
-// GoatCounter has no per-person tracking at all: "visits" are short-lived
-// sessions, "views" are pageviews. That's the honest vocabulary the UI uses.
+// GoatCounter counts anonymous visitors, not identifiable people. Its per-path
+// counts describe page visits; it does not provide traditional pageviews.
 
-export type RangeStats = { visits: number; views: number };
+export type RangeStats = { visits: number; pageVisits: number };
 export type NamedCount = { name: string; count: number };
 
 export function analyticsConfigured(): boolean {
@@ -15,13 +15,15 @@ export function analyticsConfigured(): boolean {
 // Counting began the day the GoatCounter site was created; it rejects ranges
 // that start before then ("before the site's creation").
 const SINCE = Date.UTC(2026, 6, 25);
+const HOUR = 3_600_000;
 
-// GoatCounter's start/end are DATETIMES — a bare date parses as midnight, so
-// an end of "today" would silently exclude the whole current day. Send full
-// RFC3339 timestamps, clamped to [site creation, now] (both ends rejected
-// outside that window).
+// GoatCounter requires start/end DATETIMES rounded to full hours. The previous
+// implementation sent the cron invocation's seconds (for example :00:29),
+// which GoatCounter rejected with a 404 and stopped the Monday email.
 function ts(ms: number): string {
-  const clamped = Math.min(Math.max(ms, SINCE), Date.now());
+  const currentHour = Math.floor(Date.now() / HOUR) * HOUR;
+  const requestedHour = Math.floor(ms / HOUR) * HOUR;
+  const clamped = Math.min(Math.max(requestedHour, SINCE), currentHour);
   return new Date(clamped).toISOString().slice(0, 19) + "Z";
 }
 
@@ -89,12 +91,18 @@ export async function rangeStats(
   const [totals, hits] = await Promise.all([
     get("stats/total", { start: ts(startAt), end: ts(endAt) }) as Promise<{
       total: number;
+      total_events?: number;
     }>,
     hitRows(startAt, endAt),
   ]);
-  // stats/total.total = pageviews; per-path hit counts = visits.
-  const visits = hits.reduce((n, h) => n + (h.count ?? 0), 0);
-  return { visits, views: Number(totals.total ?? 0) };
+  // total includes events; subtract them for website visits. Per-path visitor
+  // counts add up to page visits and can exceed the site-wide visitor count.
+  const visits = Math.max(
+    0,
+    Number(totals.total ?? 0) - Number(totals.total_events ?? 0),
+  );
+  const pageVisits = hits.reduce((n, h) => n + Number(h.count ?? 0), 0);
+  return { visits, pageVisits };
 }
 
 export async function topMetrics(
