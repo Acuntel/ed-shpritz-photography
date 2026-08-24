@@ -119,13 +119,15 @@ export async function GET(req: Request) {
     `• ${thisWeek.visits} counted ${plural(thisWeek.visits, "visit", "visits")} across the website (${thisWeek.pageVisits} page ${plural(thisWeek.pageVisits, "visit", "visits")} in all)`,
     `• The week before: ${lastWeek.visits} counted ${plural(lastWeek.visits, "visit", "visits")}`,
   ];
+  lines.push("", "Collections visited most:");
   if (topCollections.length > 0) {
-    lines.push("", "Collections visited most:");
     topCollections.forEach((collection, index) =>
       lines.push(
         `  ${index + 1}. ${collection.name} — ${collection.count} ${plural(collection.count, "visit", "visits")}`,
       ),
     );
+  } else {
+    lines.push("  No collection pages were opened this week.");
   }
   lines.push(
     "",
