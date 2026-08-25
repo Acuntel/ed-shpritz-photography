@@ -90,12 +90,23 @@ export default async function AboutPage() {
       </section>
 
       <section className="container-rail mt-24 text-center">
+        <p className="font-serif text-2xl font-light text-ink-soft">
+          I would enjoy keeping in touch.
+        </p>
         <Link
-          href="/#collections"
-          className="border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
+          href="/#stay-in-touch"
+          className="mt-5 inline-block rounded-full bg-ink px-7 py-3 font-sans text-sm text-paper transition-colors hover:bg-ink-soft"
         >
-          Back to the collections
+          Sign up here
         </Link>
+        <div>
+          <Link
+            href="/#collections"
+            className="mt-10 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
+          >
+            Back to the collections
+          </Link>
+        </div>
       </section>
     </article>
   );
