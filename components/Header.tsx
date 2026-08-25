@@ -10,6 +10,7 @@ const links = [
   { href: "/prints", label: "Prints" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+  { href: "/#stay-in-touch", label: "Keep in Touch" },
 ];
 
 export default function Header() {
