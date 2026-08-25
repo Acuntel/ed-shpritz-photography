@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // trailingSlash: true, so paths carry a trailing slash — keep sitemap URLs
   // consistent with the page canonicals.
-  const staticPages = ["", "about", "prints", "contact"].map((p) => ({
+  const staticPages = ["", "about", "prints", "contact", "privacy"].map((p) => ({
     url: p === "" ? `${SITE_URL}/` : `${SITE_URL}/${p}/`,
     changeFrequency: "monthly" as const,
     priority: p === "" ? 1 : 0.7,

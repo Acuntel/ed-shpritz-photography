@@ -5,6 +5,7 @@ import Hero from "@/components/Hero";
 import CollectionsIndex from "@/components/CollectionsIndex";
 import Edism from "@/components/Edism";
 import Reveal from "@/components/Reveal";
+import StayInTouch from "@/components/StayInTouch";
 
 // Read Ed's live content from Blob on every request so his published changes
 // appear instantly with no rebuild.
@@ -72,6 +73,8 @@ export default async function Home() {
           </Reveal>
         </div>
       </section>
+
+      <StayInTouch />
     </>
   );
 }

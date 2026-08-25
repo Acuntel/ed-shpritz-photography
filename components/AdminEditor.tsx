@@ -12,6 +12,7 @@ import AdminGalleries from "@/components/AdminGalleries";
 import AdminPhotographs from "@/components/AdminPhotographs";
 import AdminCollections from "@/components/AdminCollections";
 import AdminStats from "@/components/AdminStats";
+import AdminSubscribers from "@/components/AdminSubscribers";
 import { Area, Select, Text } from "@/components/AdminFields";
 import { sanitizeFilename } from "@/lib/download";
 import { measureImage } from "@/lib/measure";
@@ -22,6 +23,7 @@ const tabs = [
   "Words",
   "Collections",
   "Galleries",
+  "Subscribers",
   "Who's looking",
 ] as const;
 type Tab = (typeof tabs)[number];
@@ -677,6 +679,8 @@ export default function AdminEditor({
         )}
 
         {tab === "Who's looking" && <AdminStats passcode={passcode} />}
+
+        {tab === "Subscribers" && <AdminSubscribers passcode={passcode} />}
 
         {tab === "Collections" && (
           <AdminCollections

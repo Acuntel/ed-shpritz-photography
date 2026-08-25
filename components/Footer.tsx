@@ -16,7 +16,7 @@ export default async function Footer() {
           <p className="mt-1 font-serif text-lg font-light italic text-ink-soft">
             {site.tagline}
           </p>
-          <div className="mt-5 flex gap-5 font-sans text-sm text-ink-muted">
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 font-sans text-sm text-ink-muted">
             <Link href="/prints" className="transition-colors hover:text-ink">
               Prints
             </Link>
@@ -25,6 +25,12 @@ export default async function Footer() {
             </Link>
             <Link href="/contact" className="transition-colors hover:text-ink">
               Contact
+            </Link>
+            <Link href="/#stay-in-touch" className="transition-colors hover:text-ink">
+              Stay in touch
+            </Link>
+            <Link href="/privacy" className="transition-colors hover:text-ink">
+              Privacy
             </Link>
           </div>
         </div>
