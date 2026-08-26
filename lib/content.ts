@@ -280,6 +280,38 @@ function applyWildlifeMigration(content: Content): Content {
   };
 }
 
+// Apply Ed's confirmed BF06 caption once, by stable photo ID. The marker keeps
+// later admin edits authoritative after this correction has been saved.
+const BEST_FRIENDS_BF06_MIGRATION =
+  "best-friends-bf06-caption-2026-08-26";
+
+function applyBestFriendsBf06Migration(content: Content): Content {
+  const site = content.site as SiteWithMigrations;
+  const alreadyApplied =
+    site.migrations?.includes(BEST_FRIENDS_BF06_MIGRATION) ?? false;
+  if (alreadyApplied) return content;
+
+  return {
+    ...content,
+    site: {
+      ...site,
+      migrations: [
+        ...(site.migrations ?? []),
+        BEST_FRIENDS_BF06_MIGRATION,
+      ],
+    } as SiteWithMigrations,
+    photos: content.photos.map((photo) =>
+      photo.id === "cavalier"
+        ? {
+            ...photo,
+            title: "Small King",
+            description: "Large heart",
+          }
+        : photo,
+    ),
+  };
+}
+
 // Number every photograph once, collection by collection, without touching its
 // title, description, image, collection, or order. The marker follows the same
 // safe pattern as the Wildlife repair: once an admin save stores it in Blob,
@@ -411,8 +443,10 @@ async function readLiveBlob(): Promise<Content | null> {
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
     const content = applyPhotoNumberMigration(
-      applyWildlifeMigration(
-        mergeBundledImports((await readLiveBlob()) ?? bundledContent()),
+      applyBestFriendsBf06Migration(
+        applyWildlifeMigration(
+          mergeBundledImports((await readLiveBlob()) ?? bundledContent()),
+        ),
       ),
     );
     return normalizeEd(content) as Content;
@@ -459,7 +493,7 @@ export async function saveContent(content: Content): Promise<void> {
   // migration here as well makes that first save safe; after its marker is
   // stored, later Ed edits pass through unchanged.
   const safeContent = applyPhotoNumberMigration(
-    applyWildlifeMigration(content),
+    applyBestFriendsBf06Migration(applyWildlifeMigration(content)),
   );
   await backupCurrent();
   const result = await put(CONTENT_PATH, JSON.stringify(safeContent), {
