@@ -42,12 +42,17 @@ export default function AdminPhotographs({
 
   // Count + cover for each collection card.
   const counts = useMemo(() => {
-    const m: Record<string, number> = {};
+    const m: Record<string, { published: number; hidden: number }> = {};
     photos.forEach((p) => {
-      m[p.collection] = (m[p.collection] ?? 0) + 1;
+      m[p.collection] ??= { published: 0, hidden: 0 };
+      if (p.published === false) m[p.collection].hidden += 1;
+      else m[p.collection].published += 1;
     });
     return m;
   }, [photos]);
+
+  const publishedTotal = photos.filter((p) => p.published !== false).length;
+  const hiddenTotal = photos.length - publishedTotal;
 
   // Resolve a thumbnail src, preferring a freshly-picked preview when the cover
   // points at a photo that hasn't been uploaded to the server yet.
@@ -58,7 +63,9 @@ export default function AdminPhotographs({
   };
 
   const coverFor = (c: Collection): string => {
-    const inIt = photos.filter((p) => p.collection === c.slug);
+    const inIt = photos.filter(
+      (p) => p.collection === c.slug && p.published !== false,
+    );
     const cover =
       c.cover && inIt.some((p) => p.src === c.cover)
         ? c.cover
@@ -124,14 +131,15 @@ export default function AdminPhotographs({
     return (
       <div className="space-y-6">
         <p className="font-sans text-sm text-ink-muted">
-          {photos.length} photographs in all, {triggerCount} shown on the home
-          page. Tap a collection to add pictures, put them in the order you
-          want, or change their words.
+          {publishedTotal} public photographs, {triggerCount} shown on the home
+          page{hiddenTotal ? `, and ${hiddenTotal} kept hidden in admin` : ""}.
+          Tap a collection to add pictures, put them in the order you want, or
+          change their words.
         </p>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {collections.map((c) => {
             const cover = coverFor(c);
-            const count = counts[c.slug] ?? 0;
+            const count = counts[c.slug] ?? { published: 0, hidden: 0 };
             return (
               <button
                 key={c.slug}
@@ -155,7 +163,9 @@ export default function AdminPhotographs({
                 </div>
                 <p className="mt-2 font-serif text-lg text-ink">{c.name}</p>
                 <p className="font-sans text-xs text-ink-muted">
-                  {count} photograph{count === 1 ? "" : "s"}
+                  {count.published} public photograph
+                  {count.published === 1 ? "" : "s"}
+                  {count.hidden ? ` · ${count.hidden} hidden` : ""}
                 </p>
               </button>
             );
@@ -168,6 +178,8 @@ export default function AdminPhotographs({
   // ---- Open collection: add / reorder / edit -------------------------------
   const collection = collections.find((c) => c.slug === openSlug);
   const inIt = photos.filter((p) => p.collection === openSlug);
+  const publicInIt = inIt.filter((p) => p.published !== false).length;
+  const hiddenInIt = inIt.length - publicInIt;
 
   return (
     <div className="space-y-6">
@@ -204,9 +216,10 @@ export default function AdminPhotographs({
           {collection?.name}
         </h2>
         <p className="mt-2 font-sans text-sm text-ink-muted">
-          {inIt.length} photograph{inIt.length === 1 ? "" : "s"}. New pictures
-          go to the top — use the arrows to set the order, which is the order
-          they appear on your site.
+          {publicInIt} public photograph{publicInIt === 1 ? "" : "s"}
+          {hiddenInIt ? ` and ${hiddenInIt} hidden` : ""}. New pictures go to
+          the top — use the arrows to set the order, which is the order they
+          appear on your site.
         </p>
       </div>
 

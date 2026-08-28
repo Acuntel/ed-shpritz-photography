@@ -8,15 +8,6 @@ import type {
 import { loadContent } from "./content";
 import imetaJson from "@/public/data/imeta.json";
 import bradyDescriptionsJson from "@/public/data/brady-descriptions.json";
-import importedAirWaterJson from "@/public/data/imported-air-water.json";
-import importedAirWater2Json from "@/public/data/imported-air-water-2.json";
-import importedBeautyFlightJson from "@/public/data/imported-beauty-flight.json";
-import importedLifeObservedJson from "@/public/data/imported-life-observed.json";
-import importedBlackWhiteJson from "@/public/data/imported-black-and-white.json";
-import importedIcmJson from "@/public/data/imported-icm.json";
-import importedOurBestFriendsJson from "@/public/data/imported-our-best-friends.json";
-import importedPeopleWorldJson from "@/public/data/imported-people-world.json";
-import importedPlacesReflectionsJson from "@/public/data/imported-places-reflections.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -298,28 +289,9 @@ export async function getSite(): Promise<SiteContent> {
 
 export async function getPhotos(): Promise<Photo[]> {
   const { photos: livePhotos } = await loadContent();
-  const existingIds = new Set(livePhotos.map((photo) => photo.id));
-  const importedAirWater = (importedAirWaterJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedAirWater2 = (importedAirWater2Json as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedBeautyFlight = (importedBeautyFlightJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedLifeObserved = importedLifeObservedJson as unknown as Photo[];
-  const importedBlackWhite = (importedBlackWhiteJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedIcm = (importedIcmJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedOurBestFriends = (importedOurBestFriendsJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedPeopleWorld = (importedPeopleWorldJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const importedPlacesReflections = (importedPlacesReflectionsJson as unknown as Photo[]).filter((photo) => !existingIds.has(photo.id));
-  const photos = [
-    ...livePhotos.filter((photo) => photo.collection !== "life-observed"),
-    ...importedAirWater,
-    ...importedAirWater2,
-    ...importedBeautyFlight,
-    ...importedLifeObserved,
-    ...importedBlackWhite,
-    ...importedIcm,
-    ...importedOurBestFriends,
-    ...importedPeopleWorld,
-    ...importedPlacesReflections,
-  ];
+  // Public pages and admin now share one master photo list. Hidden records stay
+  // available to admin without appearing in collections or on the home page.
+  const photos = livePhotos.filter((photo) => photo.published !== false);
   const ordered = centerAirWaterHighlights(
     applyCuratedPhotoOrder(
       photos

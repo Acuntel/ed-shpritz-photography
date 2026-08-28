@@ -236,6 +236,7 @@ export default function AdminEditor({
       title: "untitled",
       description: "",
       collection: slug,
+      published: true,
       trigger: false,
       order: 0,
     }));
@@ -361,7 +362,7 @@ export default function AdminEditor({
   };
 
   const triggerCount = useMemo(
-    () => photos.filter((p) => p.trigger).length,
+    () => photos.filter((p) => p.trigger && p.published !== false).length,
     [photos],
   );
 

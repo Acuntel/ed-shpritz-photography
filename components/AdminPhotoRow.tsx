@@ -170,6 +170,14 @@ export default function AdminPhotoRow({
             <label className="flex items-center gap-2 font-sans text-sm text-ink-soft">
               <input
                 type="checkbox"
+                checked={photo.published !== false}
+                onChange={(e) => onChange({ published: e.target.checked })}
+              />
+              Show in public collection
+            </label>
+            <label className="flex items-center gap-2 font-sans text-sm text-ink-soft">
+              <input
+                type="checkbox"
                 checked={photo.trigger}
                 onChange={(e) => onChange({ trigger: e.target.checked })}
               />

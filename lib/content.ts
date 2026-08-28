@@ -9,8 +9,12 @@ import siteJson from "@/public/data/site.json";
 import collectionsJson from "@/public/data/collections.json";
 import photosJson from "@/public/data/photos.json";
 import galleriesJson from "@/public/data/galleries.json";
+import importedAirWaterJson from "@/public/data/imported-air-water.json";
+import importedAirWater2Json from "@/public/data/imported-air-water-2.json";
+import importedBeautyFlightJson from "@/public/data/imported-beauty-flight.json";
 import importedBestFriendsJson from "@/public/data/imported-our-best-friends.json";
 import importedIcmJson from "@/public/data/imported-icm.json";
+import importedLifeObservedJson from "@/public/data/imported-life-observed.json";
 import importedPlacesReflectionsJson from "@/public/data/imported-places-reflections.json";
 import importedBlackAndWhiteJson from "@/public/data/imported-black-and-white.json";
 import importedPeopleWorldJson from "@/public/data/imported-people-world.json";
@@ -43,8 +47,12 @@ function bundledContent(): Content {
 }
 
 const bundledImports = [
+  ...(importedAirWaterJson as unknown as Photo[]),
+  ...(importedAirWater2Json as unknown as Photo[]),
+  ...(importedBeautyFlightJson as unknown as Photo[]),
   ...(importedBestFriendsJson as unknown as Photo[]),
   ...(importedIcmJson as unknown as Photo[]),
+  ...(importedLifeObservedJson as unknown as Photo[]),
   ...(importedPlacesReflectionsJson as unknown as Photo[]),
   ...(importedBlackAndWhiteJson as unknown as Photo[]),
   ...(importedPeopleWorldJson as unknown as Photo[]),
@@ -58,19 +66,11 @@ function mergeBundledImports(content: Content): Content {
   );
   if (missing.length === 0) return content;
 
-  const nextOrder =
-    content.photos.reduce((highest, photo) => Math.max(highest, photo.order), -1) +
-    1;
-
   return {
     ...content,
-    photos: [
-      ...content.photos,
-      ...missing.map((photo, index) => ({
-        ...photo,
-        order: nextOrder + index,
-      })),
-    ],
+    // Keep each imported record's established order. Those values are what the
+    // public collections already use, so the admin receives the same sequence.
+    photos: [...content.photos, ...missing],
   };
 }
 
@@ -226,6 +226,59 @@ const WILDLIFE_CORRECTIONS: Record<
 const RECOVERABLE_WILDLIFE_IDS = new Set(["wildebeest"]);
 
 type SiteWithMigrations = SiteContent & { migrations?: string[] };
+
+// Repair the historical split between the public collection lists and the
+// master list used by admin. This runs once, then the migration marker makes
+// later admin edits authoritative (including intentional deletions).
+const ADMIN_PUBLIC_PARITY_MIGRATION =
+  "admin-public-gallery-parity-2026-08-28";
+
+function applyAdminPublicParityMigration(content: Content): Content {
+  const site = content.site as SiteWithMigrations;
+  const alreadyApplied =
+    site.migrations?.includes(ADMIN_PUBLIC_PARITY_MIGRATION) ?? false;
+  if (alreadyApplied) return content;
+
+  const merged = mergeBundledImports(content);
+  const publicLifeObserved = (
+    importedLifeObservedJson as unknown as Photo[]
+  ).map((photo) => ({ ...photo, published: true }));
+  const publicLifeObservedIds = new Set(
+    publicLifeObserved.map((photo) => photo.id),
+  );
+
+  // Five older Life Observed records exist only in admin. Preserve them rather
+  // than deleting them, but record their existing public status explicitly.
+  const hiddenLifeObserved = content.photos
+    .filter(
+      (photo) =>
+        photo.collection === "life-observed" &&
+        !publicLifeObservedIds.has(photo.id),
+    )
+    .map((photo, index) => ({
+      ...photo,
+      published: false,
+      order: 6000 + index,
+    }));
+
+  return {
+    ...merged,
+    site: {
+      ...site,
+      migrations: [
+        ...(site.migrations ?? []),
+        ADMIN_PUBLIC_PARITY_MIGRATION,
+      ],
+    } as SiteWithMigrations,
+    photos: [
+      ...merged.photos.filter(
+        (photo) => photo.collection !== "life-observed",
+      ),
+      ...publicLifeObserved,
+      ...hiddenLifeObserved,
+    ],
+  };
+}
 
 function applyWildlifeMigration(content: Content): Content {
   const site = content.site as SiteWithMigrations;
@@ -445,7 +498,9 @@ export const loadContent = cache(
     const content = applyPhotoNumberMigration(
       applyBestFriendsBf06Migration(
         applyWildlifeMigration(
-          mergeBundledImports((await readLiveBlob()) ?? bundledContent()),
+          applyAdminPublicParityMigration(
+            (await readLiveBlob()) ?? bundledContent(),
+          ),
         ),
       ),
     );
@@ -493,7 +548,9 @@ export async function saveContent(content: Content): Promise<void> {
   // migration here as well makes that first save safe; after its marker is
   // stored, later Ed edits pass through unchanged.
   const safeContent = applyPhotoNumberMigration(
-    applyBestFriendsBf06Migration(applyWildlifeMigration(content)),
+    applyBestFriendsBf06Migration(
+      applyWildlifeMigration(applyAdminPublicParityMigration(content)),
+    ),
   );
   await backupCurrent();
   const result = await put(CONTENT_PATH, JSON.stringify(safeContent), {

@@ -43,7 +43,9 @@ export default function AdminCollections({
         collection up or down.
       </p>
       {collections.map((c, i) => {
-        const inIt = photos.filter((p) => p.collection === c.slug);
+        const inIt = photos.filter(
+          (p) => p.collection === c.slug && p.published !== false,
+        );
         const resolvedCover =
           c.cover && inIt.some((p) => p.src === c.cover)
             ? c.cover

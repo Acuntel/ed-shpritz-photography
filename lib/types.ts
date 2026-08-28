@@ -24,6 +24,9 @@ export type Photo = {
   title: string;
   description: string;
   collection: string;
+  // Hidden photographs remain editable in admin but are omitted from every
+  // public collection and from the home page.
+  published?: boolean;
   // Optional subgroup within a collection (e.g. "Fog", "Boats Beached",
   // "Life"). Consecutive photos sharing a section render under one heading.
   section?: string;
