@@ -1,27 +1,9 @@
-import { pbkdf2Sync, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
+import { isValidAdminPasscode } from "@/lib/admin-auth";
 import { loadContent, saveContent, type Content } from "@/lib/content";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const ADMIN_PASSWORD = {
-  iterations: 310000,
-  salt: Buffer.from("UthLEyMaYEUxOqY4ZGRYwQ==", "base64"),
-  hash: Buffer.from("rflpocAwxBMa3+7Ex8Ik7ppZAuqu8UyYksk8ROv5Hcs=", "base64"),
-} as const;
-
-function isValidPasscode(passcode: unknown) {
-  if (typeof passcode !== "string") return false;
-  const candidate = pbkdf2Sync(
-    passcode,
-    ADMIN_PASSWORD.salt,
-    ADMIN_PASSWORD.iterations,
-    ADMIN_PASSWORD.hash.length,
-    "sha256",
-  );
-  return timingSafeEqual(candidate, ADMIN_PASSWORD.hash);
-}
 
 // GET — the admin loads the current LIVE content from here (not the bundled
 // /data/*.json, which goes stale the moment Ed publishes). Content is public.
@@ -54,7 +36,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Bad request." }, { status: 400 });
   }
 
-  if (!isValidPasscode(body.passcode)) {
+  if (!isValidAdminPasscode(body.passcode)) {
     return NextResponse.json(
       { error: "That password is not right." },
       { status: 401 },

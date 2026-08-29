@@ -185,10 +185,11 @@ export default function AdminEditor({
         height: meta.height,
         lqip: meta.lqip,
       });
-    } catch {
+    } catch (e) {
       setFailed((f) => ({ ...f, [id]: true }));
       setNotice(
-        "That picture could not be saved just now. Please check your internet and choose it again.",
+        (e as Error).message ||
+          "That picture could not be saved just now. Please check your internet and choose it again.",
       );
     } finally {
       setUploading((u) => {
@@ -316,10 +317,11 @@ export default function AdminEditor({
             : g,
         ),
       );
-    } catch {
+    } catch (e) {
       setFailed((f) => ({ ...f, [id]: true }));
       setNotice(
-        "That picture could not be saved just now. Please check your internet and choose it again.",
+        (e as Error).message ||
+          "That picture could not be saved just now. Please check your internet and choose it again.",
       );
     } finally {
       setUploading((u) => {

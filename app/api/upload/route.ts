@@ -1,5 +1,6 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
+import { isValidAdminPasscode } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,11 +17,10 @@ export async function POST(req: Request) {
       body,
       request: req,
       onBeforeGenerateToken: async (_pathname, clientPayload) => {
-        if (
-          !process.env.ADMIN_PASSCODE ||
-          clientPayload !== process.env.ADMIN_PASSCODE
-        ) {
-          throw new Error("Not allowed.");
+        if (!isValidAdminPasscode(clientPayload)) {
+          throw new Error(
+            "Your admin sign-in expired. Sign out, sign in again, and retry the picture.",
+          );
         }
         return {
           allowedContentTypes: ["image/jpeg", "image/png", "image/webp"],
@@ -34,6 +34,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(jsonResponse);
   } catch (err) {
+    console.error("Photo upload failed:", err);
     return NextResponse.json(
       { error: (err as Error).message || "Upload failed." },
       { status: 400 },
