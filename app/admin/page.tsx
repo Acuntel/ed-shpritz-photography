@@ -14,6 +14,9 @@ import AdminEditor, {
 
 const AUTH_KEY = "edshpritz-admin";
 const PASS_KEY = "edshpritz-admin-pass";
+// One-time reset: discard the stale draft that kept resurfacing on Aug 28.
+// Drafts created after this point continue to work normally.
+const DRAFT_RESET_BEFORE = Date.parse("2026-08-29T00:40:00Z");
 
 type Loaded = {
   site: SiteContent;
@@ -84,6 +87,11 @@ function readDraft(live: Loaded): AdminDraft | null {
     const d = JSON.parse(raw) as AdminDraft;
     if (!d?.site || !Array.isArray(d.photos) || !Array.isArray(d.collections))
       return null;
+
+    if ((d.savedAt ?? 0) < DRAFT_RESET_BEFORE) {
+      localStorage.removeItem(DRAFT_KEY);
+      return null;
+    }
 
     // Admin autosave rewrites numeric order values to 0,1,2... even when Ed
     // has not changed anything. Compare order by the array sequence instead of
