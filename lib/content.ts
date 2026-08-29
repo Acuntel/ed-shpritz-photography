@@ -365,38 +365,6 @@ function applyBestFriendsBf06Migration(content: Content): Content {
   };
 }
 
-// Apply Ed's confirmed brown-butterfly caption once, by stable photo ID.
-// The correction leaves the photograph's existing number and position alone.
-const BEAUTY_FLIGHT_BROWN_CAPTION_MIGRATION =
-  "beauty-flight-brown-caption-2026-08-29";
-
-function applyBeautyFlightBrownCaptionMigration(content: Content): Content {
-  const site = content.site as SiteWithMigrations;
-  const alreadyApplied =
-    site.migrations?.includes(BEAUTY_FLIGHT_BROWN_CAPTION_MIGRATION) ?? false;
-  if (alreadyApplied) return content;
-
-  return {
-    ...content,
-    site: {
-      ...site,
-      migrations: [
-        ...(site.migrations ?? []),
-        BEAUTY_FLIGHT_BROWN_CAPTION_MIGRATION,
-      ],
-    } as SiteWithMigrations,
-    photos: content.photos.map((photo) =>
-      photo.id === "skipper-leaf"
-        ? {
-            ...photo,
-            title: "DID MOTHER NATURE RUN OUT OF PASTELS?",
-            description: "BROWN!",
-          }
-        : photo,
-    ),
-  };
-}
-
 // Number every photograph once, collection by collection, without touching its
 // title, description, image, collection, or order. The marker follows the same
 // safe pattern as the Wildlife repair: once an admin save stores it in Blob,
@@ -528,12 +496,10 @@ async function readLiveBlob(): Promise<Content | null> {
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
     const content = applyPhotoNumberMigration(
-      applyBeautyFlightBrownCaptionMigration(
-        applyBestFriendsBf06Migration(
-          applyWildlifeMigration(
-            applyAdminPublicParityMigration(
-              (await readLiveBlob()) ?? bundledContent(),
-            ),
+      applyBestFriendsBf06Migration(
+        applyWildlifeMigration(
+          applyAdminPublicParityMigration(
+            (await readLiveBlob()) ?? bundledContent(),
           ),
         ),
       ),
@@ -582,10 +548,8 @@ export async function saveContent(content: Content): Promise<void> {
   // migration here as well makes that first save safe; after its marker is
   // stored, later Ed edits pass through unchanged.
   const safeContent = applyPhotoNumberMigration(
-    applyBeautyFlightBrownCaptionMigration(
-      applyBestFriendsBf06Migration(
-        applyWildlifeMigration(applyAdminPublicParityMigration(content)),
-      ),
+    applyBestFriendsBf06Migration(
+      applyWildlifeMigration(applyAdminPublicParityMigration(content)),
     ),
   );
   await backupCurrent();
