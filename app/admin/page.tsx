@@ -84,10 +84,20 @@ function readDraft(live: Loaded): AdminDraft | null {
     const d = JSON.parse(raw) as AdminDraft;
     if (!d?.site || !Array.isArray(d.photos) || !Array.isArray(d.collections))
       return null;
-    // If the draft matches what's already live, there's nothing to restore.
-    const strip = (x: Loaded | AdminDraft) =>
-      JSON.stringify([x.site, x.collections, x.photos, x.galleries]);
-    if (strip(d) === strip(live)) {
+
+    // Admin autosave rewrites numeric order values to 0,1,2... even when Ed
+    // has not changed anything. Compare order by the array sequence instead of
+    // those stored numbers. A real drag/reorder still changes the photo ID
+    // sequence and is therefore preserved as a genuine draft.
+    const comparable = (x: Loaded | AdminDraft) =>
+      JSON.stringify([
+        x.site,
+        x.collections,
+        x.photos.map(({ order: _order, ...photo }) => photo),
+        x.galleries,
+      ]);
+
+    if (comparable(d) === comparable(live)) {
       localStorage.removeItem(DRAFT_KEY);
       return null;
     }
