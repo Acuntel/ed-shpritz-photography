@@ -22,11 +22,38 @@ type Loaded = {
   galleries: ClientGallery[];
 };
 
+// Ed confirmed that the current Life Observed photos numbered 31 and 32 are
+// duplicate views of the same photograph. Keep the better file (largest pixel
+// area when dimensions are available; otherwise keep the earlier one), remove
+// the other, then renumber the collection. No other collection is touched.
+function removeLifeObserved3132Duplicate(loaded: Loaded): Loaded {
+  const ordered = loaded.photos
+    .map((photo, index) => ({ photo, index }))
+    .filter(({ photo }) => photo.collection === "life-observed")
+    .sort(
+      (a, b) =>
+        a.photo.order - b.photo.order || a.index - b.index,
+    );
+
+  if (ordered.length < 32) return loaded;
+
+  const a = ordered[30].photo;
+  const b = ordered[31].photo;
+  const pixels = (p: Photo) => (p.width ?? 0) * (p.height ?? 0);
+  const removeId = pixels(b) > pixels(a) ? a.id : b.id;
+
+  return {
+    ...loaded,
+    photos: loaded.photos.filter((photo) => photo.id !== removeId),
+  };
+}
+
 // Keep Life Observed catalog numbers in the same order Ed sees in admin.
 // This changes ONLY the photo name/number field; titles, descriptions, images,
 // visibility, collection membership, and order are left untouched.
 function numberLifeObserved(loaded: Loaded): Loaded {
-  const ordered = loaded.photos
+  const cleaned = removeLifeObserved3132Duplicate(loaded);
+  const ordered = cleaned.photos
     .map((photo, index) => ({ photo, index }))
     .filter(({ photo }) => photo.collection === "life-observed")
     .sort(
@@ -42,8 +69,8 @@ function numberLifeObserved(loaded: Loaded): Loaded {
   );
 
   return {
-    ...loaded,
-    photos: loaded.photos.map((photo) => {
+    ...cleaned,
+    photos: cleaned.photos.map((photo) => {
       const name = numberById.get(photo.id);
       return name ? { ...photo, name } : photo;
     }),
