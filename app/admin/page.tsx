@@ -22,6 +22,34 @@ type Loaded = {
   galleries: ClientGallery[];
 };
 
+// Keep Life Observed catalog numbers in the same order Ed sees in admin.
+// This changes ONLY the photo name/number field; titles, descriptions, images,
+// visibility, collection membership, and order are left untouched.
+function numberLifeObserved(loaded: Loaded): Loaded {
+  const ordered = loaded.photos
+    .map((photo, index) => ({ photo, index }))
+    .filter(({ photo }) => photo.collection === "life-observed")
+    .sort(
+      (a, b) =>
+        a.photo.order - b.photo.order || a.index - b.index,
+    );
+
+  const numberById = new Map(
+    ordered.map(({ photo }, index) => [
+      photo.id,
+      `LO${String(index + 1).padStart(2, "0")}`,
+    ]),
+  );
+
+  return {
+    ...loaded,
+    photos: loaded.photos.map((photo) => {
+      const name = numberById.get(photo.id);
+      return name ? { ...photo, name } : photo;
+    }),
+  };
+}
+
 function readDraft(live: Loaded): AdminDraft | null {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
@@ -85,8 +113,9 @@ export default function AdminPage() {
         return r.json();
       })
       .then((loaded: Loaded) => {
-        setDraft(readDraft(loaded));
-        setLive(loaded);
+        const numbered = numberLifeObserved(loaded);
+        setDraft(readDraft(numbered));
+        setLive(numbered);
       })
       .catch(() => setLoadFailed(true));
   }, [authed]);
