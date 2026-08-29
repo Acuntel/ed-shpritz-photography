@@ -14,8 +14,7 @@ import AdminEditor, {
 
 const AUTH_KEY = "edshpritz-admin";
 const PASS_KEY = "edshpritz-admin-pass";
-// One-time reset: discard the stale draft that kept resurfacing on Aug 28.
-// Drafts created after this point continue to work normally.
+// One-time reset for stale drafts created before the admin stabilization work.
 const DRAFT_RESET_BEFORE = Date.parse("2026-08-29T00:40:00Z");
 
 type Loaded = {
@@ -24,61 +23,6 @@ type Loaded = {
   photos: Photo[];
   galleries: ClientGallery[];
 };
-
-// Ed confirmed that the current Life Observed photos numbered 31 and 32 are
-// duplicate views of the same photograph. Keep the better file (largest pixel
-// area when dimensions are available; otherwise keep the earlier one), remove
-// the other, then renumber the collection. No other collection is touched.
-function removeLifeObserved3132Duplicate(loaded: Loaded): Loaded {
-  const ordered = loaded.photos
-    .map((photo, index) => ({ photo, index }))
-    .filter(({ photo }) => photo.collection === "life-observed")
-    .sort(
-      (a, b) =>
-        a.photo.order - b.photo.order || a.index - b.index,
-    );
-
-  if (ordered.length < 32) return loaded;
-
-  const a = ordered[30].photo;
-  const b = ordered[31].photo;
-  const pixels = (p: Photo) => (p.width ?? 0) * (p.height ?? 0);
-  const removeId = pixels(b) > pixels(a) ? a.id : b.id;
-
-  return {
-    ...loaded,
-    photos: loaded.photos.filter((photo) => photo.id !== removeId),
-  };
-}
-
-// Keep Life Observed catalog numbers in the same order Ed sees in admin.
-// This changes ONLY the photo name/number field; titles, descriptions, images,
-// visibility, collection membership, and order are left untouched.
-function numberLifeObserved(loaded: Loaded): Loaded {
-  const cleaned = removeLifeObserved3132Duplicate(loaded);
-  const ordered = cleaned.photos
-    .map((photo, index) => ({ photo, index }))
-    .filter(({ photo }) => photo.collection === "life-observed")
-    .sort(
-      (a, b) =>
-        a.photo.order - b.photo.order || a.index - b.index,
-    );
-
-  const numberById = new Map(
-    ordered.map(({ photo }, index) => [
-      photo.id,
-      `LO${String(index + 1).padStart(2, "0")}`,
-    ]),
-  );
-
-  return {
-    ...cleaned,
-    photos: cleaned.photos.map((photo) => {
-      const name = numberById.get(photo.id);
-      return name ? { ...photo, name } : photo;
-    }),
-  };
-}
 
 function readDraft(live: Loaded): AdminDraft | null {
   try {
@@ -93,10 +37,9 @@ function readDraft(live: Loaded): AdminDraft | null {
       return null;
     }
 
-    // Admin autosave rewrites numeric order values to 0,1,2... even when Ed
-    // has not changed anything. Compare order by the array sequence instead of
-    // those stored numbers. A real drag/reorder still changes the photo ID
-    // sequence and is therefore preserved as a genuine draft.
+    // Autosave normalizes numeric order values. Ignore those numbers when
+    // deciding whether a draft differs from live; the photo array sequence still
+    // detects a genuine reorder.
     const comparable = (x: Loaded | AdminDraft) =>
       JSON.stringify([
         x.site,
@@ -124,13 +67,9 @@ export default function AdminPage() {
 
   const [live, setLive] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<AdminDraft | null>(null);
-  // The editor ALWAYS starts from live content. A detected draft is only an
-  // offer; it becomes the editor base when Ed explicitly chooses to restore it.
-  // This is what prevents a stale draft from clobbering the live site on Save.
   const [useDraft, setUseDraft] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
 
-  // Restore a signed-in session across reloads.
   useEffect(() => {
     if (sessionStorage.getItem(AUTH_KEY) === "1") {
       setPasscode(sessionStorage.getItem(PASS_KEY) ?? "");
@@ -138,18 +77,16 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Anyone who opens the admin is Ed (or Brady) — stop counting this browser
-  // in "Who's looking" so his own visits never inflate the numbers. "skipgc"
-  // is GoatCounter's documented opt-out key.
   useEffect(() => {
     try {
       localStorage.setItem("skipgc", "t");
     } catch {
-      // private-mode storage failures are fine; worst case he gets counted
+      // private-mode storage failures are harmless
     }
   }, []);
 
-  // Load the LIVE content (from Blob via the API), not the bundled files.
+  // Load EXACTLY what is live. Do not renumber, delete, or otherwise mutate
+  // photos here. Ed's admin must never manufacture an unsaved change on load.
   useEffect(() => {
     if (!authed) return;
     fetch("/api/content/", { cache: "no-store" })
@@ -158,9 +95,8 @@ export default function AdminPage() {
         return r.json();
       })
       .then((loaded: Loaded) => {
-        const numbered = numberLifeObserved(loaded);
-        setDraft(readDraft(numbered));
-        setLive(numbered);
+        setDraft(readDraft(loaded));
+        setLive(loaded);
       })
       .catch(() => setLoadFailed(true));
   }, [authed]);
@@ -175,7 +111,6 @@ export default function AdminPage() {
     setUseDraft(false);
   };
 
-  // Ed explicitly chose to bring his unsaved draft back into the editor.
   const restoreDraft = () => setUseDraft(true);
 
   const submit = async (e: React.FormEvent) => {
@@ -209,9 +144,7 @@ export default function AdminPage() {
       <section className="container-rail flex min-h-screen flex-col items-center justify-center">
         <form onSubmit={submit} className="w-full max-w-sm text-center">
           <p className="kicker">Ed Shpritz Photography</p>
-          <h1 className="mt-3 font-serif text-3xl font-light text-ink">
-            Admin
-          </h1>
+          <h1 className="mt-3 font-serif text-3xl font-light text-ink">Admin</h1>
           <input
             type="password"
             value={pass}
@@ -223,9 +156,7 @@ export default function AdminPage() {
             placeholder="Password"
             className="mt-8 w-full border-b border-ink/30 bg-transparent py-3 text-center font-sans text-lg text-ink outline-none focus:border-ink"
           />
-          {error && (
-            <p className="mt-3 font-sans text-sm text-red-700">{error}</p>
-          )}
+          {error && <p className="mt-3 font-sans text-sm text-red-700">{error}</p>}
           <button
             type="submit"
             disabled={checking || !pass}
@@ -242,8 +173,7 @@ export default function AdminPage() {
     return (
       <section className="container-rail flex min-h-screen items-center justify-center">
         <p className="max-w-sm text-center font-sans text-sm text-ink-muted">
-          The photographs could not be loaded. Check that you are connected to
-          the internet, then pull down or press reload to try again.
+          The photographs could not be loaded. Check that you are connected to the internet, then reload.
         </p>
       </section>
     );
@@ -252,15 +182,11 @@ export default function AdminPage() {
   if (!live) {
     return (
       <section className="container-rail flex min-h-screen items-center justify-center">
-        <p className="font-sans text-sm text-ink-muted">
-          Loading your photographs...
-        </p>
+        <p className="font-sans text-sm text-ink-muted">Loading your photographs...</p>
       </section>
     );
   }
 
-  // Default base = LIVE content. Only when Ed opts in does the draft become the
-  // base (and only then can a Save publish it).
   const showingDraft = useDraft && draft;
   const source = showingDraft ? draft : live;
   return (
