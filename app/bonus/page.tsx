@@ -34,6 +34,16 @@ export default function BonusPage() {
         </Reveal>
       </section>
 
+      <section className="container-rail pb-20">
+        <Reveal className="mx-auto max-w-2xl border-t border-ink/10 pt-12 text-center">
+          <p className="kicker">Coming next</p>
+          <p className="mt-4 font-serif text-2xl font-light leading-relaxed text-ink-soft sm:text-3xl">
+            Watch for information about next year’s calendar—and how to get
+            one!
+          </p>
+        </Reveal>
+      </section>
+
       <section className="container-rail text-center">
         <Link
           href="/#collections"
