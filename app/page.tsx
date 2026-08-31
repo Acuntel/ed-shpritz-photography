@@ -41,6 +41,12 @@ export default async function Home() {
             Choose a collection. Open each photograph to see its title and
             story—the words are part of the experience.
           </h2>
+          <p className="mt-7 font-sans text-sm text-ink-muted">
+            <span aria-hidden className="mr-2 text-base text-amber-400">
+              *
+            </span>
+            Award-winning photographs
+          </p>
         </Reveal>
         <CollectionsIndex collections={collections} photos={homePhotos} />
       </section>
