@@ -7,7 +7,6 @@ import type {
 } from "./types";
 import { loadContent } from "./content";
 import imetaJson from "@/public/data/imeta.json";
-import bradyDescriptionsJson from "@/public/data/brady-descriptions.json";
 
 // Image metadata produced long ago by scripts/optimize.mjs for the original
 // gallery images — gives them width/height/lqip so they get a correct aspect
@@ -35,298 +34,35 @@ function enrichPhoto<
   return { ...p, lqip: p.lqip ?? m.lqip, width: m.width, height: m.height };
 }
 
-// Hide only Brady's original catalog descriptions. Matching by both photo ID
-// and exact wording protects any description Ed has replaced or adds later.
-const bradyDescriptionsByPhotoId =
-  bradyDescriptionsJson as Record<string, string>;
-
-function removeBradyDescription(photo: Photo): Photo {
-  const original = bradyDescriptionsByPhotoId[photo.id];
-  if (!original || photo.description.trim() !== original.trim()) {
-    return photo;
-  }
-  return { ...photo, description: "" };
-}
-
-const PHOTO_COLLECTION_CODES: Record<string, string> = {
-  "minimal-white": "MO",
-  watercolor: "WC",
-  "places-and-reflections": "PR",
-  "the-white-city": "BW",
-  wildlife: "WL",
-  "natures-beauty-and-flight": "NB",
-  birds: "BI",
-  icm: "IC",
-  "our-best-friends": "BF",
-  "people-of-the-world": "PW",
-  "air-and-water-show": "AW",
-  "natures-fury": "NF",
-  "time-preserved": "TP",
-  "life-observed": "LO",
-};
-
-function collectionCode(collection: string): string {
-  return (
-    PHOTO_COLLECTION_CODES[collection] ??
-    collection
-      .split("-")
-      .filter(Boolean)
-      .map((part) => part[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase() ??
-    "PH"
-  );
-}
-
-// Give every public photo a stable-looking catalog label while keeping the
-// collection's existing display order. Each collection has its own counter, so
-// Minimal White is MO01, MO02, ... and WaterColor starts over at WC01.
-function fixCaptionTypos(photo: Photo): Photo {
-  if (photo.id !== "p-1786020015256-0") return photo;
-  return {
-    ...photo,
-    description: photo.description.replace(
-      "Franklin Street Bridge0",
-      "Franklin Street Bridge)",
-    ),
-  };
-}
-
-function numberPhotosByCollection(photos: Photo[]): Photo[] {
-  const counters = new Map<string, number>();
-
-  return photos.map((photo) => {
-    const sequence = (counters.get(photo.collection) ?? 0) + 1;
-    counters.set(photo.collection, sequence);
-
-    const generated = `${collectionCode(photo.collection)}${String(sequence).padStart(2, "0")}`;
-    const wildlifeNumber = photo.name.trim();
-
-    return {
-      ...photo,
-      // Wildlife uses Ed's own catalog numbers (including WL42, WL31, etc.),
-      // which do not follow the page's visual order. Other collections keep
-      // their automatically generated sequential labels.
-      name:
-        photo.collection === "wildlife" && /^WL\d+$/i.test(wildlifeNumber)
-          ? wildlifeNumber.toUpperCase()
-          : generated,
-    };
-  });
-}
-
-const CURATED_PLACES_AND_REFLECTIONS_ORDER = [
-  "pr-new-england-church",
-  "pr-sagrada-familia",
-  "pr-dawn-chicago",
-  "pr-sail-under-storm",
-  "pr-osaka-reflection",
-  "pr-peel-a-boo",
-  "pr-portofino-harbor",
-  "pr-still-pond",
-  "pr-lagoon-reflection",
-  "pr-charlevoix-light",
-  "pr-navy-pier-fireworks",
-  "pr-cartagena-city-hall",
-  "pr-painted-rock",
-  "forest-light",
-  "pr-lincoln-park-autumn",
-  "pavilion-frame",
-  "pr-rays-over-shore",
-  "temple-moon",
-  "pr-autumn-fountain",
-  "mackerel-dawn",
-  "pr-riverboat-reflections",
-  "beacon-blue",
-  "pr-cloud-gate",
-  "spiral-stair",
-  "pr-painted-jungle",
-  "skyline-wave",
-  "pr-covered-bridge",
-  "autumn-island",
-  "pr-white-lighthouse",
-  "red-lighthouse",
-  "pr-oak-street-winter",
-  "river-clouds",
-  "pr-lake-sunset",
-  "masts-sunset",
-  "garden-bridge",
-] as const;
-
-const PLACES_AND_REFLECTIONS_RANK = new Map<string, number>(
-  CURATED_PLACES_AND_REFLECTIONS_ORDER.map((id, index) => [id, index]),
-);
-
-const CURATED_BEAUTY_FLIGHT_ORDER = [
-  "nb-city-tulip-boulevard",
-  "monarch-sunflower",
-  "nb-blue-hydrangeas",
-  "giant-swallowtail",
-  "nb-spring-crocus",
-  "swallowtail-pink",
-  "nb-purple-clematis",
-  "skipper-orange",
-  "nb-red-bee-balm",
-  "cabbage-white",
-  "nb-striped-tulip",
-  "skipper-zinnia",
-  "nb-purple-dahlia",
-  "skipper-leaf",
-  "nb-pink-hibiscus",
-  "tulips-bw",
-  "nb-yellow-hibiscus",
-  "yellow-blooms",
-  "nb-orange-zinnia-spider",
-  "nb-rain-kissed-pink",
-] as const;
-
-const BEAUTY_FLIGHT_RANK = new Map<string, number>(
-  CURATED_BEAUTY_FLIGHT_ORDER.map((id, index) => [id, index]),
-);
-
-function applyCuratedPhotoOrder(photos: Photo[]): Photo[] {
-  const curated = photos
-    .filter((photo) => photo.collection === "places-and-reflections")
-    .sort(
-      (a, b) =>
-        (PLACES_AND_REFLECTIONS_RANK.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
-          (PLACES_AND_REFLECTIONS_RANK.get(b.id) ?? Number.MAX_SAFE_INTEGER) ||
-        a.order - b.order,
-    );
-  let cursor = 0;
-  const placed = photos.map((photo) =>
-    photo.collection === "places-and-reflections"
-      ? curated[cursor++]
-      : photo,
-  );
-  const beauty = placed
-    .filter((photo) => photo.collection === "natures-beauty-and-flight")
-    .sort(
-      (a, b) =>
-        (BEAUTY_FLIGHT_RANK.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
-          (BEAUTY_FLIGHT_RANK.get(b.id) ?? Number.MAX_SAFE_INTEGER) ||
-        a.order - b.order,
-    );
-  let beautyCursor = 0;
-  const beautyPlaced = placed.map((photo) =>
-    photo.collection === "natures-beauty-and-flight"
-      ? beauty[beautyCursor++]
-      : photo,
-  );
-
-  const bw = beautyPlaced.filter((photo) => photo.collection === "the-white-city");
-  const newPhoto = bw.find((photo) => photo.id === "bw-so-close-so-far-away");
-  if (!newPhoto) return beautyPlaced;
-  const withoutNew = bw.filter((photo) => photo.id !== "bw-so-close-so-far-away");
-  const skylineIndex = withoutNew.findIndex((photo) => photo.id === "twc-15");
-  withoutNew.splice(skylineIndex >= 0 ? skylineIndex + 1 : withoutNew.length, 0, newPhoto);
-  let bwCursor = 0;
-  return beautyPlaced.map((photo) =>
-    photo.collection === "the-white-city" ? withoutNew[bwCursor++] : photo,
-  );
-}
-
-const CURATED_COLLECTION_ORDER = [
-  "minimal-white",
-  "birds",
-  "people-of-the-world",
-  "natures-fury",
-  "wildlife",
-  "icm",
-  "the-white-city",
-  "watercolor",
-  "our-best-friends",
-  "natures-beauty-and-flight",
-  "places-and-reflections",
-  "air-and-water-show",
-  "time-preserved",
-  "life-observed"
-] as const;
-
-const CURATED_COLLECTION_COVERS: Record<string, string> = {
-  "minimal-white": "/images/gallery/baby-elephant.jpg",
-  "birds": "/images/gallery/two-down.jpg",
-  "people-of-the-world": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1782910215549-0-troubadour-GSH9PPnK5nMatfkDH05bWDuLu8R87g.jpg",
-  "wildlife": "/images/uploads/wildlife/gorilla-in-leaves.jpg",
-  "icm": "/images/gallery/icm-flowers.jpg",
-  "the-white-city": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1781352725076-0-_dsc1226-6UUpJ3R5iur4CbbndULu51TqStlfiK.jpg",
-  "watercolor": "/images/gallery/ristorante.jpg",
-  "our-best-friends": "/images/uploads/our-best-friends/bf20-rosie1-1.jpg",
-  "natures-beauty-and-flight": "/images/uploads/beauty-flight/city-tulip-boulevard.jpg",
-  "places-and-reflections": "/images/uploads/places-reflections/new-england-church-reflection.jpg",
-  "air-and-water-show": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1783449602721-0-hurry-up--2-vXMDSeAOFqsTJG0R70ESEcT5gnX66W.jpg",
-  "time-preserved": "https://fyuetdphxkmzzect.public.blob.vercel-storage.com/gallery/p-1785070901299-0-_ehs7574-3-pwFfAO9ARlZDPnLbdN0Kf9i2sTb5pc.jpg",
-  "natures-fury": "/images/uploads/nf03.jpg",
-  "life-observed": "/images/uploads/lo-girl-umbrella.jpg"
-};
-
-const COLLECTION_RANK = new Map<string, number>(
-  CURATED_COLLECTION_ORDER.map((slug, index) => [slug, index]),
-);
-
-function centerAirWaterHighlights(photos: Photo[]): Photo[] {
-  const air = photos.filter((photo) => photo.collection === "air-and-water-show");
-  if (air.length < 3) return photos;
-  const highlights = new Set(["not-a-blue-angel", "p-1783449757657-0", "p-1783449602721-0", "p-1783449391379-0"]);
-  const remaining = air.filter((photo) => !highlights.has(photo.id));
-  // Keep these four photos anchored after the five-ship image. Using the
-  // collection midpoint made them jump whenever duplicates were removed.
-  const anchor = remaining.findIndex(
-    (photo) => photo.id === "aw-five-ship-diamond",
-  );
-  const insertAt = anchor >= 0 ? anchor + 1 : Math.floor(remaining.length / 2);
-  remaining.splice(insertAt, 0, ...air.filter((photo) => highlights.has(photo.id)));
-  let cursor = 0;
-  return photos.map((photo) =>
-    photo.collection === "air-and-water-show" ? remaining[cursor++] : photo,
-  );
-}
+// Admin is the single source of truth for all visitor-facing content. Public
+// pages preserve its names, captions, ordering, awards, covers, and collection
+// order exactly; only technical image metadata may be filled in for layout.
 
 export async function getSite(): Promise<SiteContent> {
   return (await loadContent()).site;
 }
 
 export async function getPhotos(): Promise<Photo[]> {
-  const { photos: livePhotos } = await loadContent();
-  // Public pages and admin now share one master photo list. Hidden records stay
-  // available to admin without appearing in collections or on the home page.
-  const photos = livePhotos.filter((photo) => photo.published !== false);
-  const ordered = centerAirWaterHighlights(
-    applyCuratedPhotoOrder(
-      photos
-        .map(enrichPhoto)
-        .map(removeBradyDescription)
-        .map(fixCaptionTypos)
-        .sort((a, b) => a.order - b.order),
-    ),
-  );
-  return numberPhotosByCollection(ordered);
+  const { photos } = await loadContent();
+  return photos
+    .filter((photo) => photo.published !== false)
+    .map(enrichPhoto)
+    .sort((a, b) => a.order - b.order);
 }
 
 export async function getCollections(): Promise<Collection[]> {
   const { collections } = await loadContent();
   const photos = await getPhotos();
-  return collections
-    .map((c) => {
-      const inIt = photos.filter((p) => p.collection === c.slug);
-      const preferredCover = CURATED_COLLECTION_COVERS[c.slug] ?? c.cover;
-      const coverExists =
-        !!preferredCover && photos.some((p) => p.src === preferredCover);
-      return {
-        ...c,
-        name: c.slug === "time-preserved" ? "Lost in Time" : c.name,
-        count: inIt.length,
-        // Use the curated cover when available, then safely fall back to a
-        // real photograph from the collection.
-        cover: coverExists ? preferredCover : (inIt[0]?.src ?? ""),
-      };
-    })
-    .sort(
-      (a, b) =>
-        (COLLECTION_RANK.get(a.slug) ?? Number.MAX_SAFE_INTEGER) -
-        (COLLECTION_RANK.get(b.slug) ?? Number.MAX_SAFE_INTEGER),
+  return collections.map((collection) => {
+    const collectionPhotos = photos.filter(
+      (photo) => photo.collection === collection.slug,
     );
+    return {
+      ...collection,
+      count: collectionPhotos.length,
+      cover: collection.cover || collectionPhotos[0]?.src || "",
+    };
+  });
 }
 
 export async function getTriggerPhotos(): Promise<Photo[]> {
