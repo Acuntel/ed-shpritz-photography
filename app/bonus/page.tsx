@@ -21,7 +21,7 @@ export default function BonusPage() {
 
       <section className="container-rail py-20 sm:py-28">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="kicker">Ed’ism No. 1 · Life’s Return</p>
+          <p className="kicker">Ed’ism No. 1</p>
           <span
             aria-hidden
             className="mt-8 block font-serif text-5xl leading-none text-ink-faint"
@@ -29,7 +29,7 @@ export default function BonusPage() {
             &ldquo;
           </span>
           <p className="mt-2 font-serif text-3xl font-light leading-snug text-ink sm:text-4xl">
-            Nature wakes… color returns… life begins anew.
+            I can’t put in words… what words put in me!
           </p>
         </Reveal>
       </section>
