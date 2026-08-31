@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getSite, getCollections, getPhotos } from "@/lib/data";
 import Hero from "@/components/Hero";
 import CollectionsIndex from "@/components/CollectionsIndex";
-import Edism from "@/components/Edism";
 import Reveal from "@/components/Reveal";
 import StayInTouch from "@/components/StayInTouch";
 
@@ -45,14 +44,6 @@ export default async function Home() {
         </Reveal>
         <CollectionsIndex collections={collections} photos={homePhotos} />
       </section>
-
-      <Edism
-        label="Bonus · An Ed’ism"
-        quote={
-          site.edisms[2] ??
-          "Beauty within shines outside; beauty outside only shines."
-        }
-      />
 
       {/* About teaser */}
       <section className="container-rail pb-8">
