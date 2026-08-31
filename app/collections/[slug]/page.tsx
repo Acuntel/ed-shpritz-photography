@@ -72,6 +72,19 @@ export default async function CollectionPage({
               {collection.intro}
             </p>
           )}
+          <div className="mt-8 max-w-prose2 border-l border-ink/20 pl-5">
+            <p className="kicker">How to look</p>
+            <p className="mt-3 font-sans text-sm leading-relaxed text-ink-soft">
+              Open each photograph to see its title and description—the words
+              are part of the experience.
+            </p>
+            <p className="mt-2 font-sans text-sm leading-relaxed text-ink-muted">
+              <span aria-hidden className="text-amber-400">
+                *
+              </span>{" "}
+              {site.closing.awards}
+            </p>
+          </div>
         </Reveal>
       </header>
 
