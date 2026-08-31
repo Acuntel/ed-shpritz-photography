@@ -44,7 +44,11 @@ async function fetchPaced(url: string): Promise<unknown> {
     if (wait > 0) await sleep(wait);
     lastCallAt = Date.now();
     const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${process.env.GC_TOKEN}` },
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${process.env.GC_TOKEN}`,
+        "Content-Type": "application/json",
+      },
       cache: "no-store",
     });
     if (res.status === 429 && attempt < 3) {
@@ -74,33 +78,32 @@ async function get(
 }
 
 type HitRow = { path: string; title?: string; count: number; event?: boolean };
+type HitResponse = { hits: HitRow[]; total: number };
 
-async function hitRows(startAt: number, endAt: number): Promise<HitRow[]> {
+async function hitData(startAt: number, endAt: number): Promise<{
+  hits: HitRow[];
+  total: number;
+}> {
   const r = (await get("stats/hits", {
     start: ts(startAt),
     end: ts(endAt),
     limit: 100,
-  })) as { hits: HitRow[] };
-  return (r.hits ?? []).filter((h) => !h.event);
+  })) as HitResponse;
+  return {
+    hits: (r.hits ?? []).filter((h) => !h.event),
+    total: Number(r.total ?? 0),
+  };
 }
 
 export async function rangeStats(
   startAt: number,
   endAt: number,
 ): Promise<RangeStats> {
-  const [totals, hits] = await Promise.all([
-    get("stats/total", { start: ts(startAt), end: ts(endAt) }) as Promise<{
-      total: number;
-      total_events?: number;
-    }>,
-    hitRows(startAt, endAt),
-  ]);
-  // total includes events; subtract them for website visits. Per-path visitor
-  // counts add up to page visits and can exceed the site-wide visitor count.
-  const visits = Math.max(
-    0,
-    Number(totals.total ?? 0) - Number(totals.total_events ?? 0),
-  );
+  // stats/hits already includes GoatCounter's site-wide visitor total. Using
+  // that value keeps the report on one proven endpoint; stats/total has
+  // intermittently returned 404 from the hosted service and used to abort the
+  // entire Monday email even though the page data was available.
+  const { hits, total: visits } = await hitData(startAt, endAt);
   const pageVisits = hits.reduce((n, h) => n + Number(h.count ?? 0), 0);
   return { visits, pageVisits };
 }
@@ -112,7 +115,7 @@ export async function topMetrics(
   limit = 10,
 ): Promise<NamedCount[]> {
   if (type === "url") {
-    const hits = await hitRows(startAt, endAt);
+    const { hits } = await hitData(startAt, endAt);
     return hits
       .sort((a, b) => Number(b.count ?? 0) - Number(a.count ?? 0))
       .slice(0, limit)
