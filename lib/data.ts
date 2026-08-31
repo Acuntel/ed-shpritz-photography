@@ -57,10 +57,15 @@ export async function getCollections(): Promise<Collection[]> {
     const collectionPhotos = photos.filter(
       (photo) => photo.collection === collection.slug,
     );
+    const resolvedCover =
+      collection.cover &&
+      collectionPhotos.some((photo) => photo.src === collection.cover)
+        ? collection.cover
+        : (collectionPhotos[0]?.src ?? "");
     return {
       ...collection,
       count: collectionPhotos.length,
-      cover: collection.cover || collectionPhotos[0]?.src || "",
+      cover: resolvedCover,
     };
   });
 }
