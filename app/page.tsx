@@ -39,13 +39,20 @@ export default async function Home() {
         <Reveal className="mb-14 text-center">
           <p className="kicker">The collections</p>
           <h2 className="mx-auto mt-3 max-w-prose2 font-serif text-3xl font-light leading-snug text-ink sm:text-4xl">
-            Choose a picture. It opens the rest of its kind.
+            Choose a collection. Open each photograph to see its title and
+            story—the words are part of the experience.
           </h2>
         </Reveal>
         <CollectionsIndex collections={collections} photos={homePhotos} />
       </section>
 
-      <Edism quote={site.edisms[0] ?? "We look… but do we see?"} />
+      <Edism
+        label="Bonus · An Ed’ism"
+        quote={
+          site.edisms[2] ??
+          "Beauty within shines outside; beauty outside only shines."
+        }
+      />
 
       {/* About teaser */}
       <section className="container-rail pb-8">
