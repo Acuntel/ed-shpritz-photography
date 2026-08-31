@@ -7,6 +7,7 @@ import HomePageName from "@/components/HomePageName";
 
 const links = [
   { href: "/#collections", label: "Collections" },
+  { href: "/bonus", label: "Bonus" },
   { href: "/prints", label: "Prints" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
