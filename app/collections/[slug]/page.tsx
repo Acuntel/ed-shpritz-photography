@@ -82,7 +82,7 @@ export default async function CollectionPage({
               <span aria-hidden className="text-amber-400">
                 *
               </span>{" "}
-              {site.closing.awards}
+              {site.closing?.awards ??\n                "Photographs marked with an asterisk (*) have received awards."}
             </p>
           </div>
         </Reveal>
