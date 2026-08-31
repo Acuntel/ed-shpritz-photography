@@ -10,7 +10,25 @@ export default function CollectionsIndex({
   collections: Collection[];
   photos: Photo[];
 }) {
-  const coverPhoto = (c: Collection) => photos.find((p) => p.src === c.cover);
+  const coverPhoto = (c: Collection): Photo | undefined => {
+    const matchingPhoto = photos.find((photo) => photo.src === c.cover);
+    if (matchingPhoto || !c.cover) return matchingPhoto;
+
+    // The admin-selected cover is authoritative even if the corresponding
+    // photo record is temporarily unavailable during a live Blob read.
+    return {
+      id: `collection-cover-${c.slug}`,
+      src: c.cover,
+      alt: c.name,
+      name: c.name,
+      title: "",
+      description: c.blurb,
+      collection: c.slug,
+      published: true,
+      trigger: false,
+      order: -1,
+    };
+  };
 
   return (
     <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
