@@ -72,18 +72,11 @@ export default async function CollectionPage({
               {collection.intro}
             </p>
           )}
-          <div className="mt-8 max-w-prose2 rounded-sm border border-ink/15 px-5 py-5 sm:px-6">
-            <p className="kicker">Before you begin</p>
+          <div className="mt-8 max-w-prose2 border-l border-ink/20 pl-5">
+            <p className="kicker">How to look</p>
             <p className="mt-3 font-sans text-sm leading-relaxed text-ink-soft">
               Open each photograph to see its title and description—the words
               are part of the experience.
-            </p>
-            <p className="mt-4 font-sans text-base font-medium leading-relaxed text-ink">
-              <span aria-hidden className="mr-2 text-lg text-amber-400">
-                *
-              </span>
-              {site.closing?.awards ??
-                "Photographs marked with an asterisk (*) have received awards."}
             </p>
           </div>
         </Reveal>
