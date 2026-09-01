@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isValidAdminPasscode } from "@/lib/admin-auth";
 import {
   addSubscriber,
   listSubscribers,
@@ -11,11 +12,7 @@ export const dynamic = "force-dynamic";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function isAdmin(passcode: unknown): boolean {
-  return (
-    typeof passcode === "string" &&
-    !!process.env.ADMIN_PASSCODE &&
-    passcode === process.env.ADMIN_PASSCODE
-  );
+  return isValidAdminPasscode(passcode);
 }
 
 export async function POST(req: Request) {

@@ -24,7 +24,7 @@ const tabs = [
   "Collections",
   "Galleries",
   "Subscribers",
-  "Who's looking",
+  "Visitor report",
 ] as const;
 type Tab = (typeof tabs)[number];
 
@@ -553,12 +553,12 @@ export default function AdminEditor({
           </div>
         )}
 
-        <div className="mt-6 flex gap-6 border-b border-ink/10">
+        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 border-b border-ink/10">
           {tabs.map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`-mb-px border-b-2 pb-3 font-sans text-sm transition-colors ${
+              className={`-mb-px shrink-0 border-b-2 pb-3 font-sans text-sm transition-colors ${
                 tab === t
                   ? "border-ink text-ink"
                   : "border-transparent text-ink-muted hover:text-ink"
@@ -681,7 +681,7 @@ export default function AdminEditor({
           </div>
         )}
 
-        {tab === "Who's looking" && <AdminStats passcode={passcode} />}
+        {tab === "Visitor report" && <AdminStats passcode={passcode} />}
 
         {tab === "Subscribers" && <AdminSubscribers passcode={passcode} />}
 

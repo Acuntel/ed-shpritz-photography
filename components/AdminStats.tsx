@@ -11,6 +11,7 @@ type Stats = {
   allTime: Range;
   topCollections: NamedCount[];
   countries: NamedCount[];
+  trackingSince?: string;
 };
 
 function visits(n: number): string {
@@ -57,7 +58,7 @@ function CountList({ title, rows }: { title: string; rows: NamedCount[] }) {
   );
 }
 
-// The "Who's looking" tab: Ed's visit numbers in plain words. Read-only —
+// The Visitor report tab: Ed's visit numbers in plain words. Read-only —
 // nothing here touches his photographs or publishes anything.
 export default function AdminStats({ passcode }: { passcode: string }) {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -119,6 +120,13 @@ export default function AdminStats({ passcode }: { passcode: string }) {
         rows={stats.topCollections}
       />
       <CountList title="Where they are" rows={stats.countries} />
+
+      {stats.trackingSince && (
+        <p className="font-sans text-xs leading-relaxed text-ink-faint">
+          This private report began counting on{" "}
+          {new Date(`${stats.trackingSince}T12:00:00`).toLocaleDateString()}.
+        </p>
+      )}
 
       <p className="font-sans text-xs leading-relaxed text-ink-faint">
         These counts are anonymous. One person can create more than one visit by

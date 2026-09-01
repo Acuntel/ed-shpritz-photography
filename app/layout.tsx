@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ImageGuard from "@/components/ImageGuard";
+import VisitorTracker from "@/components/VisitorTracker";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -98,6 +99,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ImageGuard />
+        <VisitorTracker />
         <Header />
         <main>{children}</main>
         <Footer />

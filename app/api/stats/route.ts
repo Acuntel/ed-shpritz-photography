@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { isValidAdminPasscode } from "@/lib/admin-auth";
 import { loadContent } from "@/lib/content";
+import { visitorStats } from "@/lib/visitor-stats";
 import {
   analyticsConfigured,
   countryNames,
@@ -15,7 +17,7 @@ const DAY = 86_400_000;
 // Nothing was counted before the site launched, so "all time" starts here.
 const LAUNCH = Date.UTC(2026, 5, 1);
 
-// POST { passcode } → the numbers behind the admin "Who's looking" tab.
+// POST { passcode } → the numbers behind the admin Visitor report tab.
 export async function POST(req: Request) {
   let body: { passcode?: string };
   try {
@@ -24,28 +26,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Bad request." }, { status: 400 });
   }
 
-  const expected = process.env.ADMIN_PASSCODE;
-  if (!expected || body.passcode !== expected) {
+  if (!isValidAdminPasscode(body.passcode)) {
     return NextResponse.json(
       { error: "That password is not right." },
       { status: 401 },
     );
   }
 
-  if (!analyticsConfigured()) {
-    return NextResponse.json({ error: "not-configured" }, { status: 503 });
-  }
 
   try {
     const now = Date.now();
-    const [week, month, allTime, pages, countries, content] =
+    const content = await loadContent();
+    if (!analyticsConfigured()) {
+      const local = await visitorStats(content.collections);
+      return NextResponse.json(
+        { ...local, countries: countryNames(local.countries) },
+        { headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
+    const [week, month, allTime, pages, countries] =
       await Promise.all([
         rangeStats(now - 7 * DAY, now),
         rangeStats(now - 30 * DAY, now),
         rangeStats(LAUNCH, now),
         topMetrics("url", now - 30 * DAY, now, 50),
         topMetrics("country", now - 30 * DAY, now, 12),
-        loadContent(),
       ]);
     const collectionNames = new Set(
       content.collections.map((collection) => collection.name),
