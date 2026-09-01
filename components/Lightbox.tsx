@@ -13,6 +13,7 @@ type Props = {
   email: string;
   onClose: () => void;
   onIndex: (i: number) => void;
+  onEnd?: () => void;
   // When true (private client galleries), show a download link instead of the
   // "inquire about a print" link.
   download?: boolean;
@@ -24,6 +25,7 @@ export default function Lightbox({
   email,
   onClose,
   onIndex,
+  onEnd,
   download = false,
 }: Props) {
   const open = index !== null;
@@ -46,10 +48,14 @@ export default function Lightbox({
   const go = useCallback(
     (dir: number) => {
       if (index === null) return;
+      if (dir > 0 && index === photos.length - 1 && onEnd) {
+        onEnd();
+        return;
+      }
       const next = (index + dir + photos.length) % photos.length;
       onIndex(next);
     },
-    [index, photos.length, onIndex],
+    [index, photos.length, onEnd, onIndex],
   );
 
   useEffect(() => {
