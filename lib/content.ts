@@ -333,6 +333,55 @@ function applyWildlifeMigration(content: Content): Content {
   };
 }
 
+// Hide repeated photographs from their secondary collections once, while
+// preserving every record in Admin so Ed can restore one later if he wishes.
+// These IDs were confirmed from the live public images, including differently
+// processed copies whose file names no longer match.
+const CROSS_COLLECTION_REPEAT_MIGRATION =
+  "cross-collection-repeats-2026-09-01";
+const CROSS_COLLECTION_REPEAT_IDS = new Set([
+  "tracks-snow",
+  "twc-06",
+  "palm-etch",
+  "twc-22",
+  "p-1781352725076-0",
+  "palm-dates",
+  "p-1785871501751-0",
+  "p-1781352942057-0",
+  "twc-25",
+  "p-1783111350919-0",
+  "merchandise-mart",
+  "twc-20",
+  "river-clouds",
+  "sundial-skyline",
+  "twc-01",
+  "p-1781354418930-0",
+  "pavilion-frame",
+]);
+
+function applyCrossCollectionRepeatMigration(content: Content): Content {
+  const site = content.site as SiteWithMigrations;
+  const alreadyApplied =
+    site.migrations?.includes(CROSS_COLLECTION_REPEAT_MIGRATION) ?? false;
+  if (alreadyApplied) return content;
+
+  return {
+    ...content,
+    site: {
+      ...site,
+      migrations: [
+        ...(site.migrations ?? []),
+        CROSS_COLLECTION_REPEAT_MIGRATION,
+      ],
+    } as SiteWithMigrations,
+    photos: content.photos.map((photo) =>
+      CROSS_COLLECTION_REPEAT_IDS.has(photo.id)
+        ? { ...photo, published: false }
+        : photo,
+    ),
+  };
+}
+
 // Apply Ed's confirmed BF06 caption once, by stable photo ID. The marker keeps
 // later admin edits authoritative after this correction has been saved.
 const BEST_FRIENDS_BF06_MIGRATION =
@@ -497,9 +546,11 @@ export const loadContent = cache(
   async function loadContent(): Promise<Content> {
     const content = applyPhotoNumberMigration(
       applyBestFriendsBf06Migration(
-        applyWildlifeMigration(
-          applyAdminPublicParityMigration(
-            (await readLiveBlob()) ?? bundledContent(),
+        applyCrossCollectionRepeatMigration(
+          applyWildlifeMigration(
+            applyAdminPublicParityMigration(
+              (await readLiveBlob()) ?? bundledContent(),
+            ),
           ),
         ),
       ),
@@ -549,7 +600,9 @@ export async function saveContent(content: Content): Promise<void> {
   // stored, later Ed edits pass through unchanged.
   const safeContent = applyPhotoNumberMigration(
     applyBestFriendsBf06Migration(
-      applyWildlifeMigration(applyAdminPublicParityMigration(content)),
+      applyCrossCollectionRepeatMigration(
+        applyWildlifeMigration(applyAdminPublicParityMigration(content)),
+      ),
     ),
   );
   await backupCurrent();
