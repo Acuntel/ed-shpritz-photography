@@ -52,9 +52,6 @@ export default async function CollectionPage({
     currentIndex >= 0 && currentIndex < all.length - 1
       ? all[currentIndex + 1]
       : undefined;
-  const nextHref = nextCollection
-    ? `/collections/${nextCollection.slug}/?open=first`
-    : "/";
 
   return (
     <article className="pt-28">
@@ -94,7 +91,7 @@ export default async function CollectionPage({
           <PhotoGrid
             photos={photos}
             email={site.contactEmail}
-            nextHref={nextHref}
+            endTargetId="after-collection"
           />
         ) : (
           <div className="flex min-h-[30vh] flex-col items-center justify-center text-center">
@@ -106,18 +103,27 @@ export default async function CollectionPage({
         )}
       </section>
 
-      <section className="container-rail mt-24 border-t border-ink/10 pt-12">
-        <p className="kicker mb-6">
-          {nextCollection ? "Next collection" : "Keep looking"}
-        </p>
-        <Link
-          href={
-            nextCollection ? `/collections/${nextCollection.slug}/` : "/"
-          }
-          className="font-serif text-2xl text-ink-soft transition-colors hover:text-ink"
-        >
-          {nextCollection ? nextCollection.name : "Return home"}
-        </Link>
+      <section
+        id="after-collection"
+        className="container-rail mt-24 scroll-mt-24 border-t border-ink/10 pt-12"
+      >
+        <p className="kicker mb-6">Where would you like to look next?</p>
+        <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-10">
+          {nextCollection && (
+            <Link
+              href={`/collections/${nextCollection.slug}/`}
+              className="font-serif text-2xl text-ink transition-colors hover:text-ink-soft"
+            >
+              Next collection: {nextCollection.name}
+            </Link>
+          )}
+          <Link
+            href="/#collections"
+            className="border-b border-ink/30 pb-1 font-sans text-sm text-ink-soft transition-colors hover:border-ink hover:text-ink"
+          >
+            All collections
+          </Link>
+        </div>
       </section>
     </article>
   );

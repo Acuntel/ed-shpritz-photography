@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Reveal from "@/components/Reveal";
 import Lightbox from "@/components/Lightbox";
 import Picture from "@/components/Picture";
@@ -29,28 +29,14 @@ function groupBySection(photos: Photo[]): Group[] {
 export default function PhotoGrid({
   photos,
   email,
-  nextHref,
+  endTargetId,
 }: {
   photos: Photo[];
   email: string;
-  nextHref?: string;
+  endTargetId?: string;
 }) {
   const [index, setIndex] = useState<number | null>(null);
   const groups = groupBySection(photos);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("open") !== "first" || photos.length === 0) return;
-
-    setIndex(0);
-    params.delete("open");
-    const query = params.toString();
-    const cleanUrl =
-      window.location.pathname +
-      (query ? "?" + query : "") +
-      window.location.hash;
-    window.history.replaceState(window.history.state, "", cleanUrl);
-  }, [photos.length]);
 
   return (
     <>
@@ -114,7 +100,17 @@ export default function PhotoGrid({
         onClose={() => setIndex(null)}
         onIndex={setIndex}
         onEnd={
-          nextHref ? () => window.location.assign(nextHref) : undefined
+          endTargetId
+            ? () => {
+                setIndex(null);
+                window.setTimeout(() => {
+                  document.getElementById(endTargetId)?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }, 50);
+              }
+            : undefined
         }
       />
     </>
