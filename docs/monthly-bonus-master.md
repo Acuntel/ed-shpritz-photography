@@ -82,3 +82,21 @@ entries must stay separate from newsletter subscribers.
 3. Test the public Bonus link.
 4. Publish a short Facebook and Instagram announcement that links to Bonus
    without revealing the three answers.
+
+## Facebook and Instagram safeguards
+
+Facebook and Instagram are promotion posts only; the website is the only place
+to enter, read the rules, and provide information.
+
+- Keep each social post to one photograph or simple graphic, a short teaser,
+  and the website link (or “link in bio” on Instagram).
+- Never make liking, following, sharing, tagging, commenting, or messaging a
+  condition of entry or an extra chance to win.
+- Do not use Facebook or Instagram logos, screenshots, or wording that could
+  imply either platform sponsors or endorses the challenge.
+- Put the final rules and entry page on the website, including the standard
+  statement that the promotion is not sponsored, endorsed, administered by, or
+  associated with Facebook or Instagram.
+- Use “Instagram” in final public copy, not abbreviated brand names.
+- Do not publish or buy an ad until the final dates, rules, privacy wording,
+  and entry experience have been reviewed together.
