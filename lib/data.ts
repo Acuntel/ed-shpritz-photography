@@ -18,6 +18,31 @@ type IMeta = Record<
 >;
 const meta = imetaJson as unknown as IMeta;
 
+// The cloud collection is intentionally empty until Ed supplies its first
+// photographs. Keeping this presentation-level definition here means it is
+// live without changing the site's stored content or publishing system.
+const DO_YOU_SEE_COLLECTION: Collection = {
+  slug: "do-you-see-what-i-see",
+  name: "Do You See What I See?",
+  kicker: "",
+  blurb: "",
+  intro:
+    "Ever look up? See a cloud looking like a bear, a face, or even a dragon? Look, imagine, smile, then match it to what I see! And have fun.",
+  cover: "",
+};
+
+function withDoYouSeeFirst(collections: Collection[]): Collection[] {
+  const existing = collections.find(
+    (collection) => collection.slug === DO_YOU_SEE_COLLECTION.slug,
+  );
+  return [
+    existing ?? DO_YOU_SEE_COLLECTION,
+    ...collections.filter(
+      (collection) => collection.slug !== DO_YOU_SEE_COLLECTION.slug,
+    ),
+  ];
+}
+
 function baseFromSrc(src: string): string {
   const file = src.split("/").pop() ?? "";
   return file.replace(/\.[a-z0-9]+$/i, "");
@@ -34,9 +59,9 @@ function enrichPhoto<
   return { ...p, lqip: p.lqip ?? m.lqip, width: m.width, height: m.height };
 }
 
-// Admin is the single source of truth for all visitor-facing content. Public
-// pages preserve its names, captions, ordering, awards, covers, and collection
-// order exactly; only technical image metadata may be filled in for layout.
+// Admin is the single source of truth for visitor content. Public pages preserve
+// its names, captions, awards, and covers; the reserved cloud collection is shown
+// first until Ed supplies its photographs. Only technical metadata is filled in.
 
 export async function getSite(): Promise<SiteContent> {
   return (await loadContent()).site;
@@ -53,7 +78,7 @@ export async function getPhotos(): Promise<Photo[]> {
 export async function getCollections(): Promise<Collection[]> {
   const { collections } = await loadContent();
   const photos = await getPhotos();
-  return collections.map((collection) => {
+  return withDoYouSeeFirst(collections).map((collection) => {
     const collectionPhotos = photos.filter(
       (photo) => photo.collection === collection.slug,
     );
