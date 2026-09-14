@@ -227,6 +227,40 @@ const RECOVERABLE_WILDLIFE_IDS = new Set(["wildebeest"]);
 
 type SiteWithMigrations = SiteContent & { migrations?: string[] };
 
+// Keep the “Do You See What I See?” collection in the same saved content used
+// by Admin. It originally lived only in the public presentation layer, which
+// made the public site show it while Admin had no way to add photographs.
+const DO_YOU_SEE_ADMIN_MIGRATION = "do-you-see-what-i-see-admin-2026-09-14";
+const DO_YOU_SEE_COLLECTION: Collection = {
+  slug: "do-you-see-what-i-see",
+  name: "Do You See What I See?",
+  kicker: "",
+  blurb: "",
+  intro:
+    "Ever look up? See a cloud looking like a bear, a face, or even a dragon? Look, imagine, smile, then match it to what I see! And have fun.",
+  cover: "",
+};
+
+function applyDoYouSeeAdminMigration(content: Content): Content {
+  const site = content.site as SiteWithMigrations;
+  if (site.migrations?.includes(DO_YOU_SEE_ADMIN_MIGRATION)) return content;
+
+  const exists = content.collections.some(
+    (collection) => collection.slug === DO_YOU_SEE_COLLECTION.slug,
+  );
+
+  return {
+    ...content,
+    site: {
+      ...site,
+      migrations: [...(site.migrations ?? []), DO_YOU_SEE_ADMIN_MIGRATION],
+    } as SiteWithMigrations,
+    collections: exists
+      ? content.collections
+      : [DO_YOU_SEE_COLLECTION, ...content.collections],
+  };
+}
+
 // Repair the historical split between the public collection lists and the
 // master list used by admin. This runs once, then the migration marker makes
 // later admin edits authoritative (including intentional deletions).
@@ -544,12 +578,14 @@ async function readLiveBlob(): Promise<Content | null> {
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    const content = applyPhotoNumberMigration(
-      applyBestFriendsBf06Migration(
-        applyCrossCollectionRepeatMigration(
-          applyWildlifeMigration(
-            applyAdminPublicParityMigration(
-              (await readLiveBlob()) ?? bundledContent(),
+    const content = applyDoYouSeeAdminMigration(
+      applyPhotoNumberMigration(
+        applyBestFriendsBf06Migration(
+          applyCrossCollectionRepeatMigration(
+            applyWildlifeMigration(
+              applyAdminPublicParityMigration(
+                (await readLiveBlob()) ?? bundledContent(),
+              ),
             ),
           ),
         ),
@@ -598,10 +634,12 @@ export async function saveContent(content: Content): Promise<void> {
   // A stale admin tab may publish once after this fix deploys. Running the
   // migration here as well makes that first save safe; after its marker is
   // stored, later Ed edits pass through unchanged.
-  const safeContent = applyPhotoNumberMigration(
-    applyBestFriendsBf06Migration(
-      applyCrossCollectionRepeatMigration(
-        applyWildlifeMigration(applyAdminPublicParityMigration(content)),
+  const safeContent = applyDoYouSeeAdminMigration(
+    applyPhotoNumberMigration(
+      applyBestFriendsBf06Migration(
+        applyCrossCollectionRepeatMigration(
+          applyWildlifeMigration(applyAdminPublicParityMigration(content)),
+        ),
       ),
     ),
   );
