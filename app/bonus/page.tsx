@@ -4,7 +4,7 @@ import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
   title: "Bonus",
-  description: "A little something extra from Ed Shpritz — and a challenge to come.",
+  description: "Ed’isms — a little something extra from Ed Shpritz.",
 };
 
 export default function BonusPage() {
@@ -35,19 +35,11 @@ export default function BonusPage() {
       </section>
 
       <section className="container-rail pb-20">
-        <Reveal className="mx-auto max-w-2xl border-y border-ink/10 py-12 text-center">
-          <p className="kicker">Coming soon</p>
-          <div className="mt-7 space-y-3 font-serif text-2xl font-light leading-relaxed text-ink-soft sm:text-3xl">
-            <p>WE LOOK… but do we SEE?</p>
-            <p>WE HEAR… but did you LISTEN?</p>
-            <p>WE LIVE…</p>
-            <p>Have FUN. LIVE LIFE!</p>
-          </div>
-          <p className="mt-10 font-sans text-sm font-medium tracking-[0.16em] text-ink">
-            WATCH FOR THE COMING CHALLENGE!
-          </p>
+        <Reveal className="mx-auto max-w-2xl border-t border-ink/10 pt-12 text-center">
+          <p className="kicker">Coming next</p>
           <p className="mt-4 font-serif text-2xl font-light leading-relaxed text-ink-soft sm:text-3xl">
-            Something FUN is coming. You’ll have to LOOK closely.
+            Watch for information about next year’s calendar—and how to get
+            one!
           </p>
         </Reveal>
       </section>
