@@ -44,6 +44,23 @@ find three photographs in different collections.
 - Test correct, wrong, blank, duplicate, desktop, iPhone, iPad, confirmation,
   timestamp, deadline closing, and public links before announcing.
 
+## Technical build path
+
+The website already has encrypted private record storage and a passcode-
+protected Admin list. The contest will use the same proven pattern, but its
+entries must stay separate from newsletter subscribers.
+
+- Store each contest entry privately: name, email, B 02 / LO18 / WL 08 answers,
+  timestamp, entry number, and verification/winner status.
+- Use a hidden spam-trap field and reject duplicate email entries without
+  exposing prior entries.
+- Show the contest list only inside Admin, with a simple download option for
+  Ed.
+- Use the website’s existing protected mail service for the entrant’s receipt
+  and for Ed’s entry notification; test both before launch.
+- Enforce the published Central Time deadline on the server, not just on the
+  visible page.
+
 ## Public teaser
 
 > WE LOOK… but do we SEE?
