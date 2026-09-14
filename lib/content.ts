@@ -238,7 +238,7 @@ const DO_YOU_SEE_COLLECTION: Collection = {
   blurb: "",
   intro:
     "Ever look up? See a cloud looking like a bear, a face, or even a dragon? Look, imagine, smile, then match it to what I see! And have fun.",
-  cover: "",
+  cover: "/images/do-you-see/cloud-01.jpg",
 };
 
 function applyDoYouSeeAdminMigration(content: Content): Content {
@@ -258,6 +258,139 @@ function applyDoYouSeeAdminMigration(content: Content): Content {
     collections: exists
       ? content.collections
       : [DO_YOU_SEE_COLLECTION, ...content.collections],
+  };
+}
+
+// These photographs were provided for the collection before it was visible in
+// Admin. Add them through the same one-time live-content migration, so they
+// are immediately visible on the site and remain fully editable in Admin.
+const DO_YOU_SEE_PHOTOS_MIGRATION =
+  "do-you-see-what-i-see-photos-2026-09-14";
+const DO_YOU_SEE_PHOTOS: Photo[] = [
+  {
+    id: "do-you-see-cloud-01",
+    src: "/images/do-you-see/cloud-01.jpg",
+    alt: "White clouds against a deep blue sky",
+    name: "First Sight",
+    title: "First Sight",
+    description: "",
+    collection: "do-you-see-what-i-see",
+    published: true,
+    trigger: false,
+    order: 9700,
+    width: 1616,
+    height: 1080,
+  },
+  {
+    id: "do-you-see-cloud-02",
+    src: "/images/do-you-see/cloud-02.jpg",
+    alt: "Towering clouds framed by tree branches",
+    name: "Mickey",
+    title: "Mickey",
+    description: "",
+    collection: "do-you-see-what-i-see",
+    published: true,
+    trigger: false,
+    order: 9701,
+    width: 2016,
+    height: 1680,
+  },
+  {
+    id: "do-you-see-cloud-03",
+    src: "/images/do-you-see/cloud-03.jpg",
+    alt: "A sculptural white cloud in a deep blue sky",
+    name: "Looking Back",
+    title: "Looking Back",
+    description: "",
+    collection: "do-you-see-what-i-see",
+    published: true,
+    trigger: false,
+    order: 9702,
+    width: 1616,
+    height: 1080,
+  },
+  {
+    id: "do-you-see-cloud-04",
+    src: "/images/do-you-see/cloud-04.jpg",
+    alt: "Bright clouds above rooftops and a pink wall",
+    name: "High Above",
+    title: "High Above",
+    description: "",
+    collection: "do-you-see-what-i-see",
+    published: true,
+    trigger: false,
+    order: 9703,
+    width: 3024,
+    height: 4032,
+  },
+  {
+    id: "do-you-see-cloud-05",
+    src: "/images/do-you-see/cloud-05.jpg",
+    alt: "A large sunlit cloud above a parking lot",
+    name: "Rabbit or Elephant?",
+    title: "Rabbit or Elephant?",
+    description: "",
+    collection: "do-you-see-what-i-see",
+    published: true,
+    trigger: false,
+    order: 9704,
+    width: 2448,
+    height: 3264,
+  },
+  {
+    id: "do-you-see-cloud-06",
+    src: "/images/do-you-see/cloud-06.jpg",
+    alt: "White clouds and a small bird in a deep blue sky",
+    name: "Cloud Traveler",
+    title: "Cloud Traveler",
+    description: "",
+    collection: "do-you-see-what-i-see",
+    published: true,
+    trigger: false,
+    order: 9705,
+    width: 1616,
+    height: 1080,
+  },
+  {
+    id: "do-you-see-cloud-07",
+    src: "/images/do-you-see/cloud-07.jpg",
+    alt: "A broad white cloud above a roofline",
+    name: "Cloud Study",
+    title: "Cloud Study",
+    description: "",
+    collection: "do-you-see-what-i-see",
+    published: true,
+    trigger: false,
+    order: 9706,
+    width: 2448,
+    height: 2448,
+  },
+];
+
+function applyDoYouSeePhotosMigration(content: Content): Content {
+  const site = content.site as SiteWithMigrations;
+  if (site.migrations?.includes(DO_YOU_SEE_PHOTOS_MIGRATION)) return content;
+
+  const photoIds = new Set(content.photos.map((photo) => photo.id));
+  const missingPhotos = DO_YOU_SEE_PHOTOS.filter(
+    (photo) => !photoIds.has(photo.id),
+  );
+
+  return {
+    ...content,
+    site: {
+      ...site,
+      migrations: [...(site.migrations ?? []), DO_YOU_SEE_PHOTOS_MIGRATION],
+    } as SiteWithMigrations,
+    collections: content.collections.map((collection) =>
+      collection.slug === DO_YOU_SEE_COLLECTION.slug && !collection.cover
+        ? { ...collection, cover: DO_YOU_SEE_COLLECTION.cover }
+        : collection,
+    ),
+    photos:
+      missingPhotos.length > 0
+        ? [...content.photos, ...missingPhotos]
+        : content.photos,
   };
 }
 
@@ -578,13 +711,15 @@ async function readLiveBlob(): Promise<Content | null> {
 // within a single request share ONE Blob fetch.
 export const loadContent = cache(
   async function loadContent(): Promise<Content> {
-    const content = applyDoYouSeeAdminMigration(
-      applyPhotoNumberMigration(
-        applyBestFriendsBf06Migration(
-          applyCrossCollectionRepeatMigration(
-            applyWildlifeMigration(
-              applyAdminPublicParityMigration(
-                (await readLiveBlob()) ?? bundledContent(),
+    const content = applyDoYouSeePhotosMigration(
+      applyDoYouSeeAdminMigration(
+        applyPhotoNumberMigration(
+          applyBestFriendsBf06Migration(
+            applyCrossCollectionRepeatMigration(
+              applyWildlifeMigration(
+                applyAdminPublicParityMigration(
+                  (await readLiveBlob()) ?? bundledContent(),
+                ),
               ),
             ),
           ),
@@ -634,11 +769,13 @@ export async function saveContent(content: Content): Promise<void> {
   // A stale admin tab may publish once after this fix deploys. Running the
   // migration here as well makes that first save safe; after its marker is
   // stored, later Ed edits pass through unchanged.
-  const safeContent = applyDoYouSeeAdminMigration(
-    applyPhotoNumberMigration(
-      applyBestFriendsBf06Migration(
-        applyCrossCollectionRepeatMigration(
-          applyWildlifeMigration(applyAdminPublicParityMigration(content)),
+  const safeContent = applyDoYouSeePhotosMigration(
+    applyDoYouSeeAdminMigration(
+      applyPhotoNumberMigration(
+        applyBestFriendsBf06Migration(
+          applyCrossCollectionRepeatMigration(
+            applyWildlifeMigration(applyAdminPublicParityMigration(content)),
+          ),
         ),
       ),
     ),
