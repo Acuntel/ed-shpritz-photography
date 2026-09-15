@@ -5,7 +5,6 @@ import { visitorStats } from "@/lib/visitor-stats";
 import {
   analyticsConfigured,
   countryNames,
-  friendlyPages,
   rangeStats,
   topMetrics,
 } from "@/lib/analytics";
@@ -45,27 +44,24 @@ export async function POST(req: Request) {
       );
     }
 
-    const [week, month, allTime, pages, countries] =
+    const [week, month, allTime, countries, local] =
       await Promise.all([
         rangeStats(now - 7 * DAY, now),
         rangeStats(now - 30 * DAY, now),
         rangeStats(LAUNCH, now),
-        topMetrics("url", now - 30 * DAY, now, 50),
         topMetrics("country", now - 30 * DAY, now, 12),
+        visitorStats(content.collections),
       ]);
-    const collectionNames = new Set(
-      content.collections.map((collection) => collection.name),
-    );
-    const topCollections = friendlyPages(pages, content.collections)
-      .filter((row) => collectionNames.has(row.name))
-      .slice(0, 8);
 
     return NextResponse.json(
       {
         week,
         month,
         allTime,
-        topCollections,
+        // Client-side navigation between the home page and a collection is
+        // recorded by VisitorTracker even when GoatCounter sees only the first
+        // page of the visit.
+        topCollections: local.topCollections,
         countries: countryNames(countries).slice(0, 8),
       },
       { headers: { "Cache-Control": "no-store" } },

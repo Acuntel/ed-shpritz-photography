@@ -36,8 +36,24 @@ function Tile({ label, range }: { label: string; range: Range }) {
   );
 }
 
-function CountList({ title, rows }: { title: string; rows: NamedCount[] }) {
-  if (rows.length === 0) return null;
+function CountList({
+  title,
+  rows,
+  emptyText,
+}: {
+  title: string;
+  rows: NamedCount[];
+  emptyText?: string;
+}) {
+  if (rows.length === 0) {
+    if (!emptyText) return null;
+    return (
+      <div>
+        <p className="kicker mb-4">{title}</p>
+        <p className="font-sans text-sm text-ink-muted">{emptyText}</p>
+      </div>
+    );
+  }
   return (
     <div>
       <p className="kicker mb-4">{title}</p>
@@ -116,8 +132,9 @@ export default function AdminStats({ passcode }: { passcode: string }) {
       </div>
 
       <CountList
-        title="Collections visited most (last 30 days)"
+        title="Collections looked at (last 30 days)"
         rows={stats.topCollections}
+        emptyText="No collection pages have been opened in the last 30 days."
       />
       <CountList title="Where they are" rows={stats.countries} />
 
