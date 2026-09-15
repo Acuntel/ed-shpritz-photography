@@ -114,12 +114,19 @@ export async function visitorStats(collections: {
       collection.name,
     ]),
   );
-  const topCollections = sortedCounts(
-    monthEvents
-      .map((event) => collectionNames.get(event.path))
-      .filter((name): name is string => !!name),
-    8,
+  const collectionCounts = new Map(
+    collections.map((collection) => [collection.name, 0]),
   );
+  for (const event of monthEvents) {
+    const name = collectionNames.get(event.path);
+    if (name) {
+      collectionCounts.set(name, (collectionCounts.get(name) ?? 0) + 1);
+    }
+  }
+  const topCollections = Array.from(
+    collectionCounts,
+    ([name, count]) => ({ name, count }),
+  ).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   const countries = sortedCounts(
     Array.from(
       new Map(
