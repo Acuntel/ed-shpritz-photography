@@ -79,8 +79,9 @@ export default async function CollectionPage({
           <div className="mt-8 max-w-prose2 border-l border-ink/20 pl-5">
             <p className="kicker">How to look</p>
             <p className="mt-3 font-sans text-sm leading-relaxed text-ink-soft">
-              Open each photograph to see its title and description—the words
-              are part of the experience.
+              {params.slug === "do-you-see-what-i-see"
+                ? "Look first. Each cloud has a number and a HINT. Open the photograph when you are ready to see what I see."
+                : "Open each photograph to see its title and description—the words are part of the experience."}
             </p>
           </div>
         </Reveal>
@@ -92,6 +93,7 @@ export default async function CollectionPage({
             photos={photos}
             email={site.contactEmail}
             endTargetId="after-collection"
+            revealAnswers={params.slug === "do-you-see-what-i-see"}
           />
         ) : (
           <div className="flex min-h-[30vh] flex-col items-center justify-center text-center">

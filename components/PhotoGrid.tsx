@@ -30,10 +30,14 @@ export default function PhotoGrid({
   photos,
   email,
   endTargetId,
+  revealAnswers = false,
 }: {
   photos: Photo[];
   email: string;
   endTargetId?: string;
+  // The cloud collection is a small visual game: keep its answers inside the
+  // opened photograph rather than revealing them underneath the thumbnail.
+  revealAnswers?: boolean;
 }) {
   const [index, setIndex] = useState<number | null>(null);
   const groups = groupBySection(photos);
@@ -69,23 +73,37 @@ export default function PhotoGrid({
                       className="block h-auto w-full transition-transform duration-[1.4s] ease-gallery group-hover:scale-[1.03]"
                     />
                   </span>
-                  <span className="mt-3 flex items-baseline justify-between gap-3">
-                    <span className="flex items-baseline gap-1.5 font-serif text-base text-ink transition-colors group-hover:text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
-                      {photoLabel(p)}
-                      {p.award && (
-                        <span
-                          aria-label="Award-winning"
-                          title="Award-winning"
-                          className="shrink-0 font-serif text-lg leading-none text-amber-500"
-                        >
-                          *
+                  {revealAnswers ? (
+                    <span className="mt-3 block">
+                      <span className="flex items-baseline gap-2">
+                        <span className="font-serif text-base text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
+                          {p.name?.trim() || `Photo ${gIndex + 1}`}
                         </span>
-                      )}
+                        <span className="kicker">Hint</span>
+                      </span>
+                      <span className="mt-1 block font-serif text-sm italic text-ink-muted">
+                        Do You See What I See?
+                      </span>
                     </span>
-                    <span className="kicker shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
-                      View
+                  ) : (
+                    <span className="mt-3 flex items-baseline justify-between gap-3">
+                      <span className="flex items-baseline gap-1.5 font-serif text-base text-ink transition-colors group-hover:text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
+                        {photoLabel(p)}
+                        {p.award && (
+                          <span
+                            aria-label="Award-winning"
+                            title="Award-winning"
+                            className="shrink-0 font-serif text-lg leading-none text-amber-500"
+                          >
+                            *
+                          </span>
+                        )}
+                      </span>
+                      <span className="kicker shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
+                        View
+                      </span>
                     </span>
-                  </span>
+                  )}
                 </button>
               </Reveal>
             ))}
