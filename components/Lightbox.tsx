@@ -20,6 +20,9 @@ type Props = {
   // For a reveal-style collection, the clue belongs on the thumbnail; the
   // opened photograph should show only the answer in its description.
   hideSubtitle?: boolean;
+  // Keep a reveal-style collection on one photograph at a time so visitors
+  // return to the grid and see the next clue before opening another answer.
+  hideNavigation?: boolean;
 };
 
 export default function Lightbox({
@@ -31,6 +34,7 @@ export default function Lightbox({
   onEnd,
   download = false,
   hideSubtitle = false,
+  hideNavigation = false,
 }: Props) {
   const open = index !== null;
   const photo = open ? photos[index as number] : null;
@@ -61,7 +65,7 @@ export default function Lightbox({
 
   const go = useCallback(
     (dir: number) => {
-      if (index === null) return;
+      if (hideNavigation || index === null) return;
       if (dir > 0 && index === photos.length - 1 && onEnd) {
         onEnd();
         return;
@@ -69,7 +73,7 @@ export default function Lightbox({
       const next = (index + dir + photos.length) % photos.length;
       onIndex(next);
     },
-    [index, photos.length, onEnd, onIndex],
+    [hideNavigation, index, photos.length, onEnd, onIndex],
   );
 
   useEffect(() => {
@@ -128,14 +132,16 @@ export default function Lightbox({
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
-            <button
-              type="button"
-              aria-label="Previous"
-              onClick={() => go(-1)}
-              className="hidden shrink-0 px-3 text-ink-muted transition-colors hover:text-ink sm:block"
-            >
-              <ChevronLeft size={32} />
-            </button>
+            {!hideNavigation && (
+              <button
+                type="button"
+                aria-label="Previous"
+                onClick={() => go(-1)}
+                className="hidden shrink-0 px-3 text-ink-muted transition-colors hover:text-ink sm:block"
+              >
+                <ChevronLeft size={32} />
+              </button>
+            )}
 
             <motion.figure
               key={photo.id}
@@ -201,14 +207,16 @@ export default function Lightbox({
               </figcaption>
             </motion.figure>
 
-            <button
-              type="button"
-              aria-label="Next"
-              onClick={() => go(1)}
-              className="hidden shrink-0 px-3 text-ink-muted transition-colors hover:text-ink sm:block"
-            >
-              <ChevronRight size={32} />
-            </button>
+            {!hideNavigation && (
+              <button
+                type="button"
+                aria-label="Next"
+                onClick={() => go(1)}
+                className="hidden shrink-0 px-3 text-ink-muted transition-colors hover:text-ink sm:block"
+              >
+                <ChevronRight size={32} />
+              </button>
+            )}
           </div>
         </motion.div>
       )}

@@ -123,6 +123,7 @@ export default function PhotoGrid({
         onClose={() => setIndex(null)}
         onIndex={setIndex}
         hideSubtitle={revealAnswers}
+        hideNavigation={revealAnswers}
         onEnd={
           endTargetId
             ? () => {
