@@ -80,7 +80,7 @@ export default async function CollectionPage({
             <p className="kicker">How to look</p>
             <p className="mt-3 font-sans text-sm leading-relaxed text-ink-soft">
               {params.slug === "do-you-see-what-i-see"
-                ? "Look first. Each cloud has a number and its own HINT. Then open the photograph to reveal what I see."
+                ? "Look at the cloud. Read the HINT. Do you see what I see? Open it to reveal my answer."
                 : "Open each photograph to see its title and description—the words are part of the experience."}
             </p>
           </div>

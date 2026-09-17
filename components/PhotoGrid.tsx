@@ -80,9 +80,15 @@ export default function PhotoGrid({
                       </span>
                       {p.title?.trim() && (
                         <span className="mt-1 block font-serif text-sm italic text-ink-muted">
-                          {p.title}
+                          HINT — {p.title
+                            .trim()
+                            .replace(/^hint\s*[:—-]?\s*/i, "")
+                            .replace(/^[:—-]\s*/, "")}
                         </span>
                       )}
+                      <span className="mt-1 block font-serif text-sm italic text-ink-muted">
+                        Do You See What I See?
+                      </span>
                     </span>
                   ) : (
                     <span className="mt-3 flex items-baseline justify-between gap-3">

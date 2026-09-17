@@ -50,6 +50,13 @@ export default function Lightbox({
     photo.title.trim() !== label
       ? photo.title
       : null;
+  // The cloud collection presents its clue before the click. After opening,
+  // recast Ed's saved prompt as his personal reveal without changing it in
+  // Admin or altering any other collection.
+  const description =
+    photo?.description && hideSubtitle
+      ? photo.description.replace(/^what do you see\?\s*/i, "I see: ")
+      : photo?.description;
   const touchX = useRef<number | null>(null);
 
   const go = useCallback(
@@ -168,9 +175,9 @@ export default function Lightbox({
                     {subtitle}
                   </p>
                 )}
-                {photo.description && (
+                {description && (
                   <p className="mt-2 font-sans text-sm leading-relaxed text-ink">
-                    {photo.description}
+                    {description}
                   </p>
                 )}
                 {download ? (
