@@ -17,6 +17,9 @@ type Props = {
   // When true (private client galleries), show a download link instead of the
   // "inquire about a print" link.
   download?: boolean;
+  // For a reveal-style collection, the clue belongs on the thumbnail; the
+  // opened photograph should show only the answer in its description.
+  hideSubtitle?: boolean;
 };
 
 export default function Lightbox({
@@ -27,6 +30,7 @@ export default function Lightbox({
   onIndex,
   onEnd,
   download = false,
+  hideSubtitle = false,
 }: Props) {
   const open = index !== null;
   const photo = open ? photos[index as number] : null;
@@ -40,7 +44,10 @@ export default function Lightbox({
   // when it adds something the heading doesn't already say.
   const label = photo ? photoLabel(photo) : "";
   const subtitle =
-    photo?.title && photo.title.trim() && photo.title.trim() !== label
+    !hideSubtitle &&
+    photo?.title &&
+    photo.title.trim() &&
+    photo.title.trim() !== label
       ? photo.title
       : null;
   const touchX = useRef<number | null>(null);

@@ -75,15 +75,14 @@ export default function PhotoGrid({
                   </span>
                   {revealAnswers ? (
                     <span className="mt-3 block">
-                      <span className="flex items-baseline gap-2">
-                        <span className="font-serif text-base text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
-                          {p.name?.trim() || `Photo ${gIndex + 1}`}
+                      <span className="font-serif text-base text-ink [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
+                        {p.name?.trim() || `Photo ${gIndex + 1}`}
+                      </span>
+                      {p.title?.trim() && (
+                        <span className="mt-1 block font-serif text-sm italic text-ink-muted">
+                          {p.title}
                         </span>
-                        <span className="kicker">Hint</span>
-                      </span>
-                      <span className="mt-1 block font-serif text-sm italic text-ink-muted">
-                        Do You See What I See?
-                      </span>
+                      )}
                     </span>
                   ) : (
                     <span className="mt-3 flex items-baseline justify-between gap-3">
@@ -117,6 +116,7 @@ export default function PhotoGrid({
         email={email}
         onClose={() => setIndex(null)}
         onIndex={setIndex}
+        hideSubtitle={revealAnswers}
         onEnd={
           endTargetId
             ? () => {
