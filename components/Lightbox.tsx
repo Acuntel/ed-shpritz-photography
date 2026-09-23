@@ -15,7 +15,7 @@ type Props = {
   onIndex: (i: number) => void;
   onEnd?: () => void;
   // When true (private client galleries), show a download link instead of the
-  // "inquire about a print" link.
+  // link to print information.
   download?: boolean;
   // For a reveal-style collection, the clue belongs on the thumbnail; the
   // opened photograph should show only the answer in its description.
@@ -28,7 +28,6 @@ type Props = {
 export default function Lightbox({
   photos,
   index,
-  email,
   onClose,
   onIndex,
   onEnd,
@@ -196,12 +195,10 @@ export default function Lightbox({
                   </a>
                 ) : (
                   <a
-                    href={`mailto:${email}?subject=${encodeURIComponent(
-                      "Print inquiry: " + label,
-                    )}`}
+                    href="/prints/"
                     className="mt-5 inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
                   >
-                    Inquire about a print
+                    PRINTS
                   </a>
                 )}
               </figcaption>
