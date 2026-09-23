@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 export const metadata: Metadata = {
   title: "Prints",
   description:
-    "Archival, signed fine art prints by Chicago photographer Ed Shpritz, available on request.",
+    "Fine-art photographic prints by Chicago photographer Ed Shpritz, available through Fine Art America.",
 };
 
 export const dynamic = "force-dynamic";
@@ -22,7 +22,11 @@ export default async function PrintsPage() {
             Prints
           </h1>
           <p className="mx-auto mt-8 max-w-prose2 font-serif text-2xl font-light leading-relaxed text-ink-soft">
-            {site.prints.statement}
+            Printed on premium fine-art photographic papers and materials.
+          </p>
+          <p className="mx-auto mt-5 max-w-prose2 font-serif text-xl font-light leading-relaxed text-ink-soft">
+            Prints are available through Fine Art America in a variety of sizes,
+            papers, frames, and finishes.
           </p>
           <a
             href="https://fineartamerica.com/profiles/edward-shpritz/shop"
@@ -30,7 +34,7 @@ export default async function PrintsPage() {
             rel="noreferrer"
             className="mt-8 inline-block border-b border-ink/30 pb-2 font-serif text-2xl font-light text-ink transition-colors hover:border-ink"
           >
-            Visit my Fine Art America shop
+            SHOP PRINTS
           </a>
           <p className="mx-auto mt-8 max-w-prose2 font-serif text-xl font-light leading-relaxed text-ink-soft">
             If the photograph you want is not there, contact me at{" "}
