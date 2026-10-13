@@ -47,8 +47,24 @@ export default async function Home() {
             </span>
             Award-winning photographs
           </p>
+          <p className="mt-7">
+            <Link
+              href="#stay-in-touch"
+              className="inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
+            >
+              See my newest photographs — sign up for occasional updates.
+            </Link>
+          </p>
         </Reveal>
         <CollectionsIndex collections={collections} photos={homePhotos} />
+        <Reveal className="mt-12 text-center">
+          <Link
+            href="#stay-in-touch"
+            className="inline-block border-b border-ink/30 pb-1 font-sans text-sm text-ink transition-colors hover:border-ink"
+          >
+            See my newest photographs — sign up for occasional updates.
+          </Link>
+        </Reveal>
       </section>
 
       {/* About teaser */}
